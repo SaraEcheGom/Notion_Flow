@@ -1,4 +1,6 @@
-﻿namespace NotionFlow.App
+﻿using NotionFlow.App.ViewModels;
+
+namespace NotionFlow.App
 {
     public partial class MainPage : ContentPage
     {
@@ -7,6 +9,8 @@
         public MainPage()
         {
             InitializeComponent();
+
+            BindingContext = new TaskViewModel(); // NUEVO
         }
 
         private void OnCounterClicked(object? sender, EventArgs e)
