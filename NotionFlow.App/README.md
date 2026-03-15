@@ -71,18 +71,41 @@ NotionFlow.App
 ├── Models
 │   └── TaskItem.cs
 │
+├── Platforms
+│   ├── Android
+│   ├── MacCatalyst
+│   ├── Tizen
+│   ├── Windows
+│   └── iOS
+│
+├── Properties
+│   └── launchSettings.json
+│
+├── Resources
+│   ├── AppIcon
+│   ├── Fonts
+│   ├── Images
+│   ├── Raw
+│   ├── Splash
+│   └── Styles
+│
 ├── Services
 │   └── TaskService.cs
 │
 ├── ViewModels
 │   └── TaskViewModel.cs
 │
-├── Platforms
-│
-├── Resources
-│
+├── App.xaml
+├── App.xaml.cs
+├── AppShell.xaml
+├── AppShell.xaml.cs
 ├── MainPage.xaml
-└── MainPage.xaml.cs
+├── MainPage.xaml.cs
+├── MauiProgram.cs
+├── NotionFlow.App.csproj
+├── README.md
+├── .gitignore
+└── NotionFlow.sln
 ```
 
 ---
