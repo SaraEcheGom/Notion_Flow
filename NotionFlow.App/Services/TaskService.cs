@@ -3,14 +3,11 @@ using NotionFlow.App.Models;
 
 namespace NotionFlow.App.Services
 {
-    /// <summary>
-    /// Servicio encargado de guardar y cargar las tareas
-    /// </summary>
     public class TaskService
     {
         private const string FileName = "tasks.json";
 
-        public List<TaskItem> Tasks { get; private set; }
+        public List<TaskItem> Tasks { get; set; }
 
         public TaskService()
         {
@@ -18,7 +15,15 @@ namespace NotionFlow.App.Services
         }
 
         /// <summary>
-        /// Agrega una nueva tarea
+        /// Obtiene todas las tareas
+        /// </summary>
+        public List<TaskItem> GetTasks()
+        {
+            return Tasks;
+        }
+
+        /// <summary>
+        /// Agrega una tarea
         /// </summary>
         public void AddTask(string title)
         {
@@ -43,7 +48,7 @@ namespace NotionFlow.App.Services
         /// <summary>
         /// Guarda las tareas en JSON
         /// </summary>
-        private void SaveTasks()
+        public void SaveTasks()
         {
             string path = GetFilePath();
 
@@ -68,6 +73,9 @@ namespace NotionFlow.App.Services
                    ?? new List<TaskItem>();
         }
 
+        /// <summary>
+        /// Obtiene la ruta del archivo
+        /// </summary>
         private string GetFilePath()
         {
             return Path.Combine(FileSystem.AppDataDirectory, FileName);

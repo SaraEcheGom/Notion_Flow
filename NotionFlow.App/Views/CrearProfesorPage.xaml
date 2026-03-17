@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.CrearProfesorPage"
+             Title="Crear Profesor">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15" VerticalOptions="Center">
+
+            <Label Text="Nuevo Profesor"
+                   FontSize="22" FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Entry Placeholder="Nombre completo"
+                   Text="{Binding NombreProfesor}" />
+
+            <Entry Placeholder="Correo electrónico"
+                   Text="{Binding EmailProfesor}"
+                   Keyboard="Email" />
+
+            <Entry Placeholder="Contraseña"
+                   Text="{Binding PasswordProfesor}"
+                   IsPassword="True" />
+
+            <Button Text="Crear Profesor"
+                    Command="{Binding CrearProfesorCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

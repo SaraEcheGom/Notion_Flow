@@ -1,31 +1,28 @@
-using System.ComponentModel;
-
 namespace NotionFlow.App.Models
 {
     /// <summary>
-    /// Modelo que representa una tarea dentro de la aplicación
+    /// Represents a task in the application.
     /// </summary>
-    public class TaskItem : INotifyPropertyChanged
+    public class TaskItem
     {
-        private bool isCompleted;
+        /// <summary>
+        /// Unique identifier of the task.
+        /// </summary>
+        public Guid Id { get; set; } = Guid.NewGuid();
 
-        public string? Title { get; set; }
+        /// <summary>
+        /// Title of the task.
+        /// </summary>
+        public string Title { get; set; } = string.Empty;
 
-        public bool IsCompleted
-        {
-            get => isCompleted;
-            set
-            {
-                isCompleted = value;
-                OnPropertyChanged(nameof(IsCompleted));
-            }
-        }
+        /// <summary>
+        /// Indicates whether the task is completed.
+        /// </summary>
+        public bool IsCompleted { get; set; }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected void OnPropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
+        /// <summary>
+        /// Date when the task was created.
+        /// </summary>
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

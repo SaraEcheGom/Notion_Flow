@@ -1,31 +1,95 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using Microsoft.Maui.Controls;
+using System.Linq;
 using NotionFlow.App.Models;
 using NotionFlow.App.Services;
-using System.ComponentModel;
-using System.Linq;
 
 namespace NotionFlow.App.ViewModels
 {
-    public class TaskViewModel : INotifyPropertyChanged
+    public class TaskViewModel : BaseViewModel
     {
-        private TaskService taskService;
+        private readonly TaskService _taskService;
 
         public ObservableCollection<TaskItem> Tasks { get; set; }
 
+        private string newTaskTitle = string.Empty;
+
+        public string NewTaskTitle
+        {
+            get => newTaskTitle;
+            set
+            {
+                newTaskTitle = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand AddTaskCommand { get; }
+
+        public ICommand CompleteTaskCommand { get; }
+
         public ICommand DeleteTaskCommand { get; }
 
-        public ICommand ShowAllCommand { get; }
-        public ICommand ShowPendingCommand { get; }
-        public ICommand ShowCompletedCommand { get; }
+        public TaskViewModel()
+        {
+            _taskService = new TaskService();
 
-        public string NewTaskTitle { get; set; }
+            Tasks = new ObservableCollection<TaskItem>(_taskService.GetTasks());
+
+            AddTaskCommand = new Command(AddTask);
+
+            CompleteTaskCommand = new Command<TaskItem>(CompleteTask);
+
+            DeleteTaskCommand = new Command<TaskItem>(DeleteTask);
+
+            UpdateCounts();
+        }
+
+        private void AddTask()
+        {
+            if (string.IsNullOrWhiteSpace(NewTaskTitle))
+                return;
+
+            var task = new TaskItem
+            {
+                Title = NewTaskTitle,
+                IsCompleted = false
+            };
+
+            Tasks.Add(task);
+
+            _taskService.SaveTasks();
+
+            NewTaskTitle = string.Empty;
+
+            OnPropertyChanged(nameof(NewTaskTitle));
+
+            UpdateCounts();
+        }
+
+        private void CompleteTask(TaskItem task)
+        {
+            if (task == null) return;
+
+            task.IsCompleted = !task.IsCompleted;
+
+            _taskService.SaveTasks();
+
+            UpdateCounts();
+        }
+
+        private void DeleteTask(TaskItem task)
+        {
+            if (task == null) return;
+
+            Tasks.Remove(task);
+
+            _taskService.SaveTasks();
+
+            UpdateCounts();
+        }
 
         private int totalTasks;
-        private int pendingTasks;
-        private int completedTasks;
 
         public int TotalTasks
         {
@@ -33,19 +97,11 @@ namespace NotionFlow.App.ViewModels
             set
             {
                 totalTasks = value;
-                OnPropertyChanged(nameof(TotalTasks));
+                OnPropertyChanged();
             }
         }
 
-        public int PendingTasks
-        {
-            get => pendingTasks;
-            set
-            {
-                pendingTasks = value;
-                OnPropertyChanged(nameof(PendingTasks));
-            }
-        }
+        private int completedTasks;
 
         public int CompletedTasks
         {
@@ -53,111 +109,29 @@ namespace NotionFlow.App.ViewModels
             set
             {
                 completedTasks = value;
-                OnPropertyChanged(nameof(CompletedTasks));
+                OnPropertyChanged();
             }
         }
 
-        public TaskViewModel()
+        private int pendingTasks;
+
+        public int PendingTasks
         {
-            taskService = new TaskService();
-
-            Tasks = new ObservableCollection<TaskItem>();
-
-            NewTaskTitle = "";
-
-            LoadAllTasks();
-
-            AddTaskCommand = new Command(AddTask);
-            DeleteTaskCommand = new Command<TaskItem>(DeleteTask);
-
-            ShowAllCommand = new Command(LoadAllTasks);
-            ShowPendingCommand = new Command(LoadPendingTasks);
-            ShowCompletedCommand = new Command(LoadCompletedTasks);
-        }
-
-        private void AddTask()
-        {
-            if (!string.IsNullOrWhiteSpace(NewTaskTitle))
+            get => pendingTasks;
+            set
             {
-                taskService.AddTask(NewTaskTitle);
-                LoadAllTasks();
-                NewTaskTitle = "";
+                pendingTasks = value;
+                OnPropertyChanged();
             }
         }
 
-        private void DeleteTask(TaskItem task)
+        private void UpdateCounts()
         {
-            if (task == null)
-                return;
+            TotalTasks = Tasks.Count;
 
-            taskService.DeleteTask(task);
-            Tasks.Remove(task);
+            CompletedTasks = Tasks.Count(t => t.IsCompleted);
 
-            UpdateCounters();
-        }
-
-        private void LoadAllTasks()
-        {
-            Tasks.Clear();
-
-            foreach (var task in taskService.Tasks)
-            {
-                Tasks.Add(task);
-            }
-
-            SubscribeToTaskChanges();
-            UpdateCounters();
-        }
-
-        private void LoadPendingTasks()
-        {
-            Tasks.Clear();
-
-            foreach (var task in taskService.Tasks)
-            {
-                if (!task.IsCompleted)
-                    Tasks.Add(task);
-            }
-        }
-
-        private void LoadCompletedTasks()
-        {
-            Tasks.Clear();
-
-            foreach (var task in taskService.Tasks)
-            {
-                if (task.IsCompleted)
-                    Tasks.Add(task);
-            }
-        }
-
-        private void UpdateCounters()
-        {
-            TotalTasks = taskService.Tasks.Count;
-            PendingTasks = taskService.Tasks.Count(t => !t.IsCompleted);
-            CompletedTasks = taskService.Tasks.Count(t => t.IsCompleted);
-        }
-
-        private void SubscribeToTaskChanges()
-        {
-            foreach (var task in Tasks)
-            {
-                task.PropertyChanged += (s, e) =>
-                {
-                    if (e.PropertyName == nameof(task.IsCompleted))
-                    {
-                        taskService.UpdateTasks();
-                        UpdateCounters();
-                    }
-                };
-            }
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected void OnPropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            PendingTasks = Tasks.Count(t => !t.IsCompleted);
         }
     }
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.PublicarContenidoPage"
+             Title="Nuevo Contenido">
+
+    <VerticalStackLayout Padding="20" Spacing="15" VerticalOptions="Center">
+
+        <Entry Placeholder="Título" x:Name="TituloEntry" />
+        <Entry Placeholder="Descripción" x:Name="DescripcionEntry" />
+        <Entry Placeholder="URL (opcional)" x:Name="UrlEntry" />
+
+        <Picker Title="Tipo" x:Name="TipoPicker">
+            <Picker.Items>
+                <x:String>Texto</x:String>
+                <x:String>Enlace</x:String>
+                <x:String>Archivo</x:String>
+            </Picker.Items>
+        </Picker>
+
+        <Button Text="Publicar" Clicked="OnPublicar" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

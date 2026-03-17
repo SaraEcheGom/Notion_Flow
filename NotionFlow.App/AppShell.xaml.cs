@@ -1,10 +1,14 @@
-﻿namespace NotionFlow.App
+﻿using NotionFlow.App.Views;
+
+namespace NotionFlow.App;
+
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        Routing.RegisterRoute("register", typeof(RegisterPage));
+        Routing.RegisterRoute("curso", typeof(CursoPage));
+        Routing.RegisterRoute("crearCurso", typeof(CrearCursoPage));
     }
 }

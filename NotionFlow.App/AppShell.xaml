@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Shell
-    x:Class="NotionFlow.App.AppShell"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:NotionFlow.App"
-    Title="NotionFlow.App">
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:NotionFlow.App.Views"
+       x:Class="NotionFlow.App.AppShell"
+       Shell.NavBarIsVisible="False">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <FlyoutItem Route="login" FlyoutItemIsVisible="False">
+        <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Route="admin" FlyoutItemIsVisible="False">
+        <ShellContent ContentTemplate="{DataTemplate views:AdminPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Route="profesor" FlyoutItemIsVisible="False">
+        <ShellContent ContentTemplate="{DataTemplate views:ProfesorPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Route="estudiante" FlyoutItemIsVisible="False">
+        <ShellContent ContentTemplate="{DataTemplate views:EstudiantePage}" />
+    </FlyoutItem>
 
 </Shell>
