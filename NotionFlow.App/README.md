@@ -1,149 +1,135 @@
 # NotionFlow
 
-
-# Features
+## Features
 
 The current version of the application includes:
 
-* Create new tasks
-* View a list of tasks
-* Mark tasks as completed
-* Delete tasks
-* Filter tasks (All / Pending / Completed)
-* Task statistics (Total, Pending, Completed)
-* Local persistence of tasks using JSON
+- User registration  
+- User authentication (login)  
+- Role-based access control (Admin, Profesor, Estudiante)  
+- Secure user management  
+- Task creation  
+- Task visualization  
+- Task completion  
+- Task deletion  
+- Task filtering (All / Pending / Completed)  
+- Task statistics (Total, Pending, Completed)  
+- Data persistence using PostgreSQL (API) and JSON (App)  
 
 ---
 
-# Architecture
+## Architecture
 
-The project follows the **MVVM (Model–View–ViewModel)** architecture pattern.
+The project follows a Clean Architecture approach with clear separation of concerns:
 
-### Models
+- Presentation Layer (API)  
+- Application Layer (Business Logic)  
+- Infrastructure Layer (Data Access)  
+- Domain Layer (Core Entities)  
 
-Represents the data structure used by the application.
-
-Example:
-
-* `TaskItem`
-
-### Views
-
-Responsible for the user interface.
-
-Example:
-
-* `MainPage.xaml`
-
-### ViewModels
-
-Contains the application logic and manages the interaction between the UI and the data.
-
-Example:
-
-* `TaskViewModel`
-
-### Services
-
-Handles data persistence and storage logic.
-
-Example:
-
-* `TaskService`
+The frontend application follows the MVVM (Model–View–ViewModel) pattern.
 
 ---
 
-# Technologies Used
+## Layers Description
 
-* **.NET MAUI**
-* **C#**
-* **MVVM Pattern**
-* **JSON Local Storage**
-* **SonarLint (Static Code Analysis)**
+### Domain
+
+Contains the core business entities and rules.
+
+Examples:
+- User  
+- Role  
 
 ---
 
-# Project Structure
+### Application (NotionFlow.App)
 
-```
-NotionFlow.App
+Contains business logic, services, and use cases.
+
+Examples:
+- AuthService  
+- UserService  
+- TaskService  
+
+---
+
+### Infrastructure
+
+Handles data persistence and database interaction.
+
+Examples:
+- DbContext  
+- Repositories  
+- Entity configurations  
+- Migrations  
+
+---
+
+### API (NotionFlow.Api)
+
+Responsible for handling HTTP requests and exposing endpoints.
+
+Examples:
+- AuthController  
+- UserController  
+
+---
+
+### App (Frontend - .NET MAUI)
+
+Implements the user interface using the MVVM pattern.
+
+Examples:
+- MainPage.xaml  
+- TaskViewModel  
+
+---
+
+## Technologies Used
+
+- .NET (ASP.NET Core Web API)  
+- .NET MAUI  
+- C#  
+- Entity Framework Core  
+- PostgreSQL  
+- MVVM Pattern  
+- JSON Local Storage  
+- Git and GitHub  
+- SonarLint  
+
+---
+
+## Project Structure
+
+```bash
+Notion_Flow/
 │
-├── Models
-│   └── TaskItem.cs
+├── NotionFlow.Api/
+│   ├── Controllers/
+│   ├── DTOs/
+│   ├── Middlewares/
 │
-├── Services
-│   └── TaskService.cs
+├── NotionFlow.App/
+│   ├── Models/
+│   ├── Services/
+│   ├── ViewModels/
+│   ├── Views/
+│   ├── Platforms/
+│   │   ├── Android/
+│   │   ├── Windows/
+│   │   └── iOS/
+│   ├── Resources/
 │
-├── ViewModels
-│   └── TaskViewModel.cs
+├── NotionFlow.Infrastructure/
+│   ├── Data/
+│   ├── Repositories/
+│   ├── Configurations/
+│   └── Migrations/
 │
-├── Platforms
+├── NotionFlow.Domain/
+│   ├── Entities/
+│   ├── Enums/
+│   └── ValueObjects/
 │
-├── Resources
-│
-├── MainPage.xaml
-└── MainPage.xaml.cs
-```
-
----
-
-# Quality of Software
-
-The project applies basic software quality practices:
-
-* C# naming conventions
-* XML documentation comments
-* Separation of concerns through MVVM architecture
-
----
-
-# MVP - Sprint 1
-
-The Minimum Viable Product for Sprint 1 includes:
-
-* Task creation
-* Task visualization
-* Task completion
-* Task deletion
-* Data persistence
-* Basic task statistics
-
----
-
-# How to Run the Project
-
-### 1 Clone the repository
-
-```
-git clone https://github.com/SaraEcheGom/Notion_Flow.git
-```
-
-### 2 Navigate to the project folder
-
-```
-cd Notion_Flow/NotionFlow.App
-```
-
-### 3 Run the application
-
-```
-dotnet run -f net9.0-windows10.0.19041.0
-```
-
----
-
-# Future Improvements
-
-Possible improvements for future sprints:
-
-* Task editing
-* Cloud synchronization
-* User authentication
-* UI improvements
-* Task deadlines and reminders
-
----
-
-
-
-
+└── NotionFlow.sln
