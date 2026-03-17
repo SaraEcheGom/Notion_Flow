@@ -133,3 +133,48 @@ Notion_Flow/
 │   └── ValueObjects/
 │
 └── NotionFlow.sln
+
+```
+## API Endpoints
+
+### Authentication
+
+- **POST** `/api/auth/register` → Register a new user  
+- **POST** `/api/auth/login` → Authenticate a user  
+
+---
+
+## Software Quality
+
+The project applies the following practices:
+
+- Clean Architecture principles  
+- MVVM pattern for frontend  
+- Separation of concerns  
+- Consistent naming conventions in C#  
+- Modular and scalable design  
+- Basic validation and access control  
+
+---
+
+## MVP - Sprint 1
+
+The Minimum Viable Product includes:
+
+- User registration  
+- User authentication  
+- Role management  
+- Task creation  
+- Task visualization  
+- Task completion  
+- Task deletion  
+- Data persistence  
+
+---
+
+## How to Run the Project
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/SaraEcheGom/Notion_Flow.git
