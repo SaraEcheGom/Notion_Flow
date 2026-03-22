@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:views="clr-namespace:NotionFlow.App.Views"
+       xmlns:viewsAuth="clr-namespace:NotionFlow.App.Views.Auth"
+       xmlns:viewsAdmin="clr-namespace:NotionFlow.App.Views.Admin"
+       xmlns:viewsProf="clr-namespace:NotionFlow.App.Views.Professor"
+       xmlns:viewsStud="clr-namespace:NotionFlow.App.Views.Student"
        x:Class="NotionFlow.App.AppShell"
        Shell.NavBarIsVisible="False">
 
     <FlyoutItem Route="login" FlyoutItemIsVisible="False">
-        <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" />
+        <ShellContent ContentTemplate="{DataTemplate viewsAuth:LoginPage}" />
     </FlyoutItem>
 
     <FlyoutItem Route="admin" FlyoutItemIsVisible="False">
-        <ShellContent ContentTemplate="{DataTemplate views:AdminPage}" />
+        <ShellContent ContentTemplate="{DataTemplate viewsAdmin:AdminPage}" />
     </FlyoutItem>
 
     <FlyoutItem Route="profesor" FlyoutItemIsVisible="False">
-        <ShellContent ContentTemplate="{DataTemplate views:ProfesorPage}" />
+        <ShellContent ContentTemplate="{DataTemplate viewsProf:ProfessorPage}" />
     </FlyoutItem>
 
     <FlyoutItem Route="estudiante" FlyoutItemIsVisible="False">
-        <ShellContent ContentTemplate="{DataTemplate views:EstudiantePage}" />
+        <ShellContent ContentTemplate="{DataTemplate viewsStud:StudentPage}" />
     </FlyoutItem>
 
 </Shell>

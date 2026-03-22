@@ -9,8 +9,6 @@ namespace NotionFlow.App
         public MainPage()
         {
             InitializeComponent();
-
-            BindingContext = new TaskViewModel(); // NUEVO
         }
 
         private void OnCounterClicked(object? sender, EventArgs e)

@@ -1,4 +1,6 @@
-﻿using NotionFlow.App.Views;
+﻿using NotionFlow.App.Views.Auth;
+using NotionFlow.App.Views.Admin;
+using NotionFlow.App.Views.Course;
 
 namespace NotionFlow.App;
 
@@ -8,7 +10,7 @@ public partial class AppShell : Shell
     {
         InitializeComponent();
         Routing.RegisterRoute("register", typeof(RegisterPage));
-        Routing.RegisterRoute("curso", typeof(CursoPage));
-        Routing.RegisterRoute("crearCurso", typeof(CrearCursoPage));
+        Routing.RegisterRoute("curso", typeof(CoursePage));
+        Routing.RegisterRoute("crearCurso", typeof(CreateCoursePage));
     }
 }

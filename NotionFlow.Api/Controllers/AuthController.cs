@@ -14,11 +14,11 @@ namespace NotionFlow.Api.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<Usuario> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly IConfiguration _config;
         private const string AdminToken = "ADMIN";
 
-        public AuthController(UserManager<Usuario> userManager, IConfiguration config)
+        public AuthController(UserManager<User> userManager, IConfiguration config)
         {
             _userManager = userManager;
             _config = config;
@@ -27,61 +27,61 @@ namespace NotionFlow.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            if (dto.Rol == "Admin" && dto.Token != AdminToken)
-                return BadRequest("Token de administrador inválido");
+            if (dto.Role == "Admin" && dto.Token != AdminToken)
+                return BadRequest("Invalid administrator token");
 
-            if (dto.Rol == "Profesor" && dto.Token != AdminToken)
-                return BadRequest("Solo un administrador puede crear profesores");
+            if (dto.Role == "Teacher" && dto.Token != AdminToken)
+                return BadRequest("Only an administrator can create teachers");
 
-            var usuario = new Usuario
+            var user = new User
             {
-                Nombre = dto.Nombre,
+                Name = dto.Name,
                 Email = dto.Email,
                 UserName = dto.Email,
-                Rol = dto.Rol
+                Role = dto.Role
             };
 
-            var result = await _userManager.CreateAsync(usuario, dto.Password);
+            var result = await _userManager.CreateAsync(user, dto.Password);
 
             if (!result.Succeeded)
                 return BadRequest(result.Errors.Select(e => e.Description));
 
-            await _userManager.AddToRoleAsync(usuario, dto.Rol);
+            await _userManager.AddToRoleAsync(user, dto.Role);
 
-            return Ok("Usuario registrado correctamente");
+            return Ok("User registered successfully");
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            var usuario = await _userManager.FindByEmailAsync(dto.Email);
+            var user = await _userManager.FindByEmailAsync(dto.Email);
 
-            if (usuario == null || !await _userManager.CheckPasswordAsync(usuario, dto.Password))
-                return Unauthorized("Credenciales inválidas");
+            if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+                return Unauthorized("Invalid credentials");
 
-            var token = GenerarToken(usuario);
+            var token = GenerateToken(user);
 
             return Ok(new AuthResponseDto(
-                token, usuario.Nombre, usuario.Email!, usuario.Rol, usuario.Id));
+                token, user.Name, user.Email!, user.Role, user.Id));
         }
 
         [HttpGet("usuarios")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ObtenerUsuariosPorRol([FromQuery] string rol)
+        public async Task<IActionResult> GetUsersByRole([FromQuery] string role)
         {
-            var usuarios = await _userManager.GetUsersInRoleAsync(rol);
-            return Ok(usuarios.Select(u => new AuthResponseDto(
-                string.Empty, u.Nombre, u.Email!, u.Rol, u.Id)));
+            var users = await _userManager.GetUsersInRoleAsync(role);
+            return Ok(users.Select(u => new AuthResponseDto(
+                string.Empty, u.Name, u.Email!, u.Role, u.Id)));
         }
 
-        private string GenerarToken(Usuario usuario)
+        private string GenerateToken(User user)
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, usuario.Id),
-                new Claim(ClaimTypes.Email, usuario.Email!),
-                new Claim(ClaimTypes.Name, usuario.Nombre),
-                new Claim(ClaimTypes.Role, usuario.Rol)
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Email, user.Email!),
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
             var key = new SymmetricSecurityKey(

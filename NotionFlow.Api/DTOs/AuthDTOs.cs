@@ -1,10 +1,10 @@
 namespace NotionFlow.Api.DTOs
 {
     public record RegisterDto(
-        string Nombre,
+        string Name,
         string Email,
         string Password,
-        string Rol,
+        string Role,
         string Token
     );
 
@@ -15,9 +15,9 @@ namespace NotionFlow.Api.DTOs
 
     public record AuthResponseDto(
         string Token,
-        string Nombre,
+        string Name,
         string Email,
-        string Rol,
+        string Role,
         string Id
     );
 }

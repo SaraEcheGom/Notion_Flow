@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using NotionFlow.App.Models;
+using NotionFlow.App.Models.Auth;
 
 namespace NotionFlow.App.Services
 {
@@ -46,13 +47,13 @@ namespace NotionFlow.App.Services
             return data;
         }
 
-        public async Task<List<CursoResponse>> GetCursosAdminAsync()
+        public async Task<List<CourseResponse>> GetCursosAdminAsync()
         {
             SetAuth();
             var res = await _http.GetAsync("cursos");
             res.EnsureSuccessStatusCode();
             var json = await res.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<CursoResponse>>(json,
+            return JsonSerializer.Deserialize<List<CourseResponse>>(json,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
 
@@ -79,23 +80,23 @@ namespace NotionFlow.App.Services
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
 
-        public async Task<List<CursoResponse>> GetCursosProfesorAsync(string profesorId)
+        public async Task<List<CourseResponse>> GetCursosProfesorAsync(string profesorId)
         {
             SetAuth();
             var res = await _http.GetAsync($"cursos/profesor/{profesorId}");
             res.EnsureSuccessStatusCode();
             var json = await res.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<CursoResponse>>(json,
+            return JsonSerializer.Deserialize<List<CourseResponse>>(json,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
 
-        public async Task<List<CursoResponse>> GetCursosEstudianteAsync(string estudianteId)
+        public async Task<List<CourseResponse>> GetCursosEstudianteAsync(string estudianteId)
         {
             SetAuth();
             var res = await _http.GetAsync($"cursos/estudiante/{estudianteId}");
             res.EnsureSuccessStatusCode();
             var json = await res.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<CursoResponse>>(json,
+            return JsonSerializer.Deserialize<List<CourseResponse>>(json,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
 
@@ -115,13 +116,13 @@ namespace NotionFlow.App.Services
             res.EnsureSuccessStatusCode();
         }
 
-        public async Task<List<Evaluacion>> GetEvaluacionesAsync(int cursoId)
+        public async Task<List<Evaluation>> GetEvaluacionesAsync(int cursoId)
         {
             SetAuth();
             var res = await _http.GetAsync($"cursos/{cursoId}/evaluaciones");
             res.EnsureSuccessStatusCode();
             var json = await res.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<Evaluacion>>(json,
+            return JsonSerializer.Deserialize<List<Evaluation>>(json,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
 
@@ -134,13 +135,13 @@ namespace NotionFlow.App.Services
             res.EnsureSuccessStatusCode();
         }
 
-        public async Task<List<Contenido>> GetContenidosAsync(int cursoId)
+        public async Task<List<Content>> GetContenidosAsync(int cursoId)
         {
             SetAuth();
             var res = await _http.GetAsync($"cursos/{cursoId}/contenidos");
             res.EnsureSuccessStatusCode();
             var json = await res.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<Contenido>>(json,
+            return JsonSerializer.Deserialize<List<Content>>(json,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
 
@@ -153,13 +154,13 @@ namespace NotionFlow.App.Services
             res.EnsureSuccessStatusCode();
         }
 
-        public async Task<List<CursoResponse>> GetTodosLosCursosAsync()
+        public async Task<List<CourseResponse>> GetTodosLosCursosAsync()
         {
             SetAuth();
             var res = await _http.GetAsync("cursos");
             res.EnsureSuccessStatusCode();
             var json = await res.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<CursoResponse>>(json,
+            return JsonSerializer.Deserialize<List<CourseResponse>>(json,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
     }

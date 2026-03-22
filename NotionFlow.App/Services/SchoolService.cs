@@ -1,54 +1,55 @@
 using NotionFlow.App.Models;
+using NotionFlow.App.Models.Users;
 
 namespace NotionFlow.App.Services
 {
     public class SchoolService
     {
-        public static List<Profesor> Profesores = new();
+        public static List<Professor> Professors = new();
 
-        public static List<Estudiante> Estudiantes = new();
+        public static List<Student> Students = new();
 
-        public Profesor CrearProfesor(string nombre, string correo, string materia)
+        public Professor CreateProfessor(string name, string email, string subject)
         {
-            var profesor = new Profesor
+            var professor = new Professor
             {
-                Id = Profesores.Count + 1,
-                Nombre = nombre,
-                Correo = correo,
-                Materia = materia
+                Id = Professors.Count + 1,
+                Name = name,
+                Email = email,
+                Subject = subject
             };
 
-            Profesores.Add(profesor);
+            Professors.Add(professor);
 
-            return profesor;
+            return professor;
         }
 
-        public Estudiante CrearEstudiante(string nombre, string grado, string profesorCorreo)
+        public Student CreateStudent(string name, string grade, string professorEmail)
         {
-            var estudiante = new Estudiante
+            var student = new Student
             {
-                Id = Estudiantes.Count + 1,
-                Nombre = nombre,
-                Grado = grado,
-                ProfesorCorreo = profesorCorreo
+                Id = Students.Count + 1,
+                Name = name,
+                Grade = grade,
+                ProfessorEmail = professorEmail
             };
 
-            Estudiantes.Add(estudiante);
+            Students.Add(student);
 
-            var profesor = Profesores.FirstOrDefault(p => p.Correo == profesorCorreo);
+            var professor = Professors.FirstOrDefault(p => p.Email == professorEmail);
 
-            if (profesor != null)
+            if (professor != null)
             {
-                profesor.Estudiantes.Add(estudiante);
+                professor.Students.Add(student);
             }
 
-            return estudiante;
+            return student;
         }
 
-        public List<Estudiante> ObtenerEstudiantesProfesor(string correoProfesor)
+        public List<Student> GetStudentsForProfessor(string professorEmail)
         {
-            return Estudiantes
-                .Where(e => e.ProfesorCorreo == correoProfesor)
+            return Students
+                .Where(e => e.ProfessorEmail == professorEmail)
                 .ToList();
         }
     }

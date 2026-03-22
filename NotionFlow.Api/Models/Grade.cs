@@ -1,11 +1,11 @@
 namespace NotionFlow.Api.Models
 {
-    public class Nota
+    public class Grade
     {
         public int Id { get; set; }
-        public int EvaluacionId { get; set; }
-        public Evaluacion? Evaluacion { get; set; }
-        public string EstudianteId { get; set; } = string.Empty;
-        public double Valor { get; set; }
+        public int EvaluationId { get; set; }
+        public Evaluation? Evaluation { get; set; }
+        public string StudentId { get; set; } = string.Empty;
+        public double Value { get; set; }
     }
 }

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.Admin.AdminPage"
+             Title="Panel Admin">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="Panel Administrador"
+                   FontSize="24" FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Grid ColumnDefinitions="*,*,Auto">
+                <Button Grid.Column="0"
+                        Text="+ Crear Curso"
+                        Command="{Binding IrACrearCursoCommand}" />
+                <Button Grid.Column="1"
+                        Text="+ Crear Profesor"
+                        Command="{Binding IrACrearProfesorCommand}" />
+                <Button Grid.Column="2"
+                        Text="Cerrar Sesión"
+                        Command="{Binding CerrarSesionCommand}" />
+            </Grid>
+
+            <!-- Cursos -->
+            <Label Text="Cursos activos"
+                   FontSize="18" FontAttributes="Bold"
+                   Margin="0,10,0,0" />
+
+            <CollectionView ItemsSource="{Binding Cursos}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,5" Padding="15"
+                                StrokeThickness="1" Stroke="LightGray"
+                                StrokeShape="RoundRectangle 8">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Nombre}"
+                                       FontAttributes="Bold"
+                                       FontSize="16" />
+                                <Label Text="{Binding Materia}"
+                                       FontSize="13" TextColor="Gray" />
+                                <Label Text="{Binding ProfesorNombre, StringFormat='Profesor: {0}'}"
+                                       FontSize="13" TextColor="Gray" />
+                                <Label Text="{Binding Estudiantes.Count, StringFormat='Estudiantes: {0}'}"
+                                       FontSize="13" TextColor="Gray" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Profesores -->
+            <Label Text="Profesores"
+                   FontSize="18" FontAttributes="Bold"
+                   Margin="0,10,0,0" />
+
+            <CollectionView ItemsSource="{Binding Profesores}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,4" Padding="12"
+                                StrokeThickness="1" Stroke="LightGray"
+                                StrokeShape="RoundRectangle 8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding Nombre}"
+                                           FontAttributes="Bold" />
+                                    <Label Text="{Binding Email}"
+                                           FontSize="13" TextColor="Gray" />
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1"
+                                        Text="Ver perfil"
+                                        CommandParameter="{Binding .}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.VerPerfilCommand}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Estudiantes -->
+            <Label Text="Estudiantes"
+                   FontSize="18" FontAttributes="Bold"
+                   Margin="0,10,0,0" />
+
+            <CollectionView ItemsSource="{Binding Estudiantes}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,4" Padding="12"
+                                StrokeThickness="1" Stroke="LightGray"
+                                StrokeShape="RoundRectangle 8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding Nombre}"
+                                           FontAttributes="Bold" />
+                                    <Label Text="{Binding Email}"
+                                           FontSize="13" TextColor="Gray" />
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1"
+                                        Text="Ver perfil"
+                                        CommandParameter="{Binding .}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.VerPerfilCommand}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

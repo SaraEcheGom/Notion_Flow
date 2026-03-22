@@ -1,9 +1,9 @@
 namespace NotionFlow.Api.Models
 {
-    public class CursoEstudiante
+    public class CourseStudent
     {
-        public int CursoId { get; set; }
-        public Curso? Curso { get; set; }
-        public string EstudianteId { get; set; } = string.Empty;
+        public int CourseId { get; set; }
+        public Course? Course { get; set; }
+        public string StudentId { get; set; } = string.Empty;
     }
 }

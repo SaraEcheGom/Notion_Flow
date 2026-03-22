@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.Course.CoursePage"
+             Title="{Binding CursoNombre}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="{Binding CursoNombre}"
+                   FontSize="22" FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <!-- Botón + solo para profesor -->
+            <Button Text="+"
+                    FontSize="24"
+                    Command="{Binding MostrarOpcionesCommand}"
+                    IsVisible="{Binding EsProfesor}"
+                    HorizontalOptions="End"
+                    WidthRequest="50" HeightRequest="50" />
+
+            <!-- Evaluaciones -->
+            <Label Text="Evaluaciones" FontSize="18" FontAttributes="Bold" />
+
+            <CollectionView ItemsSource="{Binding Evaluaciones}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,4" Padding="12"
+                                StrokeThickness="1" Stroke="LightGray"
+                                StrokeShape="RoundRectangle 8">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Titulo}" FontAttributes="Bold" />
+                                <Label Text="{Binding Descripcion}"
+                                       FontSize="13" TextColor="Gray" />
+                                <Label Text="{Binding PorcentajeValor, StringFormat='Valor: {0}%'}"
+                                       FontSize="13" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Contenidos -->
+            <Label Text="Contenidos" FontSize="18" FontAttributes="Bold" />
+
+            <CollectionView ItemsSource="{Binding Contenidos}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,4" Padding="12"
+                                StrokeThickness="1" Stroke="LightGray"
+                                StrokeShape="RoundRectangle 8">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Titulo}" FontAttributes="Bold" />
+                                <Label Text="{Binding Descripcion}"
+                                       FontSize="13" TextColor="Gray" />
+                                <Label Text="{Binding Tipo}"
+                                       FontSize="12" TextColor="Blue" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Lista estudiantes -->
+            <Label Text="Estudiantes del curso"
+                   FontSize="18" FontAttributes="Bold"
+                   IsVisible="{Binding EsProfesor}" />
+
+            <CollectionView ItemsSource="{Binding Estudiantes}"
+                            IsVisible="{Binding EsProfesor}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,4" Padding="12"
+                                StrokeThickness="1" Stroke="LightGray"
+                                StrokeShape="RoundRectangle 8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Column="0">
+                                    <Label Text="{Binding Nombre}" FontAttributes="Bold" />
+                                    <Label Text="{Binding Email}"
+                                           FontSize="13" TextColor="Gray" />
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="Ver perfil"
+                                        CommandParameter="{Binding .}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.VerPerfilEstudianteCommand}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

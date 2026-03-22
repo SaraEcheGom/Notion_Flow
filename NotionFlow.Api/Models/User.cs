@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace NotionFlow.Api.Models
 {
-    public class Usuario : IdentityUser
+    public class User : IdentityUser
     {
-        public string Nombre { get; set; } = string.Empty;
-        public string Rol { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
     }
 }

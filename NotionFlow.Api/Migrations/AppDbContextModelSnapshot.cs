@@ -154,7 +154,7 @@ namespace NotionFlow.Api.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("NotionFlow.Api.Models.Contenido", b =>
+            modelBuilder.Entity("NotionFlow.Api.Models.Content", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -162,21 +162,21 @@ namespace NotionFlow.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CursoId")
+                    b.Property<int>("CourseId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("FechaPublicacion")
+                    b.Property<DateTime>("PublicationDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Tipo")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Titulo")
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -186,12 +186,12 @@ namespace NotionFlow.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CursoId");
+                    b.HasIndex("CourseId");
 
-                    b.ToTable("Contenidos");
+                    b.ToTable("Contents");
                 });
 
-            modelBuilder.Entity("NotionFlow.Api.Models.Curso", b =>
+            modelBuilder.Entity("NotionFlow.Api.Models.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -199,41 +199,41 @@ namespace NotionFlow.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Materia")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Nombre")
+                    b.Property<string>("Subject")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ProfesorId")
+                    b.Property<string>("TeacherId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ProfesorNombre")
+                    b.Property<string>("TeacherName")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cursos");
+                    b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("NotionFlow.Api.Models.CursoEstudiante", b =>
+            modelBuilder.Entity("NotionFlow.Api.Models.CourseStudent", b =>
                 {
-                    b.Property<int>("CursoId")
+                    b.Property<int>("CourseId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("EstudianteId")
+                    b.Property<string>("StudentId")
                         .HasColumnType("text");
 
-                    b.HasKey("CursoId", "EstudianteId");
+                    b.HasKey("CourseId", "StudentId");
 
-                    b.ToTable("CursoEstudiantes");
+                    b.ToTable("CourseStudents");
                 });
 
-            modelBuilder.Entity("NotionFlow.Api.Models.Evaluacion", b =>
+            modelBuilder.Entity("NotionFlow.Api.Models.Evaluation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -241,31 +241,31 @@ namespace NotionFlow.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CursoId")
+                    b.Property<int>("CourseId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Descripcion")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Fecha")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<double>("PorcentajeValor")
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("PercentageValue")
                         .HasColumnType("double precision");
 
-                    b.Property<string>("Titulo")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CursoId");
+                    b.HasIndex("CourseId");
 
-                    b.ToTable("Evaluaciones");
+                    b.ToTable("Evaluations");
                 });
 
-            modelBuilder.Entity("NotionFlow.Api.Models.Nota", b =>
+            modelBuilder.Entity("NotionFlow.Api.Models.Grade", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -273,24 +273,24 @@ namespace NotionFlow.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("EstudianteId")
+                    b.Property<int>("EvaluationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("StudentId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("EvaluacionId")
-                        .HasColumnType("integer");
-
-                    b.Property<double>("Valor")
+                    b.Property<double>("Value")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EvaluacionId");
+                    b.HasIndex("EvaluationId");
 
-                    b.ToTable("Notas");
+                    b.ToTable("Grades");
                 });
 
-            modelBuilder.Entity("NotionFlow.Api.Models.Usuario", b =>
+            modelBuilder.Entity("NotionFlow.Api.Models.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -315,7 +315,7 @@ namespace NotionFlow.Api.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Nombre")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -336,7 +336,7 @@ namespace NotionFlow.Api.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Rol")
+                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -373,7 +373,7 @@ namespace NotionFlow.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("NotionFlow.Api.Models.Usuario", null)
+                    b.HasOne("NotionFlow.Api.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -382,7 +382,7 @@ namespace NotionFlow.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("NotionFlow.Api.Models.Usuario", null)
+                    b.HasOne("NotionFlow.Api.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -397,7 +397,7 @@ namespace NotionFlow.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NotionFlow.Api.Models.Usuario", null)
+                    b.HasOne("NotionFlow.Api.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -406,69 +406,69 @@ namespace NotionFlow.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("NotionFlow.Api.Models.Usuario", null)
+                    b.HasOne("NotionFlow.Api.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("NotionFlow.Api.Models.Contenido", b =>
+            modelBuilder.Entity("NotionFlow.Api.Models.Content", b =>
                 {
-                    b.HasOne("NotionFlow.Api.Models.Curso", "Curso")
-                        .WithMany("Contenidos")
-                        .HasForeignKey("CursoId")
+                    b.HasOne("NotionFlow.Api.Models.Course", "Course")
+                        .WithMany("Contents")
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Curso");
+                    b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("NotionFlow.Api.Models.CursoEstudiante", b =>
+            modelBuilder.Entity("NotionFlow.Api.Models.CourseStudent", b =>
                 {
-                    b.HasOne("NotionFlow.Api.Models.Curso", "Curso")
-                        .WithMany("CursoEstudiantes")
-                        .HasForeignKey("CursoId")
+                    b.HasOne("NotionFlow.Api.Models.Course", "Course")
+                        .WithMany("CourseStudents")
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Curso");
+                    b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("NotionFlow.Api.Models.Evaluacion", b =>
+            modelBuilder.Entity("NotionFlow.Api.Models.Evaluation", b =>
                 {
-                    b.HasOne("NotionFlow.Api.Models.Curso", "Curso")
-                        .WithMany("Evaluaciones")
-                        .HasForeignKey("CursoId")
+                    b.HasOne("NotionFlow.Api.Models.Course", "Course")
+                        .WithMany("Evaluations")
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Curso");
+                    b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("NotionFlow.Api.Models.Nota", b =>
+            modelBuilder.Entity("NotionFlow.Api.Models.Grade", b =>
                 {
-                    b.HasOne("NotionFlow.Api.Models.Evaluacion", "Evaluacion")
-                        .WithMany("Notas")
-                        .HasForeignKey("EvaluacionId")
+                    b.HasOne("NotionFlow.Api.Models.Evaluation", "Evaluation")
+                        .WithMany("Grades")
+                        .HasForeignKey("EvaluationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Evaluacion");
+                    b.Navigation("Evaluation");
                 });
 
-            modelBuilder.Entity("NotionFlow.Api.Models.Curso", b =>
+            modelBuilder.Entity("NotionFlow.Api.Models.Course", b =>
                 {
-                    b.Navigation("Contenidos");
+                    b.Navigation("Contents");
 
-                    b.Navigation("CursoEstudiantes");
+                    b.Navigation("CourseStudents");
 
-                    b.Navigation("Evaluaciones");
+                    b.Navigation("Evaluations");
                 });
 
-            modelBuilder.Entity("NotionFlow.Api.Models.Evaluacion", b =>
+            modelBuilder.Entity("NotionFlow.Api.Models.Evaluation", b =>
                 {
-                    b.Navigation("Notas");
+                    b.Navigation("Grades");
                 });
 #pragma warning restore 612, 618
         }

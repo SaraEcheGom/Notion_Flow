@@ -125,3 +125,7 @@ appsettings.Development.json
 *.snupkg
 
 node_modules/
+
+# Docker
+docker-compose.override.yml
+postgres_data/

@@ -4,27 +4,27 @@ using NotionFlow.Api.Models;
 
 namespace NotionFlow.Api.Data
 {
-    public class AppDbContext : IdentityDbContext<Usuario>
+    public class AppDbContext : IdentityDbContext<User>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<Curso> Cursos => Set<Curso>();
-        public DbSet<CursoEstudiante> CursoEstudiantes => Set<CursoEstudiante>();
-        public DbSet<Evaluacion> Evaluaciones => Set<Evaluacion>();
-        public DbSet<Nota> Notas => Set<Nota>();
-        public DbSet<Contenido> Contenidos => Set<Contenido>();
+        public DbSet<Course> Courses => Set<Course>();
+        public DbSet<CourseStudent> CourseStudents => Set<CourseStudent>();
+        public DbSet<Evaluation> Evaluations => Set<Evaluation>();
+        public DbSet<Grade> Grades => Set<Grade>();
+        public DbSet<Content> Contents => Set<Content>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<CursoEstudiante>()
-                .HasKey(ce => new { ce.CursoId, ce.EstudianteId });
+            builder.Entity<CourseStudent>()
+                .HasKey(ce => new { ce.CourseId, ce.StudentId });
 
-            builder.Entity<CursoEstudiante>()
-                .HasOne(ce => ce.Curso)
-                .WithMany(c => c.CursoEstudiantes)
-                .HasForeignKey(ce => ce.CursoId);
+            builder.Entity<CourseStudent>()
+                .HasOne(ce => ce.Course)
+                .WithMany(c => c.CourseStudents)
+                .HasForeignKey(ce => ce.CourseId);
         }
     }
 }
