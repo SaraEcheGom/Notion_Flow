@@ -66,17 +66,17 @@ namespace NotionFlow.App.ViewModels.Course
         {
             try
             {
-                var evaluations = await _api.GetEvaluacionesAsync(int.Parse(_courseId));
+                var evaluations = await _api.GetEvaluationsAsync(int.Parse(_courseId));
                 Evaluations.Clear();
                 foreach (var evaluation in evaluations) Evaluations.Add(evaluation);
 
-                var contents = await _api.GetContenidosAsync(int.Parse(_courseId));
+                var contents = await _api.GetContentsAsync(int.Parse(_courseId));
                 Contents.Clear();
                 foreach (var content in contents) Contents.Add(content);
 
                 if (IsTeacher)
                 {
-                    var courses = await _api.GetCursosProfesorAsync(
+                    var courses = await _api.GetCoursesByProfessorAsync(
                         AuthService.CurrentUser?.Id ?? string.Empty);
                     var course = courses.FirstOrDefault(c => c.Id.ToString() == _courseId);
                     if (course != null)
@@ -95,7 +95,7 @@ namespace NotionFlow.App.ViewModels.Course
         public async Task CreateEvaluationAsync(string title,
             string description, double percentage)
         {
-            await _api.CrearEvaluacionAsync(int.Parse(_courseId),
+            await _api.CreateEvaluationAsync(int.Parse(_courseId),
                 title, description, percentage);
             await LoadDataAsync();
         }
@@ -103,7 +103,7 @@ namespace NotionFlow.App.ViewModels.Course
         public async Task PublishContentAsync(string title,
             string description, string type, string url)
         {
-            await _api.PublicarContenidoAsync(int.Parse(_courseId),
+            await _api.PublishContentAsync(int.Parse(_courseId),
                 title, description, type, url);
             await LoadDataAsync();
         }

@@ -2,13 +2,14 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using NotionFlow.App.Services;
 
 namespace NotionFlow.App.ViewModels.Auth
 {
     public class LoginViewModel : INotifyPropertyChanged
     {
-        private readonly AuthService _authService = new();
+        private readonly AuthService _authService;
 
         public event PropertyChangedEventHandler? PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string? name = null)
@@ -30,43 +31,65 @@ namespace NotionFlow.App.ViewModels.Auth
         }
 
         public ICommand LoginCommand { get; }
-        public ICommand GoRegisterCommand { get; }
+        public ICommand NavigateToRegisterCommand { get; }
 
-        public LoginViewModel()
+        public LoginViewModel(AuthService authService)
         {
+            _authService = authService ?? throw new ArgumentNullException(nameof(authService));
             LoginCommand = new Command(async () => await LoginAsync());
-            GoRegisterCommand = new Command(async () => await GoRegisterAsync());
+            NavigateToRegisterCommand = new Command(async () => await NavigateToRegisterAsync());
+            Debug.WriteLine("✓ LoginViewModel initialized");
         }
 
         private async Task LoginAsync()
         {
+            Debug.WriteLine("🔍 [LoginViewModel] Starting LoginAsync");
+
             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
             {
-                await Shell.Current.DisplayAlert("Error", "Ingresa correo y contraseña", "OK");
+                Debug.WriteLine("✗ [LoginViewModel] Email or password empty");
+                await Shell.Current.DisplayAlert("Error", "Enter email and password", "OK");
                 return;
             }
 
+            Debug.WriteLine($"📧 [LoginViewModel] Email: {Email}");
+            Debug.WriteLine($"🔑 [LoginViewModel] Password entered (length: {Password.Length})");
+
             try
             {
+                Debug.WriteLine("🔐 [LoginViewModel] Calling AuthService.LoginAsync");
                 var user = await _authService.LoginAsync(Email, Password);
 
+                Debug.WriteLine($"✓ [LoginViewModel] Login successful. Role: {user.Role}");
+
                 if (user.Role == "Admin")
+                {
+                    Debug.WriteLine("→ [LoginViewModel] Navigating to //admin");
                     await Shell.Current.GoToAsync("//admin");
+                }
                 else if (user.Role == "Profesor")
-                    await Shell.Current.GoToAsync($"//profesor?id={user.Id}&nombre={user.Name}");
+                {
+                    Debug.WriteLine($"→ [LoginViewModel] Navigating to //professor");
+                    await Shell.Current.GoToAsync($"//professor?id={user.Id}&name={user.Name}");
+                }
                 else if (user.Role == "Estudiante")
-                    await Shell.Current.GoToAsync($"//estudiante?id={user.Id}");
+                {
+                    Debug.WriteLine($"→ [LoginViewModel] Navigating to //student");
+                    await Shell.Current.GoToAsync($"//student?id={user.Id}");
+                }
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"✗ [LoginViewModel] Exception: {ex.GetType().Name}");
+                Debug.WriteLine($"✗ [LoginViewModel] Message: {ex.Message}");
+                Debug.WriteLine($"✗ [LoginViewModel] StackTrace: {ex.StackTrace}");
                 await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
             }
-            
-            return;
         }
 
-        private async Task GoRegisterAsync()
+        private async Task NavigateToRegisterAsync()
         {
+            Debug.WriteLine("🔍 [LoginViewModel] Navigating to register page");
             await Shell.Current.GoToAsync("register");
         }
     }

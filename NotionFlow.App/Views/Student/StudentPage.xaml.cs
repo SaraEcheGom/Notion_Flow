@@ -1,5 +1,6 @@
 using NotionFlow.App.ViewModels;
 using NotionFlow.App.ViewModels.Student;
+using NotionFlow.App.Services;
 
 namespace NotionFlow.App.Views.Student;
 
@@ -15,7 +16,10 @@ public partial class StudentPage : ContentPage
         {
             _studentId = value;
             if (!string.IsNullOrEmpty(_studentId))
-                BindingContext = new StudentViewModel(_studentId);
+            {
+                var apiService = new ApiService();
+                BindingContext = new StudentViewModel(apiService, _studentId);
+            }
         }
     }
 

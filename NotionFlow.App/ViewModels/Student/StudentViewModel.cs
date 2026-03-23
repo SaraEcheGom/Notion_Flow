@@ -8,15 +8,16 @@ namespace NotionFlow.App.ViewModels.Student
 {
     public class StudentViewModel : BaseViewModel
     {
-        private readonly ApiService _api = new();
+        private readonly ApiService _api;
         private readonly string _studentId;
 
         public ObservableCollection<CourseResponse> Courses { get; } = new();
         public ICommand GoToCourseCommand { get; }
         public ICommand LogoutCommand { get; }
 
-        public StudentViewModel(string studentId)
+        public StudentViewModel(ApiService apiService, string studentId)
         {
+            _api = apiService;
             _studentId = studentId;
             GoToCourseCommand = new Command<CourseResponse>(async (course) => await GoToCourseAsync(course));
             LogoutCommand = new Command(async () => await LogoutAsync());
@@ -27,7 +28,7 @@ namespace NotionFlow.App.ViewModels.Student
         {
             try
             {
-                var coursesList = await _api.GetCursosEstudianteAsync(_studentId);
+                var coursesList = await _api.GetCoursesByStudentAsync(_studentId);
                 Courses.Clear();
                 foreach (var course in coursesList) Courses.Add(course);
             }
@@ -43,9 +44,9 @@ namespace NotionFlow.App.ViewModels.Student
                 $"course?courseId={course.Id}&courseName={course.Name}&role=Student");
         }
 
-        private async System.Threading.Tasks.Task LogoutAsync()
+        private async Task LogoutAsync()
         {
-            await new AuthService().LogoutAsync();
+            await AuthService.LogoutAsync();
             await Shell.Current.GoToAsync("//login");
         }
     }

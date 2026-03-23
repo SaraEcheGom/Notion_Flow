@@ -9,7 +9,7 @@ namespace NotionFlow.App.ViewModels.Auth
 {
     public class RegisterViewModel : INotifyPropertyChanged
     {
-        private readonly AuthService _authService = new();
+        private readonly AuthService _authService;
 
         public event PropertyChangedEventHandler? PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string? name = null)
@@ -59,19 +59,20 @@ namespace NotionFlow.App.ViewModels.Auth
             {
                 _selectedRole = value;
                 OnPropertyChanged();
-                ShowToken = value == "Admin" || value == "Teacher";
+                ShowToken = value == "Admin" || value == "Professor";
             }
         }
 
         public ObservableCollection<string> Roles { get; } = new()
         {
-            "Student", "Teacher", "Admin"
+            "Student", "Professor", "Admin"
         };
 
         public ICommand RegisterCommand { get; }
 
-        public RegisterViewModel()
+        public RegisterViewModel(AuthService authService)
         {
+            _authService = authService;
             RegisterCommand = new Command(async () => await RegisterAsync());
         }
 

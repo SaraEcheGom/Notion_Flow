@@ -45,22 +45,34 @@ builder.Logging.AddConsole();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+// Seed de datos de forma async
+await Task.Run(async () =>
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    foreach (var rol in new[] { "Admin", "Profesor", "Estudiante" })
-        if (!await roleManager.RoleExistsAsync(rol))
-            await roleManager.CreateAsync(new IdentityRole(rol));
-}
+        // Ejecutar migraciones
+        await db.Database.MigrateAsync();
+        Console.WriteLine("✓ Migraciones completadas.");
+
+        // Ejecutar seeding
+        var seeder = new DataSeeder(db, userManager, roleManager);
+        await seeder.SeedAsync();
+    }
+});
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
+    .WithName("Health")
+    .AllowAnonymous();
 
 app.UseAuthentication();
 app.UseAuthorization();

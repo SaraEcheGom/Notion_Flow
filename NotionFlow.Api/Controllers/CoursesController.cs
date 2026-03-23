@@ -84,7 +84,7 @@ namespace NotionFlow.Api.Controllers
         }
 
         [HttpGet("teacher/{teacherId}")]
-        [Authorize(Roles = "Admin,Teacher")]
+        [Authorize(Roles = "Admin,Professor")]
         public async Task<IActionResult> CoursesForTeacher(string teacherId)
         {
             var courses = await _db.Courses

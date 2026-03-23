@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using NotionFlow.App.Models.Auth;
 using NotionFlow.App.Services;
 
@@ -8,7 +9,7 @@ namespace NotionFlow.App.ViewModels.Professor
 {
     public class ProfessorViewModel : BaseViewModel
     {
-        private readonly ApiService _api = new();
+        private readonly ApiService _api;
         private readonly string _professorId;
 
         public ObservableCollection<CourseResponse> Courses { get; } = new();
@@ -17,8 +18,9 @@ namespace NotionFlow.App.ViewModels.Professor
         public ICommand GoToCourseCommand { get; }
         public ICommand LogoutCommand { get; }
 
-        public ProfessorViewModel(string professorId)
+        public ProfessorViewModel(ApiService apiService, string professorId)
         {
+            _api = apiService;
             _professorId = professorId;
             LoadCoursesCommand = new Command(async () => await LoadCoursesAsync());
             GoToCourseCommand = new Command<CourseResponse>(async (course) => await GoToCourseAsync(course));
@@ -30,12 +32,19 @@ namespace NotionFlow.App.ViewModels.Professor
         {
             try
             {
-                var coursesList = await _api.GetCursosProfesorAsync(_professorId);
+                Debug.WriteLine("📚 [ProfessorViewModel] Starting LoadCoursesAsync");
+                Debug.WriteLine($"🔍 [ProfessorViewModel] Calling GetCoursesByProfessorAsync('{_professorId}')");
+                var coursesList = await _api.GetCoursesByProfessorAsync(_professorId);
+                Debug.WriteLine($"✓ [ProfessorViewModel] Got {coursesList.Count} courses");
+
                 Courses.Clear();
                 foreach (var course in coursesList) Courses.Add(course);
+                Debug.WriteLine("✓ [ProfessorViewModel] LoadCoursesAsync completed successfully");
             }
             catch (Exception exception)
             {
+                Debug.WriteLine($"✗ [ProfessorViewModel] Error in LoadCoursesAsync: {exception.GetType().Name}");
+                Debug.WriteLine($"✗ [ProfessorViewModel] Message: {exception.Message}");
                 await Shell.Current.DisplayAlert("Error", exception.Message, "OK");
             }
         }
@@ -46,9 +55,9 @@ namespace NotionFlow.App.ViewModels.Professor
                 $"course?courseId={course.Id}&courseName={course.Name}&role=Teacher");
         }
 
-        private async System.Threading.Tasks.Task LogoutAsync()
+        private async Task LogoutAsync()
         {
-            await new AuthService().LogoutAsync();
+            await AuthService.LogoutAsync();
             await Shell.Current.GoToAsync("//login");
         }
     }

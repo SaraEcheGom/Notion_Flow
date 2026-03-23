@@ -4,9 +4,9 @@ namespace NotionFlow.App.Views.Auth;
 
 public partial class RegisterPage : ContentPage
 {
-    public RegisterPage()
+    public RegisterPage(RegisterViewModel vm)
     {
         InitializeComponent();
-        BindingContext = new RegisterViewModel();
+        BindingContext = vm;
     }
 }

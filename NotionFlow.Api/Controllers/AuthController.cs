@@ -27,18 +27,21 @@ namespace NotionFlow.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            if (dto.Role == "Admin" && dto.Token != AdminToken)
+            // Map legacy "Teacher" role to "Professor" for consistency
+            var role = dto.Role == "Teacher" ? "Professor" : dto.Role;
+
+            if (role == "Admin" && dto.Token != AdminToken)
                 return BadRequest("Invalid administrator token");
 
-            if (dto.Role == "Teacher" && dto.Token != AdminToken)
-                return BadRequest("Only an administrator can create teachers");
+            if (role == "Professor" && dto.Token != AdminToken)
+                return BadRequest("Only an administrator can create professors");
 
             var user = new User
             {
                 Name = dto.Name,
                 Email = dto.Email,
                 UserName = dto.Email,
-                Role = dto.Role
+                Role = role
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -46,7 +49,7 @@ namespace NotionFlow.Api.Controllers
             if (!result.Succeeded)
                 return BadRequest(result.Errors.Select(e => e.Description));
 
-            await _userManager.AddToRoleAsync(user, dto.Role);
+            await _userManager.AddToRoleAsync(user, role);
 
             return Ok("User registered successfully");
         }
@@ -65,7 +68,7 @@ namespace NotionFlow.Api.Controllers
                 token, user.Name, user.Email!, user.Role, user.Id));
         }
 
-        [HttpGet("usuarios")]
+        [HttpGet("users")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUsersByRole([FromQuery] string role)
         {

@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using NotionFlow.App.Services;
 using NotionFlow.App.Views.Admin;
 using NotionFlow.App.Views.Auth;
@@ -11,7 +12,7 @@ namespace NotionFlow.App.ViewModels.Admin
 {
     public class AdminViewModel : BaseViewModel
     {
-        private readonly ApiService _api = new();
+        private readonly ApiService _api;
 
         public ObservableCollection<AuthResponse> Teachers { get; } = new();
         public ObservableCollection<AuthResponse> Students { get; } = new();
@@ -83,8 +84,9 @@ namespace NotionFlow.App.ViewModels.Admin
         public ICommand CreateTeacherCommand { get; }
         public ICommand ViewProfileCommand { get; }
 
-        public AdminViewModel()
+        public AdminViewModel(ApiService apiService)
         {
+            _api = apiService;
             LoadDataCommand = new Command(async () => await LoadDataAsync());
             CreateCourseCommand = new Command(async () => await CreateCourseAsync());
             AssignStudentCommand = new Command(async () => await AssignStudentAsync());
@@ -104,13 +106,23 @@ namespace NotionFlow.App.ViewModels.Admin
             _ = LoadDataAsync();
         }
 
-        private async System.Threading.Tasks.Task LoadDataAsync()
+        private async Task LoadDataAsync()
         {
             try
             {
-                var teachers = await _api.GetUsuariosPorRolAsync("Profesor");
-                var students = await _api.GetUsuariosPorRolAsync("Estudiante");
-                var courses = await _api.GetTodosLosCursosAsync();
+                Debug.WriteLine("📊 [AdminViewModel] Starting LoadDataAsync");
+
+                Debug.WriteLine("🔍 [AdminViewModel] Calling GetUsersByRoleAsync('Professor')");
+                var teachers = await _api.GetUsersByRoleAsync("Professor");
+                Debug.WriteLine($"✓ [AdminViewModel] Got {teachers.Count} teachers");
+
+                Debug.WriteLine("🔍 [AdminViewModel] Calling GetUsersByRoleAsync('Student')");
+                var students = await _api.GetUsersByRoleAsync("Student");
+                Debug.WriteLine($"✓ [AdminViewModel] Got {students.Count} students");
+
+                Debug.WriteLine("🔍 [AdminViewModel] Calling GetAllCoursesAsync()");
+                var courses = await _api.GetAllCoursesAsync();
+                Debug.WriteLine($"✓ [AdminViewModel] Got {courses.Count} courses");
 
                 Teachers.Clear();
                 foreach (var teacher in teachers) Teachers.Add(teacher);
@@ -120,9 +132,14 @@ namespace NotionFlow.App.ViewModels.Admin
 
                 Courses.Clear();
                 foreach (var course in courses) Courses.Add(course);
+
+                Debug.WriteLine("✓ [AdminViewModel] LoadDataAsync completed successfully");
             }
             catch (Exception exception)
             {
+                Debug.WriteLine($"✗ [AdminViewModel] Error in LoadDataAsync: {exception.GetType().Name}");
+                Debug.WriteLine($"✗ [AdminViewModel] Message: {exception.Message}");
+                Debug.WriteLine($"✗ [AdminViewModel] StackTrace: {exception.StackTrace}");
                 await Shell.Current.DisplayAlertAsync("Error", exception.Message, "OK");
             }
         }
@@ -139,7 +156,7 @@ namespace NotionFlow.App.ViewModels.Admin
 
             try
             {
-                await _api.CrearCursoAsync(CourseName, CourseSubject, SelectedTeacher.Id);
+                await _api.CreateCourseAsync(CourseName, CourseSubject, SelectedTeacher.Id);
                 await Shell.Current.DisplayAlertAsync("Success", "Course created", "OK");
                 CourseName = string.Empty;
                 CourseSubject = string.Empty;
@@ -166,7 +183,7 @@ namespace NotionFlow.App.ViewModels.Admin
             {
                 await _api.RegisterAsync(
                     TeacherName, TeacherEmail, TeacherPassword,
-                    "Profesor", "NOTIONFLOW_ADMIN_2024");
+                    "Professor", "NOTIONFLOW_ADMIN_2024");
 
                 await Shell.Current.DisplayAlertAsync("Success", "Teacher created successfully", "OK");
                 TeacherName = string.Empty;
@@ -181,7 +198,7 @@ namespace NotionFlow.App.ViewModels.Admin
             }
         }
 
-        private async System.Threading.Tasks.Task AssignStudentAsync()
+        private async Task AssignStudentAsync()
         {
             if (SelectedCourse == null || SelectedStudent == null)
             {
@@ -191,7 +208,7 @@ namespace NotionFlow.App.ViewModels.Admin
 
             try
             {
-                await _api.AsignarEstudianteAsync(SelectedCourse.Id, SelectedStudent.Id);
+                await _api.AssignStudentAsync(SelectedCourse.Id, SelectedStudent.Id);
                 await Shell.Current.DisplayAlertAsync("Success",
                     $"{SelectedStudent.Name} assigned to {SelectedCourse.Name}", "OK");
                 await LoadDataAsync();
@@ -202,9 +219,9 @@ namespace NotionFlow.App.ViewModels.Admin
             }
         }
 
-        private async System.Threading.Tasks.Task LogoutAsync()
+        private async Task LogoutAsync()
         {
-            await new AuthService().LogoutAsync();
+            await AuthService.LogoutAsync();
             await Shell.Current.GoToAsync("//login");
         }
     }

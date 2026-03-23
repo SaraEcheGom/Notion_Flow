@@ -31,8 +31,8 @@ namespace NotionFlow.Api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Nombre = table.Column<string>(type: "text", nullable: false),
-                    Rol = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Role = table.Column<string>(type: "text", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -54,19 +54,19 @@ namespace NotionFlow.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Cursos",
+                name: "Courses",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Nombre = table.Column<string>(type: "text", nullable: false),
-                    Materia = table.Column<string>(type: "text", nullable: false),
-                    ProfesorId = table.Column<string>(type: "text", nullable: false),
-                    ProfesorNombre = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Subject = table.Column<string>(type: "text", nullable: false),
+                    TeacherId = table.Column<string>(type: "text", nullable: false),
+                    TeacherName = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cursos", x => x.Id);
+                    table.PrimaryKey("PK_Courses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -176,87 +176,87 @@ namespace NotionFlow.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Contenidos",
+                name: "Contents",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CursoId = table.Column<int>(type: "integer", nullable: false),
-                    Titulo = table.Column<string>(type: "text", nullable: false),
-                    Descripcion = table.Column<string>(type: "text", nullable: false),
-                    Tipo = table.Column<string>(type: "text", nullable: false),
+                    CourseId = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<string>(type: "text", nullable: false),
                     Url = table.Column<string>(type: "text", nullable: false),
-                    FechaPublicacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    PublicationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Contenidos", x => x.Id);
+                    table.PrimaryKey("PK_Contents", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Contenidos_Cursos_CursoId",
-                        column: x => x.CursoId,
-                        principalTable: "Cursos",
+                        name: "FK_Contents_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CursoEstudiantes",
+                name: "CourseStudents",
                 columns: table => new
                 {
-                    CursoId = table.Column<int>(type: "integer", nullable: false),
-                    EstudianteId = table.Column<string>(type: "text", nullable: false)
+                    CourseId = table.Column<int>(type: "integer", nullable: false),
+                    StudentId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CursoEstudiantes", x => new { x.CursoId, x.EstudianteId });
+                    table.PrimaryKey("PK_CourseStudents", x => new { x.CourseId, x.StudentId });
                     table.ForeignKey(
-                        name: "FK_CursoEstudiantes_Cursos_CursoId",
-                        column: x => x.CursoId,
-                        principalTable: "Cursos",
+                        name: "FK_CourseStudents_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Evaluaciones",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CursoId = table.Column<int>(type: "integer", nullable: false),
-                    Titulo = table.Column<string>(type: "text", nullable: false),
-                    Descripcion = table.Column<string>(type: "text", nullable: false),
-                    Fecha = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    PorcentajeValor = table.Column<double>(type: "double precision", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Evaluaciones", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Evaluaciones_Cursos_CursoId",
-                        column: x => x.CursoId,
-                        principalTable: "Cursos",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Notas",
+                name: "Evaluations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    EvaluacionId = table.Column<int>(type: "integer", nullable: false),
-                    EstudianteId = table.Column<string>(type: "text", nullable: false),
-                    Valor = table.Column<double>(type: "double precision", nullable: false)
+                    CourseId = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PercentageValue = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Notas", x => x.Id);
+                    table.PrimaryKey("PK_Evaluations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Notas_Evaluaciones_EvaluacionId",
-                        column: x => x.EvaluacionId,
-                        principalTable: "Evaluaciones",
+                        name: "FK_Evaluations_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Grades",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    EvaluationId = table.Column<int>(type: "integer", nullable: false),
+                    StudentId = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<double>(type: "double precision", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Grades", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Grades_Evaluations_EvaluationId",
+                        column: x => x.EvaluationId,
+                        principalTable: "Evaluations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -299,19 +299,19 @@ namespace NotionFlow.Api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Contenidos_CursoId",
-                table: "Contenidos",
-                column: "CursoId");
+                name: "IX_Contents_CourseId",
+                table: "Contents",
+                column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Evaluaciones_CursoId",
-                table: "Evaluaciones",
-                column: "CursoId");
+                name: "IX_Evaluations_CourseId",
+                table: "Evaluations",
+                column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notas_EvaluacionId",
-                table: "Notas",
-                column: "EvaluacionId");
+                name: "IX_Grades_EvaluationId",
+                table: "Grades",
+                column: "EvaluationId");
         }
 
         /// <inheritdoc />

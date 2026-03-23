@@ -33,9 +33,9 @@ namespace NotionFlow.App.ViewModels.Auth
                 List<CourseResponse> coursesList;
 
                 if (user.Role == "Profesor")
-                    coursesList = await _api.GetCursosProfesorAsync(user.Id);
+                    coursesList = await _api.GetCoursesByProfessorAsync(user.Id);
                 else
-                    coursesList = await _api.GetCursosEstudianteAsync(user.Id);
+                    coursesList = await _api.GetCoursesByStudentAsync(user.Id);
 
                 Courses.Clear();
                 foreach (var course in coursesList) Courses.Add(course);

@@ -1,22 +1,57 @@
-version: '3.8'
-
 services:
   postgres:
-    image: postgres:latest
-    container_name: notionflow-postgres
+    image: postgres:16-alpine
+    container_name: notionflow_postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: notionflow
+      POSTGRES_USER: ${POSTGRES_USER:-notionflow_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-notionflow_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-notionflow_db}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - notionflow-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-notionflow_user} -d ${POSTGRES_DB:-notionflow_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 40s
+
+  api:
+    build:
+      context: .
+      dockerfile: NotionFlow.Api/Dockerfile
+    container_name: notionflow_api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: http://+:5000
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-notionflow_db};Username=${POSTGRES_USER:-notionflow_user};Password=${POSTGRES_PASSWORD:-notionflow_pass};
+      Jwt__Key: ${JWT_KEY:-NotionFlow2024SuperSecretKey123456789!}
+      Jwt__Issuer: ${JWT_ISSUER:-NotionFlow.Api}
+      Jwt__Audience: ${JWT_AUDIENCE:-NotionFlow.App}
+    ports:
+      - "5000:5000"
+    networks:
+      - notionflow-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
 volumes:
   postgres_data:
+    name: notionflow_postgres_data
+
+networks:
+  notionflow-network:
+    driver: bridge

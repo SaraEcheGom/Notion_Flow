@@ -1,5 +1,6 @@
 using NotionFlow.App.ViewModels;
 using NotionFlow.App.ViewModels.Professor;
+using NotionFlow.App.Services;
 
 namespace NotionFlow.App.Views.Professor;
 
@@ -15,7 +16,10 @@ public partial class ProfessorPage : ContentPage
         {
             _profesorId = value;
             if (!string.IsNullOrEmpty(_profesorId))
-                BindingContext = new ProfessorViewModel(_profesorId);
+            {
+                var apiService = new ApiService();
+                BindingContext = new ProfessorViewModel(apiService, _profesorId);
+            }
         }
     }
 

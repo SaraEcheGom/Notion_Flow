@@ -7,13 +7,13 @@ namespace NotionFlow.App.Models.Auth
         [JsonPropertyName("token")]
         public string Token { get; set; } = string.Empty;
 
-        [JsonPropertyName("nombre")]
+        [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
 
         [JsonPropertyName("email")]
         public string Email { get; set; } = string.Empty;
 
-        [JsonPropertyName("rol")]
+        [JsonPropertyName("role")]
         public string Role { get; set; } = string.Empty;
 
         [JsonPropertyName("id")]
