@@ -5,51 +5,50 @@ namespace NotionFlow.App.Services
 {
     public class SchoolService
     {
-        public static List<Professor> Professors = new();
+        public static List<Teacher> Teachers = new();
 
         public static List<Student> Students = new();
 
-        public Professor CreateProfessor(string name, string email, string subject)
+        public Teacher CreateTeacher(string name, string email, string subject)
         {
-            var professor = new Professor
+            var teacher = new Teacher
             {
-                Id = Professors.Count + 1,
                 Name = name,
                 Email = email,
                 Subject = subject
             };
 
-            Professors.Add(professor);
+            Teachers.Add(teacher);
 
-            return professor;
+            return teacher;
         }
 
-        public Student CreateStudent(string name, string grade, string professorEmail)
+        public Student CreateStudent(string name, string grade, string teacherEmail)
         {
             var student = new Student
             {
                 Id = Students.Count + 1,
                 Name = name,
                 Grade = grade,
-                ProfessorEmail = professorEmail
+                ProfessorEmail = teacherEmail
             };
 
             Students.Add(student);
 
-            var professor = Professors.FirstOrDefault(p => p.Email == professorEmail);
+            var teacher = Teachers.FirstOrDefault(p => p.Email == teacherEmail);
 
-            if (professor != null)
+            if (teacher != null)
             {
-                professor.Students.Add(student);
+                teacher.Students.Add(student);
             }
 
             return student;
         }
 
-        public List<Student> GetStudentsForProfessor(string professorEmail)
+        public List<Student> GetStudentsForTeacher(string teacherEmail)
         {
             return Students
-                .Where(e => e.ProfessorEmail == professorEmail)
+                .Where(e => e.ProfessorEmail == teacherEmail)
                 .ToList();
         }
     }

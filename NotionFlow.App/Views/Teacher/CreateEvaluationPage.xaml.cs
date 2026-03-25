@@ -1,6 +1,6 @@
 using NotionFlow.App.ViewModels.Course;
 
-namespace NotionFlow.App.Views.Professor;
+namespace NotionFlow.App.Views.Teacher;
 
 public partial class CreateEvaluationPage : ContentPage
 {

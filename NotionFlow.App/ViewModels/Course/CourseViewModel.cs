@@ -5,7 +5,7 @@ using System.Linq;
 using NotionFlow.App.Models.Auth;
 using NotionFlow.App.Services;
 using NotionFlow.App.Views.Course;
-using NotionFlow.App.Views.Professor;
+using NotionFlow.App.Views.Teacher;
 using NotionFlow.App.Views.Auth;
 using NotionFlow.App.ViewModels.Auth;
 

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Controls.PageHeaderComponent"
+             x:Name="this"
+             Padding="0"
+             Margin="0">
+    <Border BackgroundColor="{DynamicResource Primary}"
+            HeightRequest="165"
+            Padding="24,32,24,0"
+            Margin="0,0,0,20"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 0,0,32,32">
+        <Grid ColumnDefinitions="*,Auto"
+              RowSpacing="0"
+              ColumnSpacing="0">
+            <StackLayout Spacing="5"
+                         VerticalOptions="Center"
+                         HorizontalOptions="Fill">
+                <Label Text="{Binding Title, Source={x:Reference this}}"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       Opacity="0.85"
+                       TextColor="#E9F1F7"
+                       Margin="0"
+                       Padding="0"
+                       FontFamily="Inter"
+                       HorizontalTextAlignment="Start" />
+                <Label Text="{Binding Subtitle, Source={x:Reference this}}"
+                       FontSize="14"
+                       Opacity="0.7"
+                       TextColor="#E9F1F7"
+                       Margin="0"
+                       Padding="0"
+                       FontFamily="Inter"
+                       HorizontalTextAlignment="Start" />
+            </StackLayout>
+            <StackLayout x:Name="NotificationIcon" 
+                         Grid.Column="1"
+                         VerticalOptions="Center"
+                         HorizontalOptions="End"
+                         IsVisible="{Binding ShowNotification, Source={x:Reference this}}"
+                         Margin="0"
+                         Padding="0" />
+        </Grid>
+    </Border>
+</ContentView>

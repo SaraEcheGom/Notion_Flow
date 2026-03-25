@@ -17,12 +17,12 @@
         <CollectionView ItemsSource="{Binding Cursos}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border Margin="0,5" Padding="15" StrokeThickness="1" Stroke="LightGray">
+                    <Border Margin="0,5" Padding="15" StrokeThickness="1" Stroke="{StaticResource Gray300}">
                         <VerticalStackLayout>
                             <Label Text="{Binding Nombre}" FontAttributes="Bold" FontSize="16" />
-                            <Label Text="{Binding Materia}" FontSize="13" TextColor="Gray" />
+                            <Label Text="{Binding Materia}" FontSize="13" TextColor="{StaticResource Gray400}" />
                             <Label Text="{Binding ProfesorNombre, StringFormat='Profesor: {0}'}"
-                                   FontSize="13" TextColor="Gray" />
+                                   FontSize="13" TextColor="{StaticResource Gray400}" />
                             <Button Text="Ver curso"
                                     CommandParameter="{Binding .}"
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IrACursoCommand}" />

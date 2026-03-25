@@ -6,33 +6,45 @@
 
     <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
 
-    <Color x:Key="Primary">#512BD4</Color>
-    <Color x:Key="PrimaryDark">#ac99ea</Color>
-    <Color x:Key="PrimaryDarkText">#242424</Color>
-    <Color x:Key="Secondary">#DFD8F7</Color>
-    <Color x:Key="SecondaryDarkText">#9880e5</Color>
-    <Color x:Key="Tertiary">#2B0B98</Color>
+    <!-- Primitive / Brand Colors -->
+    <Color x:Key="Teal">#095256</Color>
+    <Color x:Key="Yellow">#F9DA58</Color>
+    <Color x:Key="Primary">#095256</Color>
+    <Color x:Key="Secondary">#F9DA58</Color>
 
-    <Color x:Key="White">White</Color>
-    <Color x:Key="Black">Black</Color>
-    <Color x:Key="Magenta">#D600AA</Color>
-    <Color x:Key="MidnightBlue">#190649</Color>
-    <Color x:Key="OffBlack">#1f1f1f</Color>
+    <!-- Primitive / Neutral Colors -->
+    <Color x:Key="Dark">#1B1725</Color>
+    <Color x:Key="Gray400">#B7B8BA</Color>
+    <Color x:Key="LightWarm">#DBD8CB</Color>
+    <Color x:Key="LightCool">#E9F1F7</Color>
 
-    <Color x:Key="Gray100">#E1E1E1</Color>
-    <Color x:Key="Gray200">#C8C8C8</Color>
-    <Color x:Key="Gray300">#ACACAC</Color>
-    <Color x:Key="Gray400">#919191</Color>
-    <Color x:Key="Gray500">#6E6E6E</Color>
-    <Color x:Key="Gray600">#404040</Color>
-    <Color x:Key="Gray900">#212121</Color>
-    <Color x:Key="Gray950">#141414</Color>
+    <!-- Aliases for compatibility -->
+    <Color x:Key="White">#E9F1F7</Color>
+    <Color x:Key="Black">#1B1725</Color>
+    <Color x:Key="OffBlack">#0A0A0A</Color>
+    <Color x:Key="PrimaryDark">#095256</Color>
+    <Color x:Key="PrimaryDarkText">#E9F1F7</Color>
+    <Color x:Key="SecondaryDarkText">#DBD8CB</Color>
+    <Color x:Key="Tertiary">#095256</Color>
 
+    <!-- Gray Scale Palette -->
+    <Color x:Key="Gray100">#E9F1F7</Color>
+    <Color x:Key="Gray200">#DBD8CB</Color>
+    <Color x:Key="Gray300">#B788BA</Color>
+    <Color x:Key="Gray500">#9A8CA8</Color>
+    <Color x:Key="Gray600">#5A5266</Color>
+    <Color x:Key="Gray900">#2D1F35</Color>
+    <Color x:Key="Gray950">#1B1725</Color>
+
+    <!-- Solid Color Brushes -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
     <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
     <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
     <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
+    <SolidColorBrush x:Key="TealBrush" Color="{StaticResource Teal}"/>
+    <SolidColorBrush x:Key="YellowBrush" Color="{StaticResource Yellow}"/>
+    <SolidColorBrush x:Key="DarkBrush" Color="{StaticResource Dark}"/>
 
     <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
     <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>

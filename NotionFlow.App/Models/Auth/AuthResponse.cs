@@ -18,6 +18,9 @@ namespace NotionFlow.App.Models.Auth
 
         [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
+
+        [JsonPropertyName("institutionId")]
+        public int InstitutionId { get; set; }
     }
 
     public class CourseResponse
@@ -25,16 +28,19 @@ namespace NotionFlow.App.Models.Auth
         [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [JsonPropertyName("nombre")]
+        [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
 
-        [JsonPropertyName("materia")]
+        [JsonPropertyName("subject")]
         public string Subject { get; set; } = string.Empty;
 
-        [JsonPropertyName("profesorNombre")]
+        [JsonPropertyName("teacherId")]
+        public string TeacherId { get; set; } = string.Empty;
+
+        [JsonPropertyName("teacherName")]
         public string TeacherName { get; set; } = string.Empty;
 
-        [JsonPropertyName("estudiantes")]
+        [JsonPropertyName("students")]
         public List<StudentItem> Students { get; set; } = new();
     }
 

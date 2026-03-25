@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using NotionFlow.Api.Data;
 using NotionFlow.Api.DTOs;
 using NotionFlow.Api.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace NotionFlow.Api.Controllers
 {
@@ -16,12 +18,14 @@ namespace NotionFlow.Api.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _config;
+        private readonly AppDbContext _context;
         private const string AdminToken = "ADMIN";
 
-        public AuthController(UserManager<User> userManager, IConfiguration config)
+        public AuthController(UserManager<User> userManager, IConfiguration config, AppDbContext context)
         {
             _userManager = userManager;
             _config = config;
+            _context = context;
         }
 
         [HttpPost("register")]
@@ -36,12 +40,22 @@ namespace NotionFlow.Api.Controllers
             if (role == "Professor" && dto.Token != AdminToken)
                 return BadRequest("Only an administrator can create professors");
 
+            // Get the current user's InstitutionId (if authenticated)
+            int? institutionId = null;
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(currentUserId))
+            {
+                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == currentUserId);
+                institutionId = currentUser?.InstitutionId;
+            }
+
             var user = new User
             {
                 Name = dto.Name,
                 Email = dto.Email,
                 UserName = dto.Email,
-                Role = role
+                Role = role,
+                InstitutionId = institutionId
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -65,16 +79,31 @@ namespace NotionFlow.Api.Controllers
             var token = GenerateToken(user);
 
             return Ok(new AuthResponseDto(
-                token, user.Name, user.Email!, user.Role, user.Id));
+                token, user.Name, user.Email!, user.Role, user.Id, user.InstitutionId ?? 0));
         }
 
         [HttpGet("users")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUsersByRole([FromQuery] string role)
         {
+            // Get the current authenticated user
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized("User not authenticated");
+
+            // Find the current user to get their InstitutionId
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == currentUserId);
+            if (currentUser == null)
+                return NotFound("User not found");
+
+            // Get users in the specified role and filter by the admin's institution
             var users = await _userManager.GetUsersInRoleAsync(role);
-            return Ok(users.Select(u => new AuthResponseDto(
-                string.Empty, u.Name, u.Email!, u.Role, u.Id)));
+            var institutionUsers = users
+                .Where(u => u.InstitutionId == currentUser.InstitutionId)
+                .ToList();
+
+            return Ok(institutionUsers.Select(u => new AuthResponseDto(
+                string.Empty, u.Name, u.Email!, u.Role, u.Id, u.InstitutionId ?? 0)));
         }
 
         private string GenerateToken(User user)
@@ -84,7 +113,8 @@ namespace NotionFlow.Api.Controllers
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Email, user.Email!),
                 new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim("InstitutionId", (user.InstitutionId ?? 0).ToString())
             };
 
             var key = new SymmetricSecurityKey(

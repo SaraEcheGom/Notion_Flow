@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.Teacher.CreateEvaluationPage"
+             Title="Create Evaluation">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15" VerticalOptions="Center">
+
+            <Label Text="New Evaluation"
+                   FontSize="22" FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Label Text="Title"
+                   FontSize="14" FontAttributes="Bold" />
+            <Entry x:Name="TitleEntry"
+                   Placeholder="Evaluation title"
+                   Keyboard="Default" />
+
+            <Label Text="Description"
+                   FontSize="14" FontAttributes="Bold" />
+            <Editor x:Name="DescriptionEntry"
+                    Placeholder="Evaluation description (optional)"
+                    HeightRequest="100" />
+
+            <Label Text="Percentage Value"
+                   FontSize="14" FontAttributes="Bold" />
+            <Entry x:Name="PercentageEntry"
+                   Placeholder="0.0"
+                   Keyboard="Numeric" />
+
+            <Button Text="Create Evaluation"
+                    Clicked="OnSave"
+                    Margin="0,20,0,0" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

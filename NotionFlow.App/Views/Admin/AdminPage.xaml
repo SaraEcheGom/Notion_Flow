@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:NotionFlow.App.Controls"
              x:Class="NotionFlow.App.Views.Admin.AdminPage"
              Title="Panel Admin">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+        <VerticalStackLayout Padding="0" Spacing="15">
 
-            <Label Text="Panel Administrador"
-                   FontSize="24" FontAttributes="Bold"
-                   HorizontalOptions="Center" />
+            <controls:PageHeaderComponent x:Name="AdminHeader" />
 
-            <Grid ColumnDefinitions="*,*,Auto">
-                <Button Grid.Column="0"
+            <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                <Button Grid.Column="0" Grid.Row="0"
                         Text="+ Crear Curso"
-                        Command="{Binding IrACrearCursoCommand}" />
-                <Button Grid.Column="1"
+                        Command="{Binding GoToCreateCourseCommand}" />
+                <Button Grid.Column="1" Grid.Row="0"
                         Text="+ Crear Profesor"
-                        Command="{Binding IrACrearProfesorCommand}" />
-                <Button Grid.Column="2"
+                        Command="{Binding GoToCreateTeacherCommand}" />
+                <Button Grid.Column="0" Grid.Row="1"
+                        Text="+ Crear Estudiante"
+                        Command="{Binding GoToCreateStudentCommand}" />
+                <Button Grid.Column="1" Grid.Row="1"
                         Text="Cerrar Sesión"
-                        Command="{Binding CerrarSesionCommand}" />
+                        Command="{Binding LogoutCommand}" />
             </Grid>
 
             <!-- Cursos -->
@@ -28,23 +32,31 @@
                    FontSize="18" FontAttributes="Bold"
                    Margin="0,10,0,0" />
 
-            <CollectionView ItemsSource="{Binding Cursos}">
+            <CollectionView ItemsSource="{Binding Courses}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border Margin="0,5" Padding="15"
-                                StrokeThickness="1" Stroke="LightGray"
+                                StrokeThickness="1" Stroke="{StaticResource Gray300}"
                                 StrokeShape="RoundRectangle 8">
-                            <VerticalStackLayout Spacing="4">
-                                <Label Text="{Binding Nombre}"
-                                       FontAttributes="Bold"
-                                       FontSize="16" />
-                                <Label Text="{Binding Materia}"
-                                       FontSize="13" TextColor="Gray" />
-                                <Label Text="{Binding ProfesorNombre, StringFormat='Profesor: {0}'}"
-                                       FontSize="13" TextColor="Gray" />
-                                <Label Text="{Binding Estudiantes.Count, StringFormat='Estudiantes: {0}'}"
-                                       FontSize="13" TextColor="Gray" />
-                            </VerticalStackLayout>
+                            <Grid ColumnDefinitions="*,Auto" RowSpacing="4">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="{Binding Name}"
+                                           FontAttributes="Bold"
+                                           FontSize="16" />
+                                    <Label Text="{Binding Subject}"
+                                           FontSize="13" TextColor="{StaticResource Gray400}" />
+                                    <Label Text="{Binding TeacherName, StringFormat='Teacher: {0}'}"
+                                           FontSize="13" TextColor="{StaticResource Gray400}" />
+                                    <Label Text="{Binding Students.Count, StringFormat='Students: {0}'}"
+                                           FontSize="13" TextColor="{StaticResource Gray400}" />
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Grid.Row="0"
+                                        Text="View"
+                                        CommandParameter="{Binding .}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewCourseDetailsCommand}"
+                                        Padding="5"
+                                        FontSize="12" />
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
@@ -55,23 +67,23 @@
                    FontSize="18" FontAttributes="Bold"
                    Margin="0,10,0,0" />
 
-            <CollectionView ItemsSource="{Binding Profesores}">
+            <CollectionView ItemsSource="{Binding Teachers}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border Margin="0,4" Padding="12"
-                                StrokeThickness="1" Stroke="LightGray"
+                                StrokeThickness="1" Stroke="{StaticResource Gray300}"
                                 StrokeShape="RoundRectangle 8">
                             <Grid ColumnDefinitions="*,Auto">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                    <Label Text="{Binding Nombre}"
+                                    <Label Text="{Binding Name}"
                                            FontAttributes="Bold" />
                                     <Label Text="{Binding Email}"
-                                           FontSize="13" TextColor="Gray" />
+                                           FontSize="13" TextColor="{StaticResource Gray400}" />
                                 </VerticalStackLayout>
                                 <Button Grid.Column="1"
                                         Text="Ver perfil"
                                         CommandParameter="{Binding .}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.VerPerfilCommand}" />
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewProfileCommand}" />
                             </Grid>
                         </Border>
                     </DataTemplate>
@@ -83,29 +95,30 @@
                    FontSize="18" FontAttributes="Bold"
                    Margin="0,10,0,0" />
 
-            <CollectionView ItemsSource="{Binding Estudiantes}">
+            <CollectionView ItemsSource="{Binding Students}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border Margin="0,4" Padding="12"
-                                StrokeThickness="1" Stroke="LightGray"
+                                StrokeThickness="1" Stroke="{StaticResource Gray300}"
                                 StrokeShape="RoundRectangle 8">
                             <Grid ColumnDefinitions="*,Auto">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                    <Label Text="{Binding Nombre}"
+                                    <Label Text="{Binding Name}"
                                            FontAttributes="Bold" />
                                     <Label Text="{Binding Email}"
-                                           FontSize="13" TextColor="Gray" />
+                                           FontSize="13" TextColor="{StaticResource Gray400}" />
                                 </VerticalStackLayout>
                                 <Button Grid.Column="1"
                                         Text="Ver perfil"
                                         CommandParameter="{Binding .}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.VerPerfilCommand}" />
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewProfileCommand}" />
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 

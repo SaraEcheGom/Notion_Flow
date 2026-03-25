@@ -2,9 +2,9 @@ using NotionFlow.App.ViewModels.Admin;
 
 namespace NotionFlow.App.Views.Admin;
 
-public partial class CreateProfessorPage : ContentPage
+public partial class CreateTeacherPage : ContentPage
 {
-    public CreateProfessorPage(AdminViewModel vm)
+    public CreateTeacherPage(AdminViewModel vm)
     {
         InitializeComponent();
         BindingContext = vm;

@@ -23,17 +23,18 @@ namespace NotionFlow.App.Services
                 Debug.WriteLine($"📡 [AuthService] Calling ApiService.LoginAsync");
                 var response = await _apiService.LoginAsync(email, password);
 
-                Debug.WriteLine($"✓ [AuthService] Response received. ID: {response.Id}, Role: {response.Role}");
+                Debug.WriteLine($"✓ [AuthService] Response received. ID: {response.Id}, Role: {response.Role}, InstitutionId: {response.InstitutionId}");
 
                 CurrentUser = new User
                 {
                     Id = response.Id,
                     Name = response.Name,
                     Email = response.Email,
-                    Role = response.Role
+                    Role = response.Role,
+                    InstitutionId = response.InstitutionId
                 };
 
-                Debug.WriteLine($"✓ [AuthService] CurrentUser set. Role: {CurrentUser.Role}");
+                Debug.WriteLine($"✓ [AuthService] CurrentUser set. Role: {CurrentUser.Role}, InstitutionId: {CurrentUser.InstitutionId}");
                 return CurrentUser;
             }
             catch (Exception ex)

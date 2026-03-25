@@ -22,7 +22,7 @@
                    Text="{Binding Password}"
                    IsPassword="True" />
 
-            <Label Text="Tipo de cuenta" TextColor="Gray" FontSize="13" />
+            <Label Text="Tipo de cuenta" TextColor="{StaticResource Gray400}" FontSize="13" />
 
             <Picker Title="Selecciona un rol"
                     ItemsSource="{Binding Roles}"
@@ -34,7 +34,7 @@
                    IsVisible="{Binding MostrarToken}" />
 
             <Label Text="Se requiere token para crear cuentas de Profesor o Admin"
-                   TextColor="Gray"
+                   TextColor="{StaticResource Gray400}"
                    FontSize="12"
                    IsVisible="{Binding MostrarToken}" />
 

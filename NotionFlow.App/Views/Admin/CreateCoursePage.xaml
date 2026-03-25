@@ -12,20 +12,23 @@
                    HorizontalOptions="Center" />
 
             <Entry Placeholder="Nombre del curso"
-                   Text="{Binding NombreCurso}" />
+                   Text="{Binding CourseName}" />
 
             <Entry Placeholder="Materia"
-                   Text="{Binding MateriaCurso}" />
+                   Text="{Binding CourseSubject}" />
+
+            <Entry Placeholder="Descripción del curso"
+                   Text="{Binding CourseDescription}" />
 
             <Label Text="Selecciona Profesor" TextColor="Gray" FontSize="13" />
 
             <Picker Title="Profesor"
-                    ItemsSource="{Binding Profesores}"
-                    ItemDisplayBinding="{Binding Nombre}"
-                    SelectedItem="{Binding ProfesorSeleccionado}" />
+                    ItemsSource="{Binding Teachers}"
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedTeacher}" />
 
             <Button Text="Crear Curso"
-                    Command="{Binding CrearCursoCommand}" />
+                    Command="{Binding CreateCourseCommand}" />
 
             <BoxView HeightRequest="1" Color="LightGray" Margin="0,10" />
 
@@ -33,17 +36,17 @@
                    FontSize="18" FontAttributes="Bold" />
 
             <Picker Title="Estudiante"
-                    ItemsSource="{Binding Estudiantes}"
-                    ItemDisplayBinding="{Binding Nombre}"
-                    SelectedItem="{Binding EstudianteSeleccionado}" />
+                    ItemsSource="{Binding Students}"
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedStudent}" />
 
             <Picker Title="Curso"
-                    ItemsSource="{Binding Cursos}"
-                    ItemDisplayBinding="{Binding Nombre}"
-                    SelectedItem="{Binding CursoSeleccionado}" />
+                    ItemsSource="{Binding Courses}"
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedCourse}" />
 
             <Button Text="Asignar Estudiante"
-                    Command="{Binding AsignarEstudianteCommand}" />
+                    Command="{Binding AssignStudentCommand}" />
 
         </VerticalStackLayout>
     </ScrollView>

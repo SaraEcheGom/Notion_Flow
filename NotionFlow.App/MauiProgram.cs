@@ -2,7 +2,7 @@
 using NotionFlow.App.Services;
 using NotionFlow.App.ViewModels.Auth;
 using NotionFlow.App.ViewModels.Admin;
-using NotionFlow.App.ViewModels.Professor;
+using NotionFlow.App.ViewModels.Teacher;
 using NotionFlow.App.ViewModels.Student;
 
 namespace NotionFlow.App
@@ -30,7 +30,7 @@ namespace NotionFlow.App
 
             // Register Role ViewModels
             builder.Services.AddSingleton<AdminViewModel>();
-            builder.Services.AddSingleton<ProfessorViewModel>();
+            builder.Services.AddSingleton<TeacherViewModel>();
             builder.Services.AddSingleton<StudentViewModel>();
 
 #if DEBUG

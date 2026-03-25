@@ -30,6 +30,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <MauiXaml Update="Controls\PageHeader.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Controls\PageHeaderComponent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Views\Admin\CreateStudentPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Views\Admin\CreateTeacherPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Views\Course\CourseDetailsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Views\CrearCursoPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
@@ -45,10 +60,17 @@
     <MauiXaml Update="Views\PublicarContenidoPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="Views\Teacher\CreateEvaluationPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Views\Teacher\TeacherPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Models\Task\" />
+    <Folder Include="ViewModels\Professor\" />
   </ItemGroup>
 
 </Project>
