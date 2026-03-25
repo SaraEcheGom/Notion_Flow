@@ -15,6 +15,7 @@
               RowSpacing="0"
               ColumnSpacing="0">
             <StackLayout Spacing="5"
+                         
                          VerticalOptions="Center"
                          HorizontalOptions="Fill">
                 <Label Text="{Binding Title, Source={x:Reference this}}"
