@@ -72,5 +72,3 @@
     <Folder Include="Models\Task\" />
     <Folder Include="ViewModels\Professor\" />
   </ItemGroup>
-
-</Project>
