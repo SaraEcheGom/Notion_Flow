@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.Course.CourseDetailsPage"
+             Title="Course Details">
+
+    <Grid RowDefinitions="Auto,*" Padding="0">
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0" Padding="20" Spacing="10">
+            <Label Text="{Binding CourseName}" FontSize="24" FontAttributes="Bold" />
+            <Label Text="{Binding Subject, StringFormat='Subject: {0}'}" FontSize="14" TextColor="{StaticResource Gray400}" />
+            <Label Text="{Binding TeacherName, StringFormat='Teacher: {0}'}" FontSize="14" TextColor="{StaticResource Gray400}" />
+            <Label Text="{Binding Students.Count, StringFormat='Assigned Students: {0}'}" FontSize="14" TextColor="{StaticResource Gray400}" />
+        </VerticalStackLayout>
+
+        <!-- Students List -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="15">
+                <Label Text="Students in this course" FontSize="18" FontAttributes="Bold" />
+                
+                <CollectionView ItemsSource="{Binding Students}" EmptyView="Ningún estudiante asignado">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,5" Padding="15" StrokeThickness="1" Stroke="{StaticResource Gray300}" StrokeShape="RoundRectangle 8">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                        <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
+                                        <Label Text="{Binding Email}" FontSize="13" TextColor="{StaticResource Gray400}" />
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="1" 
+                                            Text="Remove" 
+                                            CommandParameter="{Binding .}" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveStudentCommand}" 
+                                            IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CanRemoveStudents}"
+                                            Padding="5" 
+                                            FontSize="12" 
+                                            BackgroundColor="{StaticResource Teal}"
+                                            TextColor="White" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Button Text="← Back" Command="{Binding BackCommand}" Margin="0,20,0,0" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>
