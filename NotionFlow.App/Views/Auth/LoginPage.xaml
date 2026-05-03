@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.Auth.LoginPage"
+             BackgroundColor="{StaticResource PageBackground}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+
+        <!-- Imagen de fondo semitransparente (opcional) -->
+        <Image
+            Source="login_bg.png"
+            Aspect="AspectFill"
+            Opacity="0.22"/>
+
+        <ScrollView>
+            <VerticalStackLayout x:Name="LoginContainer"
+                                 Padding="28,56,28,40"
+                                 Spacing="16"
+                                 Opacity="0">
+
+                <!-- Logo -->
+                <Image
+                    Source="notionflow_logo.png"
+                    HeightRequest="140"
+                    Aspect="AspectFit"
+                    Margin="0,0,0,4"/>
+
+                <!-- Tagline -->
+                <Label
+                    Text="Organiza · Aprende · Crea · Brilla"
+                    FontSize="12"
+                    TextColor="{StaticResource TextMuted}"
+                    HorizontalOptions="Center"
+                    Margin="0,0,0,6"/>
+
+                <!-- Card del formulario -->
+                <Border Style="{StaticResource KawaiiCard}">
+                    <VerticalStackLayout Spacing="14">
+
+                        <Label
+                            Text="¡Bienvenido de nuevo!"
+                            Style="{StaticResource SectionTitle}"
+                            HorizontalOptions="Center"
+                            Margin="0,0,0,4"/>
+
+                        <!-- Binding Email -->
+                        <Entry
+                            Placeholder="Correo electrónico"
+                            Keyboard="Email"
+                            Text="{Binding Email}"/>
+
+                        <!-- Binding Password -->
+                        <Entry
+                            Placeholder="Contraseña"
+                            IsPassword="True"
+                            Text="{Binding Password}"/>
+
+                        <!-- Error message -->
+                        <Label
+                            Text="{Binding ErrorMessage}"
+                            TextColor="{StaticResource ErrorColor}"
+                            FontSize="12"
+                            IsVisible="{Binding HasError}"
+                            HorizontalOptions="Center"/>
+
+                        <!-- Botón principal -->
+                        <Button
+                            Text="Iniciar sesión 🚀"
+                            Style="{StaticResource PrimaryBtn}"
+                            Command="{Binding LoginCommand}"/>
+
+                        <!-- Separador -->
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="8">
+                            <BoxView Color="{StaticResource BorderLight}"
+                                     HeightRequest="1" WidthRequest="80"
+                                     VerticalOptions="Center"/>
+                            <Label Text="o" Style="{StaticResource MutedText}"/>
+                            <BoxView Color="{StaticResource BorderLight}"
+                                     HeightRequest="1" WidthRequest="80"
+                                     VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+
+                        <!-- Botón crear cuenta -->
+                        <Button
+                            Text="Crear cuenta nueva ⭐"
+                            Style="{StaticResource OutlineBtn}"
+                            Command="{Binding NavigateToRegisterCommand}"/>
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label
+                    Text="NotionFlow © 2026"
+                    Style="{StaticResource MutedText}"
+                    FontSize="11"
+                    HorizontalOptions="Center"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

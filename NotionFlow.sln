@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11605.240
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotionFlow.App", "NotionFlow.App\NotionFlow.App.csproj", "{397229EF-ACA1-4423-9769-6F0A01AA8AAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotionFlow.Api", "NotionFlow.Api\NotionFlow.Api.csproj", "{C28C4790-F9A4-7B9F-E537-CA58A9C9800D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		prueba|Any CPU = prueba|Any CPU
+		prueba|x64 = prueba|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.Debug|x64.ActiveCfg = Debug|x64
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.Debug|x64.Build.0 = Debug|x64
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.Debug|x64.Deploy.0 = Debug|x64
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.prueba|Any CPU.ActiveCfg = prueba|Any CPU
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.prueba|x64.ActiveCfg = Debug|x64
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.prueba|x64.Build.0 = Debug|x64
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.prueba|x64.Deploy.0 = Debug|x64
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.Release|x64.ActiveCfg = Release|x64
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.Release|x64.Build.0 = Release|x64
+		{397229EF-ACA1-4423-9769-6F0A01AA8AAE}.Release|x64.Deploy.0 = Release|x64
+		{C28C4790-F9A4-7B9F-E537-CA58A9C9800D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C28C4790-F9A4-7B9F-E537-CA58A9C9800D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C28C4790-F9A4-7B9F-E537-CA58A9C9800D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C28C4790-F9A4-7B9F-E537-CA58A9C9800D}.Debug|x64.Build.0 = Debug|Any CPU
+		{C28C4790-F9A4-7B9F-E537-CA58A9C9800D}.prueba|Any CPU.ActiveCfg = Debug|Any CPU
+		{C28C4790-F9A4-7B9F-E537-CA58A9C9800D}.prueba|Any CPU.Build.0 = Debug|Any CPU
+		{C28C4790-F9A4-7B9F-E537-CA58A9C9800D}.prueba|x64.ActiveCfg = Debug|Any CPU
+		{C28C4790-F9A4-7B9F-E537-CA58A9C9800D}.prueba|x64.Build.0 = Debug|Any CPU
+		{C28C4790-F9A4-7B9F-E537-CA58A9C9800D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C28C4790-F9A4-7B9F-E537-CA58A9C9800D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C28C4790-F9A4-7B9F-E537-CA58A9C9800D}.Release|x64.ActiveCfg = Release|Any CPU
+		{C28C4790-F9A4-7B9F-E537-CA58A9C9800D}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {14A8B86D-8C51-458D-872A-A96F2884D714}
+	EndGlobalSection
+EndGlobal
