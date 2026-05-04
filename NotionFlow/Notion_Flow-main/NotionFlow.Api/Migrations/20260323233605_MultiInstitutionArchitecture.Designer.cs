@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NotionFlow.Api.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NotionFlow.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260323233605_MultiInstitutionArchitecture")]
+    partial class MultiInstitutionArchitecture
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,143 +155,6 @@ namespace NotionFlow.Api.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("NotionFlow.Api.Models.Activity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<DateTime?>("DueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<double>("PercentageValue")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.ToTable("Activities");
-                });
-
-            modelBuilder.Entity("NotionFlow.Api.Models.ActivityAssignment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ActivityId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Feedback")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<int?>("Score")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("StartedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("StudentId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("SubmittedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("ActivityAssignments");
-                });
-
-            modelBuilder.Entity("NotionFlow.Api.Models.ActivityOption", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("OptionText")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionId");
-
-                    b.ToTable("ActivityOptions");
-                });
-
-            modelBuilder.Entity("NotionFlow.Api.Models.ActivityQuestion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ActivityId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Points")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("QuestionText")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
-
-                    b.ToTable("ActivityQuestions");
                 });
 
             modelBuilder.Entity("NotionFlow.Api.Models.Content", b =>
@@ -678,58 +544,6 @@ namespace NotionFlow.Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("NotionFlow.Api.Models.Activity", b =>
-                {
-                    b.HasOne("NotionFlow.Api.Models.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-                });
-
-            modelBuilder.Entity("NotionFlow.Api.Models.ActivityAssignment", b =>
-                {
-                    b.HasOne("NotionFlow.Api.Models.Activity", "Activity")
-                        .WithMany("Assignments")
-                        .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NotionFlow.Api.Models.User", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Activity");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("NotionFlow.Api.Models.ActivityOption", b =>
-                {
-                    b.HasOne("NotionFlow.Api.Models.ActivityQuestion", "Question")
-                        .WithMany("Options")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Question");
-                });
-
-            modelBuilder.Entity("NotionFlow.Api.Models.ActivityQuestion", b =>
-                {
-                    b.HasOne("NotionFlow.Api.Models.Activity", "Activity")
-                        .WithMany("Questions")
-                        .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Activity");
-                });
-
             modelBuilder.Entity("NotionFlow.Api.Models.Content", b =>
                 {
                     b.HasOne("NotionFlow.Api.Models.Course", "Course")
@@ -831,18 +645,6 @@ namespace NotionFlow.Api.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Institution");
-                });
-
-            modelBuilder.Entity("NotionFlow.Api.Models.Activity", b =>
-                {
-                    b.Navigation("Assignments");
-
-                    b.Navigation("Questions");
-                });
-
-            modelBuilder.Entity("NotionFlow.Api.Models.ActivityQuestion", b =>
-                {
-                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("NotionFlow.Api.Models.Course", b =>

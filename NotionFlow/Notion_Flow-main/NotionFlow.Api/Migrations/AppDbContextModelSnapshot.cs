@@ -175,9 +175,6 @@ namespace NotionFlow.Api.Migrations
                     b.Property<DateTime?>("DueDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<double>("PercentageValue")
-                        .HasColumnType("double precision");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
