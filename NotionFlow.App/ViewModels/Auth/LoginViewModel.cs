@@ -81,7 +81,7 @@ namespace NotionFlow.App.ViewModels.Auth
                       || string.Equals(role, "Teacher", StringComparison.OrdinalIgnoreCase))
                 {
                     Debug.WriteLine($"→ [LoginViewModel] Navigating to //teacher");
-                    await Shell.Current.GoToAsync($"//teacher?id={user.Id}&name={user.Name}");
+                    await Shell.Current.GoToAsync($"//teacher?id={user.Id}");
                 }
                 else if (string.Equals(role, "Student", StringComparison.OrdinalIgnoreCase)
                       || string.Equals(role, "Estudiante", StringComparison.OrdinalIgnoreCase))

@@ -12,9 +12,9 @@
                                      Subtitle="Manage your courses" />
 
         <!-- Content Section -->
-        <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="15">
+        <Grid Grid.Row="1" RowDefinitions="Auto,*" Padding="20" RowSpacing="15">
             <!-- Action Buttons -->
-            <HorizontalStackLayout Spacing="10" HorizontalOptions="FillAndExpand">
+            <HorizontalStackLayout Grid.Row="0" Spacing="10" HorizontalOptions="FillAndExpand">
                 <Button Text="Refresh" 
                         Command="{Binding LoadCoursesCommand}"
                         HorizontalOptions="FillAndExpand" />
@@ -24,41 +24,21 @@
             </HorizontalStackLayout>
 
             <!-- Courses List -->
-            <CollectionView ItemsSource="{Binding Courses}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="0,8" 
-                                Padding="16" 
-                                StrokeThickness="1.5" 
-                                Stroke="{StaticResource Gray300}"
-                                StrokeShape="RoundRectangle 12">
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="{StaticResource LightCool}" Offset="0" />
-                                    <GradientStop Color="{StaticResource White}" Offset="1" />
-                                </LinearGradientBrush>
-                            </Border.Background>
-                            <VerticalStackLayout Spacing="8">
-                                <Label Text="{Binding Name}" 
-                                       FontAttributes="Bold" 
-                                       FontSize="16"
-                                       TextColor="{StaticResource TextDark}" />
-                                <Label Text="{Binding Subject}" 
-                                       FontSize="13" 
-                                       TextColor="{StaticResource Gray400}"
-                                       Opacity="0.9" />
-                                <Button Text="Open course"
-                                        Margin="0,8,0,0"
-                                        FontSize="12"
-                                        Padding="12,8"
-                                        CommandParameter="{Binding .}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.GoToCourseCommand}" />
-                            </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
+            <VerticalStackLayout Grid.Row="1" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="10" Padding="0">
+                <!-- Debug Label to show course count -->
+                <Label Text="{Binding Courses.Count, StringFormat='Total Courses: {0}'}"
+                       FontSize="14"
+                       TextColor="{StaticResource TextDark}"
+                       Margin="0,10,0,0" />
+
+                <!-- Using a ScrollView with a StackLayout for better rendering -->
+                <ScrollView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <VerticalStackLayout x:Name="CoursesContainer" Spacing="8" Padding="0">
+                        <!-- Courses will be dynamically added here -->
+                    </VerticalStackLayout>
+                </ScrollView>
+            </VerticalStackLayout>
+        </Grid>
     </Grid>
 
 </ContentPage>

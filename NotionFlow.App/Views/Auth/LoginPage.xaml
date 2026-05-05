@@ -67,7 +67,7 @@
 
                         <!-- Botón principal -->
                         <Button
-                            Text="Iniciar sesión 🚀"
+                            Text="Iniciar sesión"
                             Style="{StaticResource PrimaryBtn}"
                             Command="{Binding LoginCommand}"/>
 
@@ -84,7 +84,7 @@
 
                         <!-- Botón crear cuenta -->
                         <Button
-                            Text="Crear cuenta nueva ⭐"
+                            Text="Crear cuenta nueva"
                             Style="{StaticResource OutlineBtn}"
                             Command="{Binding NavigateToRegisterCommand}"/>
 

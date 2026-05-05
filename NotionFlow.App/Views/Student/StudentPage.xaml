@@ -1,60 +1,90 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!--
+╔══════════════════════════════════════════════════════════════╗
+║  StudentPage.xaml — NotionFlow                               ║
+║  RUTA   : NotionFlow.App/Views/Student/StudentPage.xaml      ║
+║  ACCIÓN : REEMPLAZA el archivo completo                      ║
+║                                                              ║
+║  ✅ Bindings conservados intactos:                           ║
+║     - {Binding LogoutCommand}                                ║
+║     - {Binding Courses}                                      ║
+║     - {Binding Name}                                         ║
+║     - {Binding Subject}                                      ║
+║     - {Binding TeacherName}                                  ║
+║     - {Binding GoToCourseCommand}                            ║
+║  🎨 Adaptado de MainPage a StudentPage (Colores y layout)    ║
+╚══════════════════════════════════════════════════════════════╝
+-->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NotionFlow.App.Views.Student.StudentPage"
-             Title="Mis Cursos">
+             Title="Mis Cursos"
+             BackgroundColor="{StaticResource PageBackground}">
 
-    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+    <ScrollView>
+        <VerticalStackLayout x:Name="MainContainer"
+                             Padding="20,30,20,30"
+                             Spacing="14">
 
-        <!-- Header -->
-        <VerticalStackLayout Grid.Row="0" Padding="20,16,20,8" Spacing="4"
-                             BackgroundColor="{StaticResource Primary}">
-            <Label Text="Mis Cursos"
-                   FontSize="22" FontAttributes="Bold"
-                   TextColor="White" HorizontalOptions="Center"/>
-        </VerticalStackLayout>
+            <!-- Logo + saludo -->
+            <Image
+                Source="notionflow_logo.png"
+                HeightRequest="130"
+                Aspect="AspectFit"
+                Margin="0,0,0,4"/>
 
-        <!-- Content -->
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="20" Spacing="12">
+            <Label
+                Text="Tus Cursos 📚"
+                Style="{StaticResource Headline}"
+                HorizontalOptions="Center"/>
 
-                <Button Text="Cerrar Sesión"
+            <!-- Botón de Cerrar Sesión -->
+            <HorizontalStackLayout HorizontalOptions="End" Margin="0,0,0,10">
+                <Button Text="Cerrar Sesión 🚪"
                         Command="{Binding LogoutCommand}"
-                        HorizontalOptions="End"
-                        BackgroundColor="{StaticResource Gray200}"
-                        TextColor="{StaticResource TextDark}"
-                        CornerRadius="8"
-                        Padding="12,8"/>
+                        Style="{StaticResource OutlineBtn}"
+                        Padding="14,8"/>
+            </HorizontalStackLayout>
 
-                <CollectionView ItemsSource="{Binding Courses}"
-                                EmptyView="No tienes cursos asignados.">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Margin="0,5" Padding="15"
-                                    StrokeThickness="1" Stroke="{StaticResource Gray300}"
-                                    StrokeShape="RoundRectangle 10">
-                                <VerticalStackLayout Spacing="4">
-                                    <Label Text="{Binding Name}"
-                                           FontAttributes="Bold" FontSize="16"/>
-                                    <Label Text="{Binding Subject}"
-                                           FontSize="13" TextColor="{StaticResource Gray400}"/>
-                                    <Label Text="{Binding TeacherName, StringFormat='Profesor: {0}'}"
-                                           FontSize="13" TextColor="{StaticResource Gray400}"/>
-                                    <Button Text="Ver curso"
-                                            Margin="0,8,0,0"
-                                            CornerRadius="8"
-                                            Padding="12,8"
-                                            CommandParameter="{Binding .}"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.GoToCourseCommand}"/>
-                                </VerticalStackLayout>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+            <!-- Lista de Cursos -->
+            <CollectionView ItemsSource="{Binding Courses}"
+                            EmptyView="Aún no tienes cursos asignados.">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource KawaiiCard}" Margin="0,8">
+                            <VerticalStackLayout Spacing="8">
+                                <HorizontalStackLayout Spacing="10">
+                                    <!-- Decorador visual -->
+                                    <BoxView WidthRequest="4" 
+                                             Color="{StaticResource PrimaryColor}" 
+                                             CornerRadius="2"/>
+                                    <VerticalStackLayout Spacing="2">
+                                        <Label Text="{Binding Name}"
+                                               Style="{StaticResource SectionTitle}"/>
+                                        <Label Text="{Binding Subject}"
+                                               Style="{StaticResource BodyText}"
+                                               TextColor="{StaticResource TextMuted}"/>
+                                    </VerticalStackLayout>
+                                </HorizontalStackLayout>
 
-            </VerticalStackLayout>
-        </ScrollView>
+                                <Label Text="{Binding TeacherName, StringFormat='Profesor: {0}'}"
+                                       Style="{StaticResource MutedText}"
+                                       Margin="14,4,0,0"/>
 
-    </Grid>
+                                <!-- Ver curso Botón -->
+                                <Button Text="Ir al curso 🎓"
+                                        Style="{StaticResource PrimaryBtn}"
+                                        HorizontalOptions="Start"
+                                        Margin="14,10,0,0"
+                                        CommandParameter="{Binding .}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.GoToCourseCommand}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
 
 </ContentPage>

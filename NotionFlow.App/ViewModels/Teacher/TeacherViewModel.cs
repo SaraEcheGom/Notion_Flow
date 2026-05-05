@@ -22,6 +22,7 @@ namespace NotionFlow.App.ViewModels.Teacher
 
         public TeacherViewModel(ApiService apiService, string teacherId)
         {
+            Debug.WriteLine($"🎓 [TeacherViewModel] Constructor called with teacherId: {teacherId}");
             _api = apiService;
             _teacherId = teacherId;
 
@@ -48,24 +49,76 @@ namespace NotionFlow.App.ViewModels.Teacher
                 await Shell.Current.GoToAsync("//login");
             });
 
-            _ = LoadCoursesAsync();
+            // Removed _ = LoadCoursesAsync(); to prevent duplicate/premature initialization before Binding Context is fully attached.
         }
 
         private async Task LoadCoursesAsync()
         {
+            if (IsBusy) return;
+            IsBusy = true;
+
             try
             {
                 Debug.WriteLine($"📚 [TeacherViewModel] LoadCoursesAsync — teacherId={_teacherId}");
                 var list = await _api.GetCoursesByProfessorAsync(_teacherId);
-                Debug.WriteLine($"✓ [TeacherViewModel] Got {list.Count} courses");
-                Courses.Clear();
-                foreach (var c in list) Courses.Add(c);
+                Debug.WriteLine($"✓ [TeacherViewModel] Got {list?.Count ?? 0} courses");
+
+                if (list == null || list.Count == 0)
+                {
+                    Debug.WriteLine($"⚠️ [TeacherViewModel] No courses returned. Returning early.");
+                    MainThread.BeginInvokeOnMainThread(() => IsBusy = false);
+                    return;
+                }
+
+                try
+                {
+                    var courseNames = string.Join(", ", list.Select(c => c?.Name ?? "Unknown"));
+                    Debug.WriteLine($"📋 [TeacherViewModel] Course names: {courseNames}");
+                }
+                catch (Exception nameEx)
+                {
+                    Debug.WriteLine($"⚠️ [TeacherViewModel] Error while formatting course names: {nameEx.Message}");
+                }
+
+                // Need to dispatch to main thread for UI updates in .NET MAUI CollectionView
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    try
+                    {
+                        Debug.WriteLine($"🔄 [TeacherViewModel] Updating UI with {list.Count} courses");
+                        Courses.Clear();
+                        foreach (var c in list)
+                        {
+                            if (c != null)
+                            {
+                                Debug.WriteLine($"➕ [TeacherViewModel] Adding course: {c.Id} - {c.Name}");
+                                Courses.Add(c);
+                            }
+                        }
+                        Debug.WriteLine($"✅ [TeacherViewModel] UI updated. Courses count: {Courses.Count}");
+                    }
+                    catch (Exception uiEx)
+                    {
+                        Debug.WriteLine($"❌ [TeacherViewModel] Error during UI update: {uiEx.GetType().Name}: {uiEx.Message}");
+                        Debug.WriteLine($"❌ [TeacherViewModel] StackTrace: {uiEx.StackTrace}");
+                    }
+                    finally
+                    {
+                        IsBusy = false;
+                    }
+                });
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"✗ [TeacherViewModel] {ex.GetType().Name}: {ex.Message}");
+                Debug.WriteLine($"✗ [TeacherViewModel] StackTrace: {ex.StackTrace}");
                 global::NotionFlow.App.CrashLog.Write("TeacherViewModel.LoadCoursesAsync", ex);
-                await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+
+                MainThread.BeginInvokeOnMainThread(async () => 
+                {
+                    await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+                    IsBusy = false;
+                });
             }
         }
     }

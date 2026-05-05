@@ -56,13 +56,12 @@ namespace NotionFlow.App.Services
 #elif __IOS__
             return "http://localhost:5000/api/";
 #elif WINDOWS
-            // The previous hard-coded WSL2 IP (172.17.218.15) only worked on the
-            // original developer's machine and rotates on every WSL2 reboot.
-            // The user confirmed `Invoke-RestMethod http://localhost:5000/api/Auth/login`
-            // works from PowerShell, so localhost is the correct value here.
-            return "http://localhost:5000/api/";
+            // To prevent IPv6 resolution issues (where localhost resolves to ::1
+            // instead of 127.0.0.1 which Docker binds to), we explicitly use 127.0.0.1.
+            // If you are using WSL without Docker Desktop, you may need to use the WSL IP instead.
+            return "http://127.0.0.1:5000/api/";
 #else
-            return "http://localhost:5000/api/";
+            return "http://127.0.0.1:5000/api/";
 #endif
         }
 
