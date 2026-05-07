@@ -1,44 +1,40 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:controls="clr-namespace:NotionFlow.App.Controls"
              x:Class="NotionFlow.App.Views.Teacher.TeacherPage"
-             Title="My Courses">
-
-    <Grid RowDefinitions="Auto,*" RowSpacing="0">
-        <!-- Header Component -->
-        <controls:PageHeaderComponent Grid.Row="0"
-                                     Title="My Courses"
-                                     Subtitle="Manage your courses" />
-
-        <!-- Content Section -->
-        <Grid Grid.Row="1" RowDefinitions="Auto,*" Padding="20" RowSpacing="15">
-            <!-- Action Buttons -->
-            <HorizontalStackLayout Grid.Row="0" Spacing="10" HorizontalOptions="FillAndExpand">
-                <Button Text="Refresh" 
-                        Command="{Binding LoadCoursesCommand}"
-                        HorizontalOptions="FillAndExpand" />
-                <Button Text="Logout"
-                        Command="{Binding LogoutCommand}"
-                        HorizontalOptions="FillAndExpand" />
-            </HorizontalStackLayout>
-
-            <!-- Courses List -->
-            <VerticalStackLayout Grid.Row="1" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="10" Padding="0">
-                <!-- Debug Label to show course count -->
-                <Label Text="{Binding Courses.Count, StringFormat='Total Courses: {0}'}"
-                       FontSize="14"
-                       TextColor="{StaticResource TextDark}"
-                       Margin="0,10,0,0" />
-
-                <!-- Using a ScrollView with a StackLayout for better rendering -->
-                <ScrollView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                    <VerticalStackLayout x:Name="CoursesContainer" Spacing="8" Padding="0">
-                        <!-- Courses will be dynamically added here -->
-                    </VerticalStackLayout>
-                </ScrollView>
+             Title="Mis Cursos"
+             BackgroundColor="{StaticResource PageBackground}">
+    <ScrollView>
+        <VerticalStackLayout Spacing="0">
+            <Border BackgroundColor="#F4A0C0"
+                    StrokeThickness="0" Padding="20,28,20,20">
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <Label Text="&#128105;&#8205;&#127979;" FontSize="36" HorizontalOptions="Center"/>
+                    <Label Text="Mis Cursos" FontSize="22" FontAttributes="Bold"
+                           TextColor="White" HorizontalOptions="Center"/>
+                    <Label Text="Gestiona tus cursos" FontSize="12"
+                           TextColor="White" Opacity="0.9" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+            <VerticalStackLayout Padding="16,16" Spacing="12">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Grid.Column="0" Text="&#8635; Actualizar"
+                            Command="{Binding LoadCoursesCommand}"
+                            Style="{StaticResource OutlineBtn}"/>
+                    <Button Grid.Column="1" Text="Cerrar sesi&#243;n"
+                            Command="{Binding LogoutCommand}"
+                            BackgroundColor="#6BAADD"
+                            TextColor="White" CornerRadius="16" Padding="0,12"/>
+                </Grid>
+                <Border BackgroundColor="#e0f8ee" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 14" Padding="12,10">
+                    <Label Text="{Binding Courses.Count, StringFormat='&#128218; Total de cursos: {0}'}"
+                           FontSize="14" FontAttributes="Bold"
+                           TextColor="{StaticResource PrimaryDark}"/>
+                </Border>
+                <VerticalStackLayout x:Name="CoursesContainer" Spacing="10"/>
             </VerticalStackLayout>
-        </Grid>
-    </Grid>
-
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
+

@@ -58,7 +58,7 @@
                                         TextColor="{StaticResource Gray400}"/>
                                 <Label Text="Ya asignado"
                                         FontSize="11"
-                                        TextColor="{StaticResource Teal}"
+                                        TextColor="{StaticResource PrimaryColor}"
                                        IsVisible="{Binding AlreadyAssigned}"/>
                             </VerticalStackLayout>
                             <CheckBox Grid.Column="1"
@@ -72,7 +72,7 @@
         <Button Grid.Row="3"
                 Text="Asignar a seleccionados"
                 Clicked="OnAssign"
-                BackgroundColor="{StaticResource Teal}"
+                BackgroundColor="{StaticResource PrimaryColor}"
                 TextColor="White"
                 CornerRadius="10"
                 Padding="0,14"

@@ -2,89 +2,72 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NotionFlow.App.Views.Teacher.ActivitiesPage"
-             Title="Actividades del Curso">
-    <Grid RowDefinitions="Auto,*"
-            RowSpacing="0">
-        <VerticalStackLayout Grid.Row="0"
-                Padding="20,16,20,8"
-                Spacing="4"
-                             BackgroundColor="{StaticResource Primary}">
-            <Label Text="{Binding CourseName}"
-                   FontSize="20"
-                    FontAttributes="Bold"
-                    TextColor="White"/>
-            <Label Text="Gestión de actividades"
-                   FontSize="13"
-                    TextColor="White"
-                    Opacity="0.85"/>
-        </VerticalStackLayout>
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="20"
-                    Spacing="12">
-                <Button Text="+ Nueva Actividad (Cuestionario)"
-                        Command="{Binding CreateActivityCommand}"
-                        BackgroundColor="{StaticResource Primary}"
-                        TextColor="White"
-                        CornerRadius="10"
-                        Padding="0,14"/>
-                <Button Text="↻ Actualizar"
-                        Command="{Binding LoadActivitiesCommand}"
-                        BackgroundColor="{StaticResource Gray200}"
-                        TextColor="{StaticResource TextDark}"
-                        CornerRadius="10"
-                        Padding="0,10"/>
-                <Label Text="Actividades creadas"
-                       FontSize="16"
-                        FontAttributes="Bold"
-                        Margin="0,8,0,0"/>
+             Title="Actividades"
+             BackgroundColor="{StaticResource PageBackground}">
+    <ScrollView>
+        <VerticalStackLayout Spacing="0">
+
+            <Border BackgroundColor="{StaticResource PrimaryColor}"
+                    StrokeThickness="0" Padding="20,28,20,20">
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <Label Text="&#127919;" FontSize="36" HorizontalOptions="Center"/>
+                    <Label Text="Actividades" FontSize="22" FontAttributes="Bold"
+                           TextColor="White" HorizontalOptions="Center"/>
+                    <Label Text="{Binding CourseName}" FontSize="12"
+                           TextColor="White" Opacity="0.9" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <VerticalStackLayout Padding="16,16" Spacing="12">
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Grid.Column="0" Text="&#43; Nueva Actividad"
+                            Command="{Binding CreateActivityCommand}"
+                            Style="{StaticResource PrimaryBtn}"/>
+                    <Button Grid.Column="1" Text="&#8635; Actualizar"
+                            Command="{Binding LoadActivitiesCommand}"
+                            Style="{StaticResource OutlineBtn}"/>
+                </Grid>
+
+                <Border BackgroundColor="#e0f8ee" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 14" Padding="12,10">
+                    <Label Text="&#127919; Actividades creadas" FontSize="14"
+                           FontAttributes="Bold" TextColor="{StaticResource PrimaryDark}"/>
+                </Border>
+
                 <CollectionView ItemsSource="{Binding Activities}"
-                                EmptyView="No hay actividades creadas aún.">
+                                EmptyView="No hay actividades creadas a&#250;n.">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Border Margin="0,6"
-                                    Padding="16"
-                                    StrokeThickness="1.5"
-                                    Stroke="{StaticResource Gray300}"
-                                    StrokeShape="RoundRectangle 12">
+                            <Border Style="{StaticResource KawaiiCard}" Margin="0,6"
+                                    StrokeShape="RoundRectangle 14">
                                 <VerticalStackLayout Spacing="6">
-                                    <Label Text="{Binding Title}"
-                                           FontAttributes="Bold"
-                                            FontSize="16"
-                                           TextColor="{StaticResource TextDark}"/>
-                                    <Label Text="{Binding Description}"
-                                           FontSize="13"
-                                            TextColor="{StaticResource Gray400}"/>
+                                    <Label Text="{Binding Title}" FontAttributes="Bold"
+                                           FontSize="15" TextColor="{StaticResource TextDark}"/>
+                                    <Label Text="{Binding Description}" FontSize="12"
+                                           TextColor="{StaticResource TextMuted}"/>
                                     <Label Text="{Binding PercentageValue, StringFormat='Valor: {0}%'}"
-                                           FontSize="13"/>
-                                    <Label Text="{Binding DueDate, StringFormat='Fecha límite: {0:dd/MM/yyyy}'}"
-                                           FontSize="13"
-                                            TextColor="{StaticResource Gray400}"/>
+                                           FontSize="12" TextColor="{StaticResource PrimaryDark}"/>
+                                    <Label Text="{Binding DueDate, StringFormat='Fecha l&#237;mite: {0:dd/MM/yyyy}'}"
+                                           FontSize="12" TextColor="{StaticResource TextMuted}"/>
                                     <Label Text="{Binding Questions.Count, StringFormat='Preguntas: {0}'}"
-                                           FontSize="12"
-                                            TextColor="{StaticResource Primary}"/>
-                                    <HorizontalStackLayout Spacing="8"
-                                            Margin="0,8,0,0">
-                                        <Button Text="✏ Editar"
-                                                FontSize="12"
-                                                Padding="12,8"
-                                                CornerRadius="8"
-                                                BackgroundColor="{StaticResource Primary}"
+                                           FontSize="11" TextColor="{StaticResource PrimaryColor}"/>
+                                    <HorizontalStackLayout Spacing="8" Margin="0,4,0,0">
+                                        <Button Text="&#9999; Editar" FontSize="12"
+                                                Padding="12,8" CornerRadius="10"
+                                                BackgroundColor="{StaticResource PrimaryColor}"
                                                 TextColor="White"
                                                 CommandParameter="{Binding .}"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditActivityCommand}"/>
-                                        <Button Text="👤 Asignar"
-                                                FontSize="12"
-                                                Padding="12,8"
-                                                CornerRadius="8"
-                                                BackgroundColor="{StaticResource Teal}"
+                                        <Button Text="&#128101; Asignar" FontSize="12"
+                                                Padding="12,8" CornerRadius="10"
+                                                BackgroundColor="{StaticResource AccentLavender}"
                                                 TextColor="White"
                                                 CommandParameter="{Binding .}"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AssignActivityCommand}"/>
-                                        <Button Text="🗑 Eliminar"
-                                                FontSize="12"
-                                                Padding="12,8"
-                                                CornerRadius="8"
-                                                BackgroundColor="#E53935"
+                                        <Button Text="&#128465; Eliminar" FontSize="12"
+                                                Padding="12,8" CornerRadius="10"
+                                                BackgroundColor="{StaticResource AccentPink}"
                                                 TextColor="White"
                                                 CommandParameter="{Binding .}"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteActivityCommand}"/>
@@ -94,7 +77,8 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
             </VerticalStackLayout>
-        </ScrollView>
-    </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

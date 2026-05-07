@@ -2,53 +2,78 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NotionFlow.App.Views.Admin.CreateCoursePage"
-             Title="Crear Curso">
-
+             Title="Nuevo Curso"
+             BackgroundColor="{StaticResource PageBackground}">
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+        <VerticalStackLayout Spacing="0">
 
-            <Label Text="Nuevo Curso"
-                   FontSize="22" FontAttributes="Bold"
-                   HorizontalOptions="Center" />
+            <Border BackgroundColor="{StaticResource AccentYellow}"
+                    StrokeThickness="0" Padding="20,28,20,20">
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <Label Text="&#128218;" FontSize="36" HorizontalOptions="Center"/>
+                    <Label Text="Nuevo Curso" FontSize="22" FontAttributes="Bold"
+                           TextColor="White" HorizontalOptions="Center"/>
+                    <Label Text="&#161;Completa la informaci&#243;n!" FontSize="12"
+                           TextColor="White" Opacity="0.9" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
 
-            <Entry Placeholder="Nombre del curso"
-                   Text="{Binding CourseName}" />
+            <VerticalStackLayout Padding="16,16" Spacing="12">
+                <Border Style="{StaticResource KawaiiCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="&#128221; Nombre del curso" FontSize="12"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Entry Placeholder="Ej: Matem&#225;ticas Avanzadas"
+                               Text="{Binding CourseName}"/>
+                        <Label Text="&#127919; Materia" FontSize="12"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Entry Placeholder="Ej: &#193;lgebra"
+                               Text="{Binding CourseSubject}"/>
+                        <Label Text="&#128172; Descripci&#243;n" FontSize="12"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Entry Placeholder="Descripci&#243;n del curso"
+                               Text="{Binding CourseDescription}"/>
+                        <Label Text="&#128105;&#8205;&#127979; Profesor asignado" FontSize="12"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Picker Title="Selecciona un profesor"
+                                ItemsSource="{Binding Teachers}"
+                                ItemDisplayBinding="{Binding Name}"
+                                SelectedItem="{Binding SelectedTeacher}"/>
+                        <Button Text="&#127881; Crear Curso"
+                                Command="{Binding CreateCourseCommand}"
+                                Style="{StaticResource PrimaryBtn}"
+                                Margin="0,6,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
 
-            <Entry Placeholder="Materia"
-                   Text="{Binding CourseSubject}" />
+                <Border BackgroundColor="#e0f8ee" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 14" Padding="2">
+                    <Label Text="&#127891; Asignar Estudiante a Curso" FontSize="14"
+                           FontAttributes="Bold" TextColor="{StaticResource PrimaryDark}"
+                           Padding="12,10"/>
+                </Border>
 
-            <Entry Placeholder="Descripción del curso"
-                   Text="{Binding CourseDescription}" />
-
-            <Label Text="Selecciona Profesor" TextColor="Gray" FontSize="13" />
-
-            <Picker Title="Profesor"
-                    ItemsSource="{Binding Teachers}"
-                    ItemDisplayBinding="{Binding Name}"
-                    SelectedItem="{Binding SelectedTeacher}" />
-
-            <Button Text="Crear Curso"
-                    Command="{Binding CreateCourseCommand}" />
-
-            <BoxView HeightRequest="1" Color="LightGray" Margin="0,10" />
-
-            <Label Text="Asignar Estudiante a Curso"
-                   FontSize="18" FontAttributes="Bold" />
-
-            <Picker Title="Estudiante"
-                    ItemsSource="{Binding Students}"
-                    ItemDisplayBinding="{Binding Name}"
-                    SelectedItem="{Binding SelectedStudent}" />
-
-            <Picker Title="Curso"
-                    ItemsSource="{Binding Courses}"
-                    ItemDisplayBinding="{Binding Name}"
-                    SelectedItem="{Binding SelectedCourse}" />
-
-            <Button Text="Asignar Estudiante"
-                    Command="{Binding AssignStudentCommand}" />
-
+                <Border Style="{StaticResource KawaiiCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="&#127891; Estudiante" FontSize="12"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Picker Title="Selecciona un estudiante"
+                                ItemsSource="{Binding Students}"
+                                ItemDisplayBinding="{Binding Name}"
+                                SelectedItem="{Binding SelectedStudent}"/>
+                        <Label Text="&#128218; Curso" FontSize="12"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Picker Title="Selecciona un curso"
+                                ItemsSource="{Binding Courses}"
+                                ItemDisplayBinding="{Binding Name}"
+                                SelectedItem="{Binding SelectedCourse}"/>
+                        <Button Text="&#10024; Asignar Estudiante"
+                                Command="{Binding AssignStudentCommand}"
+                                Style="{StaticResource PrimaryBtn}"
+                                Margin="0,6,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>

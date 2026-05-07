@@ -2,143 +2,169 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NotionFlow.App.Views.Course.CoursePage"
-             Title="{Binding CourseName}">
-
+             Title="{Binding CourseName}"
+             BackgroundColor="{StaticResource PageBackground}">
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+        <VerticalStackLayout Spacing="0">
 
-            <Label Text="{Binding CourseName}"
-                   FontSize="22" FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
+            <Border BackgroundColor="{StaticResource PrimaryColor}"
+                    StrokeThickness="0" Padding="20,28,20,20">
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <Label Text="&#128216;" FontSize="36" HorizontalOptions="Center"/>
+                    <Label Text="{Binding CourseName}" FontSize="20" FontAttributes="Bold"
+                           TextColor="White" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
 
-            <!-- Botón + solo para profesor -->
-            <Button Text="+"
-                    FontSize="24"
-                    Command="{Binding ShowOptionsCommand}"
-                    IsVisible="{Binding IsTeacher}"
-                    HorizontalOptions="End"
-                    WidthRequest="50"
-                    HeightRequest="50"/>
+            <VerticalStackLayout Padding="16,16" Spacing="12">
 
-            <!-- Evaluaciones -->
-            <Label Text="Evaluaciones" FontSize="18" FontAttributes="Bold"/>
+                <Button Text="&#43; Nueva actividad"
+                        Command="{Binding ShowOptionsCommand}"
+                        IsVisible="{Binding IsTeacher}"
+                        BackgroundColor="{StaticResource AccentLavender}"
+                        TextColor="White" CornerRadius="16"
+                        HorizontalOptions="End" Padding="16,8"/>
 
-            <CollectionView ItemsSource="{Binding Evaluations}"
-                            EmptyView="Sin evaluaciones.">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="0,4" Padding="12"
-                                StrokeThickness="1" Stroke="LightGray"
-                                StrokeShape="RoundRectangle 8">
-                            <VerticalStackLayout>
-                                <Label Text="{Binding Title}" FontAttributes="Bold"/>
-                                <Label Text="{Binding Description}" FontSize="13" TextColor="Gray"/>
-                                <Label Text="{Binding PercentageValue, StringFormat='Valor: {0}%'}" FontSize="13"/>
-                            </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <!-- Contenidos -->
-            <Label Text="Contenidos" FontSize="18" FontAttributes="Bold"/>
-
-            <CollectionView ItemsSource="{Binding Contents}"
-                            EmptyView="Sin contenidos.">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="0,4" Padding="12"
-                                StrokeThickness="1" Stroke="LightGray"
-                                StrokeShape="RoundRectangle 8">
-                            <VerticalStackLayout>
-                                <Label Text="{Binding Title}" FontAttributes="Bold"/>
-                                <Label Text="{Binding Description}" FontSize="13" TextColor="Gray"/>
-                                <Label Text="{Binding Type}" FontSize="12" TextColor="Blue"/>
-                            </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <!-- Actividades -->
-            <Label Text="Actividades (Cuestionarios)" FontSize="18" FontAttributes="Bold"/>
-
-            <CollectionView ItemsSource="{Binding Activities}"
-                            EmptyView="Sin actividades asignadas.">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="0,4" Padding="12"
-                                StrokeThickness="1" Stroke="LightGray"
-                                StrokeShape="RoundRectangle 8">
-                            <VerticalStackLayout Spacing="4">
-                                <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="15"/>
-                                <Label Text="{Binding Description}" FontSize="13" TextColor="Gray"/>
-                                <Label Text="{Binding PercentageValue, StringFormat='Valor: {0}%'}" FontSize="13"/>
-                                <Label Text="{Binding DueDate, StringFormat='Entrega: {0:dd/MM/yyyy}'}" FontSize="13" TextColor="Gray"/>
-                                <Label Text="{Binding Questions.Count, StringFormat='Preguntas: {0}'}" FontSize="12" TextColor="Blue"/>
-                                <!-- Botones para Profesor -->
-                                <HorizontalStackLayout Spacing="8" Margin="0,6,0,0"
-                                    IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsTeacher}">
-                                    <Button Text="✏ Editar"
-                                            FontSize="12" Padding="10,6" CornerRadius="8"
-                                            BackgroundColor="{StaticResource Primary}" TextColor="White"
-                                            CommandParameter="{Binding .}"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditActivityCommand}"/>
-                                    <Button Text="📊 Resultados"
-                                            FontSize="12" Padding="10,6" CornerRadius="8"
-                                            BackgroundColor="{StaticResource Teal}" TextColor="White"
-                                            CommandParameter="{Binding .}"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewResultsCommand}"/>
-                                    <Button Text="🗑 Eliminar"
-                                            FontSize="12" Padding="10,6" CornerRadius="8"
-                                            BackgroundColor="#E53935" TextColor="White"
-                                            CommandParameter="{Binding .}"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteActivityCommand}"/>
-                                </HorizontalStackLayout>
-                                <!-- Botón para Estudiante -->
-                                <Button Text="📝 Responder actividad"
-                                        FontSize="12" Padding="10,6" CornerRadius="8"
-                                        BackgroundColor="{StaticResource Teal}" TextColor="White"
-                                        CommandParameter="{Binding .}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.TakeActivityCommand}"
-                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsStudent}"
-                                        HorizontalOptions="Start"
-                                        Margin="0,6,0,0"/>
-                            </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <!-- Lista estudiantes (solo profesor) -->
-            <Label Text="Estudiantes del curso"
-                   FontSize="18" FontAttributes="Bold"
-                   IsVisible="{Binding IsTeacher}"/>
-
-            <CollectionView ItemsSource="{Binding Students}"
-                            IsVisible="{Binding IsTeacher}"
-                            EmptyView="Sin estudiantes.">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="0,4" Padding="12"
-                                StrokeThickness="1" Stroke="LightGray"
-                                StrokeShape="RoundRectangle 8">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <VerticalStackLayout Grid.Column="0">
-                                    <Label Text="{Binding Name}" FontAttributes="Bold"/>
-                                    <Label Text="{Binding Email}" FontSize="13" TextColor="Gray"/>
+                <Border BackgroundColor="#fff5d0" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 14" Padding="12,10">
+                    <Label Text="&#128221; Evaluaciones" FontSize="14"
+                           FontAttributes="Bold" TextColor="{StaticResource PrimaryDark}"/>
+                </Border>
+                <CollectionView ItemsSource="{Binding Evaluations}" EmptyView="Sin evaluaciones.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource KawaiiCard}" Margin="0,4"
+                                    StrokeShape="RoundRectangle 12">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding Title}" FontAttributes="Bold"
+                                           FontSize="14" TextColor="{StaticResource TextDark}"/>
+                                    <Label Text="{Binding Description}" FontSize="12"
+                                           TextColor="{StaticResource TextMuted}"/>
+                                    <Label Text="{Binding PercentageValue, StringFormat='Valor: {0}%'}"
+                                           FontSize="12" TextColor="{StaticResource PrimaryDark}"/>
                                 </VerticalStackLayout>
-                                <Button Grid.Column="1"
-                                        Text="Ver perfil"
-                                        CommandParameter="{Binding .}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewStudentProfileCommand}"/>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
+                <Border BackgroundColor="#f3e0ff" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 14" Padding="12,10">
+                    <Label Text="&#128206; Contenidos" FontSize="14"
+                           FontAttributes="Bold" TextColor="{StaticResource PrimaryDark}"/>
+                </Border>
+                <CollectionView ItemsSource="{Binding Contents}" EmptyView="Sin contenidos.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource KawaiiCard}" Margin="0,4"
+                                    StrokeShape="RoundRectangle 12">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding Title}" FontAttributes="Bold"
+                                           FontSize="14" TextColor="{StaticResource TextDark}"/>
+                                    <Label Text="{Binding Description}" FontSize="12"
+                                           TextColor="{StaticResource TextMuted}"/>
+                                    <Label Text="{Binding Type}" FontSize="11"
+                                           TextColor="{StaticResource PrimaryColor}"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Border BackgroundColor="#e0f8ee" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 14" Padding="12,10">
+                    <Label Text="&#127919; Actividades" FontSize="14"
+                           FontAttributes="Bold" TextColor="{StaticResource PrimaryDark}"/>
+                </Border>
+                <CollectionView ItemsSource="{Binding Activities}" EmptyView="Sin actividades.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource KawaiiCard}" Margin="0,4"
+                                    StrokeShape="RoundRectangle 12">
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="{Binding Title}" FontAttributes="Bold"
+                                           FontSize="14" TextColor="{StaticResource TextDark}"/>
+                                    <Label Text="{Binding Description}" FontSize="12"
+                                           TextColor="{StaticResource TextMuted}"/>
+                                    <Label Text="{Binding PercentageValue, StringFormat='Valor: {0}%'}"
+                                           FontSize="12" TextColor="{StaticResource PrimaryDark}"/>
+                                    <Label Text="{Binding DueDate, StringFormat='Entrega: {0:dd/MM/yyyy}'}"
+                                           FontSize="12" TextColor="{StaticResource TextMuted}"/>
+                                    <HorizontalStackLayout Spacing="8" Margin="0,4,0,0"
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsTeacher}">
+                                        <Button Text="&#9999; Editar" FontSize="12" Padding="12,8"
+                                                CornerRadius="10"
+                                                BackgroundColor="{StaticResource PrimaryColor}"
+                                                TextColor="White"
+                                                CommandParameter="{Binding .}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditActivityCommand}"/>
+                                        <Button Text="&#128202; Resultados" FontSize="12" Padding="12,8"
+                                                CornerRadius="10"
+                                                BackgroundColor="{StaticResource AccentLavender}"
+                                                TextColor="White"
+                                                CommandParameter="{Binding .}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewResultsCommand}"/>
+                                        <Button Text="&#128465; Eliminar" FontSize="12" Padding="12,8"
+                                                CornerRadius="10"
+                                                BackgroundColor="{StaticResource AccentPink}"
+                                                TextColor="White"
+                                                CommandParameter="{Binding .}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteActivityCommand}"/>
+                                    </HorizontalStackLayout>
+                                    <Button Text="&#128221; Responder actividad"
+                                            FontSize="12" Padding="12,8" CornerRadius="10"
+                                            BackgroundColor="{StaticResource PrimaryColor}"
+                                            TextColor="White"
+                                            CommandParameter="{Binding .}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.TakeActivityCommand}"
+                                            IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsStudent}"
+                                            HorizontalOptions="Start" Margin="0,4,0,0"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Border BackgroundColor="#ddeeff" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 14" Padding="12,10"
+                        IsVisible="{Binding IsTeacher}">
+                    <Label Text="&#128101; Estudiantes" FontSize="14"
+                           FontAttributes="Bold" TextColor="#2266aa"/>
+                </Border>
+                <CollectionView ItemsSource="{Binding Students}"
+                                IsVisible="{Binding IsTeacher}"
+                                EmptyView="Sin estudiantes.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource KawaiiCard}" Margin="0,4"
+                                    StrokeShape="RoundRectangle 12">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <Border Grid.Column="0" BackgroundColor="#ffe0ec"
+                                            StrokeThickness="0" StrokeShape="RoundRectangle 20"
+                                            WidthRequest="38" HeightRequest="38">
+                                        <Label Text="&#127891;" FontSize="18"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center"/>
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                        <Label Text="{Binding Name}" FontAttributes="Bold"
+                                               FontSize="13" TextColor="{StaticResource TextDark}"/>
+                                        <Label Text="{Binding Email}" FontSize="11"
+                                               TextColor="{StaticResource TextMuted}"/>
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="2" Text="Ver"
+                                            CommandParameter="{Binding .}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewStudentProfileCommand}"
+                                            BackgroundColor="#6BAADD"
+                                            TextColor="White" CornerRadius="10"
+                                            Padding="10,6" FontSize="11"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>

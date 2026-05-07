@@ -2,30 +2,44 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NotionFlow.App.Views.Admin.CreateStudentPage"
-             Title="Create Student">
-
+             Title="Nuevo Estudiante"
+             BackgroundColor="{StaticResource PageBackground}">
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15" VerticalOptions="Center">
+        <VerticalStackLayout Spacing="0">
 
-            <Label Text="New Student"
-                   FontSize="22" FontAttributes="Bold"
-                   HorizontalOptions="Center" />
+            <Border BackgroundColor="{StaticResource AccentPink}"
+                    StrokeThickness="0" Padding="20,28,20,20">
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <Label Text="&#127891;" FontSize="36" HorizontalOptions="Center"/>
+                    <Label Text="Nuevo Estudiante" FontSize="22" FontAttributes="Bold"
+                           TextColor="White" HorizontalOptions="Center"/>
+                    <Label Text="&#161;Agrega un nuevo alumno!" FontSize="12"
+                           TextColor="White" Opacity="0.9" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
 
-            <Entry Placeholder="Full name"
-                   Text="{Binding StudentName}" />
-
-            <Entry Placeholder="Email"
-                   Text="{Binding StudentEmail}"
-                   Keyboard="Email" />
-
-            <Entry Placeholder="Password"
-                   Text="{Binding StudentPassword}"
-                   IsPassword="True" />
-
-            <Button Text="Create Student"
-                    Command="{Binding CreateStudentCommand}" />
-
+            <VerticalStackLayout Padding="16,16" Spacing="12">
+                <Border Style="{StaticResource KawaiiCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="&#128522; Nombre completo" FontSize="12"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Entry Placeholder="Nombre y apellido"
+                               Text="{Binding StudentName}"/>
+                        <Label Text="&#128231; Correo electr&#243;nico" FontSize="12"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Entry Placeholder="correo@ejemplo.com"
+                               Text="{Binding StudentEmail}" Keyboard="Email"/>
+                        <Label Text="&#128274; Contrase&#241;a" FontSize="12"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Entry Placeholder="Contrase&#241;a segura"
+                               Text="{Binding StudentPassword}" IsPassword="True"/>
+                        <Button Text="&#127881; Crear Estudiante"
+                                Command="{Binding CreateStudentCommand}"
+                                Style="{StaticResource PrimaryBtn}"
+                                Margin="0,6,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>

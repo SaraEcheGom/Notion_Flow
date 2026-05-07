@@ -544,6 +544,40 @@ namespace NotionFlow.Api.Migrations
                     b.ToTable("InstitutionAdministrators");
                 });
 
+            modelBuilder.Entity("NotionFlow.Api.Models.StudentAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssignmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SelectedOptionIds")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("TextAnswer")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignmentId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("StudentAnswers");
+                });
+
             modelBuilder.Entity("NotionFlow.Api.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -821,6 +855,25 @@ namespace NotionFlow.Api.Migrations
                     b.Navigation("Institution");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("NotionFlow.Api.Models.StudentAnswer", b =>
+                {
+                    b.HasOne("NotionFlow.Api.Models.ActivityAssignment", "Assignment")
+                        .WithMany()
+                        .HasForeignKey("AssignmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NotionFlow.Api.Models.ActivityQuestion", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Assignment");
+
+                    b.Navigation("Question");
                 });
 
             modelBuilder.Entity("NotionFlow.Api.Models.User", b =>

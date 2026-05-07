@@ -38,7 +38,7 @@ public partial class TakeActivityPage : ContentPage
         }
     }
 
-    private async void OnSubmit(object sender, EventArgs e)
+    private async void OnSubmit(object? sender, EventArgs e)
     {
         if (_submitted) return;
 

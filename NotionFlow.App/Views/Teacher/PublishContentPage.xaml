@@ -2,53 +2,59 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NotionFlow.App.Views.Teacher.PublishContentPage"
-             Title="Publish Content">
-
+             Title="Publicar Contenido"
+             BackgroundColor="{StaticResource PageBackground}">
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15" VerticalOptions="Center">
+        <VerticalStackLayout Spacing="0">
 
-            <Label Text="New Content"
-                   FontSize="22" FontAttributes="Bold"
-                   HorizontalOptions="Center" />
+            <Border BackgroundColor="{StaticResource AccentLavender}"
+                    StrokeThickness="0" Padding="20,28,20,20">
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <Label Text="&#128206;" FontSize="36" HorizontalOptions="Center"/>
+                    <Label Text="Nuevo Contenido" FontSize="22" FontAttributes="Bold"
+                           TextColor="White" HorizontalOptions="Center"/>
+                    <Label Text="&#161;Comparte material con tus alumnos!" FontSize="12"
+                           TextColor="White" Opacity="0.9" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
 
-            <Label Text="Title"
-                   FontSize="14" FontAttributes="Bold" />
-            <Entry x:Name="TitleEntry"
-                   Placeholder="Content title"
-                   Keyboard="Default" />
-
-            <Label Text="Description"
-                   FontSize="14" FontAttributes="Bold" />
-            <Editor x:Name="DescriptionEntry"
-                    Placeholder="Content description"
-                    HeightRequest="100" />
-
-            <Label Text="Content Type"
-                   FontSize="14" FontAttributes="Bold" />
-            <Picker x:Name="TypePicker"
-                    Title="Select content type">
-                <Picker.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                        <x:String>Video</x:String>
-                        <x:String>Document</x:String>
-                        <x:String>Image</x:String>
-                        <x:String>Link</x:String>
-                        <x:String>Other</x:String>
-                    </x:Array>
-                </Picker.ItemsSource>
-            </Picker>
-
-            <Label Text="URL or Path"
-                   FontSize="14" FontAttributes="Bold" />
-            <Entry x:Name="UrlEntry"
-                   Placeholder="https://example.com/resource"
-                   Keyboard="Url" />
-
-            <Button Text="Publish Content"
-                    Clicked="OnPublish"
-                    Margin="0,20,0,0" />
-
+            <VerticalStackLayout Padding="16,16" Spacing="12">
+                <Border Style="{StaticResource KawaiiCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="&#128221; T&#237;tulo" FontSize="12"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Entry x:Name="TitleEntry"
+                               Placeholder="T&#237;tulo del contenido"/>
+                        <Label Text="&#128172; Descripci&#243;n" FontSize="12"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Editor x:Name="DescriptionEntry"
+                                Placeholder="Descripci&#243;n del contenido"
+                                HeightRequest="100"/>
+                        <Label Text="&#127919; Tipo de contenido" FontSize="12"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Picker x:Name="TypePicker" Title="Selecciona el tipo">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Video</x:String>
+                                    <x:String>Documento</x:String>
+                                    <x:String>Imagen</x:String>
+                                    <x:String>Enlace</x:String>
+                                    <x:String>Otro</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                        <Label Text="&#127760; URL o ruta" FontSize="12"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Entry x:Name="UrlEntry"
+                               Placeholder="https://ejemplo.com/recurso"
+                               Keyboard="Url"/>
+                        <Button Text="&#127881; Publicar contenido"
+                                Clicked="OnPublish"
+                                Style="{StaticResource PrimaryBtn}"
+                                Margin="0,6,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>

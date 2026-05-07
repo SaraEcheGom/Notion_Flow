@@ -3,123 +3,201 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:NotionFlow.App.Controls"
              x:Class="NotionFlow.App.Views.Admin.AdminPage"
-             Title="Panel Admin">
-
+             Title="Panel Admin"
+             BackgroundColor="{StaticResource PageBackground}">
     <ScrollView>
-        <VerticalStackLayout Padding="0" Spacing="15">
-
-            <controls:PageHeaderComponent x:Name="AdminHeader" />
-
-            <VerticalStackLayout Padding="20" Spacing="15">
-
-            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
-                <Button Grid.Column="0" Grid.Row="0"
-                        Text="+ Crear Curso"
-                        Command="{Binding GoToCreateCourseCommand}" />
-                <Button Grid.Column="1" Grid.Row="0"
-                        Text="+ Crear Profesor"
-                        Command="{Binding GoToCreateTeacherCommand}" />
-                <Button Grid.Column="0" Grid.Row="1"
-                        Text="+ Crear Estudiante"
-                        Command="{Binding GoToCreateStudentCommand}" />
-                <Button Grid.Column="1" Grid.Row="1"
-                        Text="Cerrar Sesión"
-                        Command="{Binding LogoutCommand}" />
-            </Grid>
-
-            <!-- Cursos -->
-            <Label Text="Cursos activos"
-                   FontSize="18" FontAttributes="Bold"
-                   Margin="0,10,0,0" />
-
-            <CollectionView ItemsSource="{Binding Courses}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="0,5" Padding="15"
-                                StrokeThickness="1" Stroke="{StaticResource Gray300}"
-                                StrokeShape="RoundRectangle 8">
-                            <Grid ColumnDefinitions="*,Auto" RowSpacing="4">
-                                <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                    <Label Text="{Binding Name}"
-                                           FontAttributes="Bold"
-                                           FontSize="16" />
-                                    <Label Text="{Binding Subject}"
-                                           FontSize="13" TextColor="{StaticResource Gray400}" />
-                                    <Label Text="{Binding TeacherName, StringFormat='Teacher: {0}'}"
-                                           FontSize="13" TextColor="{StaticResource Gray400}" />
-                                    <Label Text="{Binding Students.Count, StringFormat='Students: {0}'}"
-                                           FontSize="13" TextColor="{StaticResource Gray400}" />
+        <VerticalStackLayout Spacing="0">
+            <Border BackgroundColor="{StaticResource AccentLavender}"
+                    StrokeThickness="0" Padding="20,28,20,20">
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <Label Text="&#128075;" FontSize="36" HorizontalOptions="Center"/>
+                    <Label Text="&#161;Hola, Admin!" FontSize="22" FontAttributes="Bold"
+                           TextColor="White" HorizontalOptions="Center"/>
+                    <Label Text="Gestiona tu plataforma" FontSize="12"
+                           TextColor="White" Opacity="0.9" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+            <VerticalStackLayout Padding="16,16" Spacing="14">
+                <Border Style="{StaticResource KawaiiCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="&#10022; Acciones r&#225;pidas" FontSize="13"
+                               FontAttributes="Bold" TextColor="{StaticResource TextMuted}"/>
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
+                              ColumnSpacing="8" RowSpacing="8">
+                            <Border Grid.Column="0" Grid.Row="0"
+                                    BackgroundColor="#6BAADD"
+                                    StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="10">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding GoToCreateCourseCommand}"/>
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="&#128218;" FontSize="18"/>
+                                    <Label Text="Crear Curso" FontSize="11" FontAttributes="Bold" TextColor="White"/>
+                                    <Label Text="Nuevo curso" FontSize="9" TextColor="White" Opacity="0.85"/>
                                 </VerticalStackLayout>
-                                <Button Grid.Column="1" Grid.Row="0"
-                                        Text="View"
-                                        CommandParameter="{Binding .}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewCourseDetailsCommand}"
-                                        Padding="5"
-                                        FontSize="12" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <!-- Profesores -->
-            <Label Text="Profesores"
-                   FontSize="18" FontAttributes="Bold"
-                   Margin="0,10,0,0" />
-
-            <CollectionView ItemsSource="{Binding Teachers}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="0,4" Padding="12"
-                                StrokeThickness="1" Stroke="{StaticResource Gray300}"
-                                StrokeShape="RoundRectangle 8">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                    <Label Text="{Binding Name}"
-                                           FontAttributes="Bold" />
-                                    <Label Text="{Binding Email}"
-                                           FontSize="13" TextColor="{StaticResource Gray400}" />
+                            </Border>
+                            <Border Grid.Column="1" Grid.Row="0"
+                                    BackgroundColor="{StaticResource AccentPink}"
+                                    StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="10">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding GoToCreateTeacherCommand}"/>
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="&#128105;&#8205;&#127979;" FontSize="18"/>
+                                    <Label Text="Crear Profesor" FontSize="11" FontAttributes="Bold" TextColor="White"/>
+                                    <Label Text="Registrar" FontSize="9" TextColor="White" Opacity="0.85"/>
                                 </VerticalStackLayout>
-                                <Button Grid.Column="1"
-                                        Text="Ver perfil"
-                                        CommandParameter="{Binding .}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewProfileCommand}" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <!-- Estudiantes -->
-            <Label Text="Estudiantes"
-                   FontSize="18" FontAttributes="Bold"
-                   Margin="0,10,0,0" />
-
-            <CollectionView ItemsSource="{Binding Students}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="0,4" Padding="12"
-                                StrokeThickness="1" Stroke="{StaticResource Gray300}"
-                                StrokeShape="RoundRectangle 8">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                    <Label Text="{Binding Name}"
-                                           FontAttributes="Bold" />
-                                    <Label Text="{Binding Email}"
-                                           FontSize="13" TextColor="{StaticResource Gray400}" />
+                            </Border>
+                            <Border Grid.Column="0" Grid.Row="1"
+                                    BackgroundColor="{StaticResource AccentYellow}"
+                                    StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="10">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding GoToCreateStudentCommand}"/>
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="&#127891;" FontSize="18"/>
+                                    <Label Text="Crear Estudiante" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource TextDark}"/>
+                                    <Label Text="Agregar" FontSize="9" TextColor="{StaticResource TextDark}" Opacity="0.75"/>
                                 </VerticalStackLayout>
-                                <Button Grid.Column="1"
-                                        Text="Ver perfil"
-                                        CommandParameter="{Binding .}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewProfileCommand}" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
+                            </Border>
+                            <Border Grid.Column="1" Grid.Row="1"
+                                    BackgroundColor="#5BBF8A" StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="10">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding LogoutCommand}"/>
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="&#128682;" FontSize="18"/>
+                                    <Label Text="Cerrar Sesi&#243;n" FontSize="11" FontAttributes="Bold" TextColor="White"/>
+                                    <Label Text="Salir" FontSize="9" TextColor="White"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <Border Grid.Column="0" BackgroundColor="#e0f8ee"
+                            StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="8">
+                        <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                            <Label Text="{Binding Courses.Count}" FontSize="20" FontAttributes="Bold"
+                                   TextColor="{StaticResource PrimaryDark}" HorizontalOptions="Center"/>
+                            <Label Text="&#128218; Cursos" FontSize="10"
+                                   TextColor="{StaticResource TextMuted}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" BackgroundColor="#fff5d0"
+                            StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="8">
+                        <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                            <Label Text="{Binding Teachers.Count}" FontSize="20" FontAttributes="Bold"
+                                   TextColor="#8a6800" HorizontalOptions="Center"/>
+                            <Label Text="&#128105;&#8205;&#127979; Profes" FontSize="10"
+                                   TextColor="{StaticResource TextMuted}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2" BackgroundColor="#f3e0ff"
+                            StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="8">
+                        <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                            <Label Text="{Binding Students.Count}" FontSize="20" FontAttributes="Bold"
+                                   TextColor="#6b2fa8" HorizontalOptions="Center"/>
+                            <Label Text="&#127891; Estud." FontSize="10"
+                                   TextColor="{StaticResource TextMuted}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+                <Label Text="&#128218; Cursos activos" FontSize="15" FontAttributes="Bold"
+                       TextColor="{StaticResource PrimaryDark}"/>
+                <CollectionView ItemsSource="{Binding Courses}" EmptyView="Sin cursos activos.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource KawaiiCard}" Margin="0,4"
+                                    StrokeShape="RoundRectangle 12">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding Name}" FontAttributes="Bold"
+                                               FontSize="14" TextColor="{StaticResource TextDark}"/>
+                                        <Label Text="{Binding Subject}" FontSize="12"
+                                               TextColor="{StaticResource TextMuted}"/>
+                                        <Label Text="{Binding TeacherName, StringFormat='&#128105;&#8205;&#127979; {0}'}"
+                                               FontSize="12" TextColor="{StaticResource TextMuted}"/>
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="1" Text="Ver"
+                                            CommandParameter="{Binding .}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewCourseDetailsCommand}"
+                                            BackgroundColor="{StaticResource AccentLavender}"
+                                            TextColor="White" CornerRadius="10"
+                                            Padding="12,6" FontSize="12"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <Label Text="&#128105;&#8205;&#127979; Profesores" FontSize="15" FontAttributes="Bold"
+                       TextColor="{StaticResource PrimaryDark}" Margin="0,8,0,0"/>
+                <CollectionView ItemsSource="{Binding Teachers}" EmptyView="Sin profesores.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource KawaiiCard}" Margin="0,4"
+                                    StrokeShape="RoundRectangle 12">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <Border Grid.Column="0" BackgroundColor="#ddeeff" StrokeThickness="0" StrokeShape="RoundRectangle 20"
+                                            WidthRequest="38" HeightRequest="38">
+                                        <Label Text="&#128105;" FontSize="18"
+                                               HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                        <Label Text="{Binding Name}" FontAttributes="Bold"
+                                               FontSize="13" TextColor="{StaticResource TextDark}"/>
+                                        <Label Text="{Binding Email}" FontSize="11"
+                                               TextColor="{StaticResource TextMuted}"/>
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="2" Text="Ver perfil"
+                                            CommandParameter="{Binding .}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewProfileCommand}"
+                                            BackgroundColor="#6BAADD"
+                                            TextColor="White" CornerRadius="10"
+                                            Padding="10,6" FontSize="11"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <Label Text="&#127891; Estudiantes" FontSize="15" FontAttributes="Bold"
+                       TextColor="{StaticResource PrimaryDark}" Margin="0,8,0,0"/>
+                <CollectionView ItemsSource="{Binding Students}" EmptyView="Sin estudiantes.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource KawaiiCard}" Margin="0,4"
+                                    StrokeShape="RoundRectangle 12">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <Border Grid.Column="0" BackgroundColor="#ffe0ec"
+                                            StrokeThickness="0" StrokeShape="RoundRectangle 20"
+                                            WidthRequest="38" HeightRequest="38">
+                                        <Label Text="&#127891;" FontSize="18"
+                                               HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                        <Label Text="{Binding Name}" FontAttributes="Bold"
+                                               FontSize="13" TextColor="{StaticResource TextDark}"/>
+                                        <Label Text="{Binding Email}" FontSize="11"
+                                               TextColor="{StaticResource TextMuted}"/>
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="2" Text="Ver perfil"
+                                            CommandParameter="{Binding .}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewProfileCommand}"
+                                            BackgroundColor="#6BAADD"
+                                            TextColor="White" CornerRadius="10"
+                                            Padding="10,6" FontSize="11"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>
+
+
+
+
+
+
