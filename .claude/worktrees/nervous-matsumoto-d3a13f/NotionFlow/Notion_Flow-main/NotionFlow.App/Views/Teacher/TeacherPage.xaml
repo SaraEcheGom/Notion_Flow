@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:NotionFlow.App.Controls"
+             x:Class="NotionFlow.App.Views.Teacher.TeacherPage"
+             Title="My Courses">
+
+    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+        <!-- Header Component -->
+        <controls:PageHeaderComponent Grid.Row="0"
+                                     Title="My Courses"
+                                     Subtitle="Manage your courses" />
+
+        <!-- Content Section -->
+        <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="15">
+            <!-- Action Buttons -->
+            <HorizontalStackLayout Spacing="10" HorizontalOptions="FillAndExpand">
+                <Button Text="Refresh" 
+                        Command="{Binding LoadCoursesCommand}"
+                        HorizontalOptions="FillAndExpand" />
+                <Button Text="Logout"
+                        Command="{Binding LogoutCommand}"
+                        HorizontalOptions="FillAndExpand" />
+            </HorizontalStackLayout>
+
+            <!-- Courses List -->
+            <CollectionView ItemsSource="{Binding Courses}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,8" 
+                                Padding="16" 
+                                StrokeThickness="1.5" 
+                                Stroke="{StaticResource Gray300}"
+                                StrokeShape="RoundRectangle 12">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="{StaticResource LightCool}" Offset="0" />
+                                    <GradientStop Color="{StaticResource White}" Offset="1" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{Binding Name}" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"
+                                       TextColor="{StaticResource Dark}" />
+                                <Label Text="{Binding Subject}" 
+                                       FontSize="13" 
+                                       TextColor="{StaticResource Gray400}"
+                                       Opacity="0.9" />
+                                <Button Text="Open course"
+                                        Margin="0,8,0,0"
+                                        FontSize="12"
+                                        Padding="12,8"
+                                        CommandParameter="{Binding .}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.GoToCourseCommand}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </Grid>
+
+</ContentPage>

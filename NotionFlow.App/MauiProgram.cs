@@ -20,6 +20,9 @@ namespace NotionFlow.App
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("Fraunces_72pt-Regular.ttf", "FrauncesRegular");
+                    fonts.AddFont("Fraunces_72pt-Italic.ttf", "FrauncesItalic");
+                    fonts.AddFont("Fraunces_72pt-SemiBold.ttf", "FrauncesSemiBold");
                 });
 
             // Register Services

@@ -1,0 +1,3 @@
+-- Este archivo está VACÍO
+-- Las tablas serán creadas por Entity Framework (migraciones) desde la API
+-- El seed de datos será manejado por la API automáticamente

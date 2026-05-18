@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.Admin.CreateCoursePage"
+             Title="Crear Curso">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="Nuevo Curso"
+                   FontSize="22" FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Entry Placeholder="Nombre del curso"
+                   Text="{Binding CourseName}" />
+
+            <Entry Placeholder="Materia"
+                   Text="{Binding CourseSubject}" />
+
+            <Entry Placeholder="Descripción del curso"
+                   Text="{Binding CourseDescription}" />
+
+            <Label Text="Selecciona Profesor" TextColor="{StaticResource TextMuted}" FontSize="13" />
+
+            <Picker Title="Profesor"
+                    ItemsSource="{Binding Teachers}"
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedTeacher}" />
+
+            <Button Text="Crear Curso"
+                    Command="{Binding CreateCourseCommand}" />
+
+            <BoxView HeightRequest="1" Color="{StaticResource Gray200}" Margin="0,10" />
+
+            <Label Text="Asignar Estudiante a Curso"
+                   FontSize="18" FontAttributes="Bold" />
+
+            <Picker Title="Estudiante"
+                    ItemsSource="{Binding Students}"
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedStudent}" />
+
+            <Picker Title="Curso"
+                    ItemsSource="{Binding Courses}"
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedCourse}" />
+
+            <Button Text="Asignar Estudiante"
+                    Command="{Binding AssignStudentCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

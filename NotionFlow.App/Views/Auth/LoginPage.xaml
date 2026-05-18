@@ -1,105 +1,236 @@
 <?xml version="1.0" encoding="utf-8" ?>
-
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
              x:Class="NotionFlow.App.Views.Auth.LoginPage"
              BackgroundColor="{StaticResource PageBackground}"
              Shell.NavBarIsVisible="False">
 
-    <Grid>
+    <Grid x:Name="LoginContainer"
+          RowDefinitions="Auto,*"
+          BackgroundColor="{StaticResource PageBackground}">
 
-        <!-- Imagen de fondo semitransparente (opcional) -->
-        <Image
-            Source="login_bg.png"
-            Aspect="AspectFill"
-            Opacity="0.22"/>
+        <!-- ===================== HERO ===================== -->
+        <Grid Grid.Row="0"
+              Background="{StaticResource HeroGradient}"
+              Padding="0"
+              MinimumHeightRequest="280">
 
-        <ScrollView>
-            <VerticalStackLayout x:Name="LoginContainer"
-                                 Padding="28,56,28,40"
-                                 Spacing="16"
-                                 Opacity="0">
+            <!-- Patrón decorativo: círculos concéntricos arriba derecha -->
+            <Grid HorizontalOptions="End"
+                  VerticalOptions="Start"
+                  Margin="0,12,-20,0"
+                  WidthRequest="180"
+                  HeightRequest="180"
+                  Opacity="0.18"
+                  InputTransparent="True">
+                <Ellipse Stroke="White" StrokeThickness="1" Fill="Transparent"
+                         WidthRequest="180" HeightRequest="180"
+                         HorizontalOptions="End" VerticalOptions="Start"/>
+                <Ellipse Stroke="White" StrokeThickness="1" Fill="Transparent"
+                         WidthRequest="120" HeightRequest="120"
+                         HorizontalOptions="End" VerticalOptions="Start"
+                         Margin="0,20,20,0"/>
+                <Ellipse Stroke="White" StrokeThickness="1" Fill="Transparent"
+                         WidthRequest="80" HeightRequest="80"
+                         HorizontalOptions="End" VerticalOptions="Start"
+                         Margin="0,40,35,0"/>
+            </Grid>
 
-                <!-- Logo -->
-                <Image
-                    Source="notionflow_logo.png"
-                    HeightRequest="140"
-                    Aspect="AspectFit"
-                    Margin="0,0,0,4"/>
+            <!-- Estrella decorativa abajo izquierda -->
+            <shapes:Path Stroke="Transparent" Fill="White"
+                         Opacity="0.3"
+                         HorizontalOptions="Start"
+                         VerticalOptions="End"
+                         Margin="18,0,0,70"
+                         WidthRequest="32"
+                         HeightRequest="32"
+                         InputTransparent="True">
+                <shapes:Path.Data>
+                    <PathGeometry Figures="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z"/>
+                </shapes:Path.Data>
+            </shapes:Path>
 
-                <!-- Tagline -->
-                <Label
-                    Text="Organiza · Aprende · Crea · Brilla"
-                    FontSize="12"
-                    TextColor="{StaticResource TextMuted}"
-                    HorizontalOptions="Center"
-                    Margin="0,0,0,6"/>
+            <!-- Contenido del hero -->
+            <VerticalStackLayout x:Name="HeroContent"
+                                 Padding="26,16,26,78"
+                                 Spacing="0">
 
-                <!-- Card del formulario -->
-                <Border Style="{StaticResource KawaiiCard}">
-                    <VerticalStackLayout Spacing="14">
+                <!-- Fila superior: logo + selector idioma -->
+                <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                    <HorizontalStackLayout Grid.Column="0" Spacing="10" VerticalOptions="Center">
+                        <Border BackgroundColor="#2EFFFFFF"
+                                Stroke="#59FFFFFF"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 9"
+                                WidthRequest="28"
+                                HeightRequest="28"
+                                Padding="0">
+                            <Label Text="N"
+                                   TextColor="White"
+                                   FontFamily="FrauncesSemiBold"
+                                   FontSize="18"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                        </Border>
+                        <Label VerticalOptions="Center"
+                               TextColor="White">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Notion"
+                                          FontFamily="FrauncesSemiBold"
+                                          FontSize="20"
+                                          TextColor="White"/>
+                                    <Span Text="flow"
+                                          FontFamily="FrauncesItalic"
+                                          FontSize="20"
+                                          TextColor="White"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </HorizontalStackLayout>
 
-                        <Label
-                            Text="¡Bienvenido de nuevo!"
-                            Style="{StaticResource SectionTitle}"
-                            HorizontalOptions="Center"
-                            Margin="0,0,0,4"/>
+                    <Button Grid.Column="1"
+                            Text="ES ▾"
+                            Style="{StaticResource LangPillBtn}"/>
+                </Grid>
 
-                        <!-- Binding Email -->
-                        <Entry
-                            Placeholder="Correo electrónico"
-                            Keyboard="Email"
-                            Text="{Binding Email}"/>
+                <!-- Eyebrow + título grande -->
+                <VerticalStackLayout Margin="0,38,0,6" Spacing="10">
+                    <Label Text="NOTIONFLOW" Style="{StaticResource HeroEyebrow}"/>
 
-                        <!-- Binding Password -->
-                        <Entry
-                            Placeholder="Contraseña"
-                            IsPassword="True"
-                            Text="{Binding Password}"/>
+                    <Label Style="{StaticResource HeroTitle}">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="¡Bienvenido"
+                                      FontFamily="FrauncesSemiBold"
+                                      FontSize="34"
+                                      TextColor="White"/>
+                                <Span Text="&#10;"/>
+                                <Span Text="de nuevo!"
+                                      FontFamily="FrauncesItalic"
+                                      FontSize="34"
+                                      TextColor="White"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
 
-                        <!-- Error message -->
-                        <Label
-                            Text="{Binding ErrorMessage}"
-                            TextColor="{StaticResource ErrorColor}"
-                            FontSize="12"
+                    <Label Text="Organiza · Aprende · Crea · Brilla"
+                           Style="{StaticResource HeroTagline}"
+                           Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+            <!-- Curva blanca inferior -->
+            <!--<shapes:Path Fill="{StaticResource PageBackground}"
+                         Stroke="Transparent"
+                         VerticalOptions="End"
+                         HorizontalOptions="Fill"
+                         HeightRequest="50"
+                         Aspect="Fill"
+                         InputTransparent="True">
+                <shapes:Path.Data>
+                    <PathGeometry Figures="M0 50 L0 25 Q170 -10 340 25 L340 50 Z"/>
+                </shapes:Path.Data>
+            </shapes:Path>-->
+        </Grid>
+
+        <!-- ===================== CONTENIDO INFERIOR ===================== -->
+        <Grid Grid.Row="1"
+              RowDefinitions="Auto,*,Auto"
+              BackgroundColor="{StaticResource PageBackground}">
+
+            <!-- Card flotante superpuesta al hero -->
+            <Border Grid.Row="0"
+                    Style="{StaticResource LoginCard}"
+                    Margin="22,-46,22,0">
+
+                <VerticalStackLayout Spacing="0">
+
+                    <Label Text="Inicia sesión"
+                           Style="{StaticResource LoginCardTitle}"
+                           Margin="0,0,0,4"/>
+
+                    <Label Text="Continúa donde lo dejaste."
+                           Style="{StaticResource LoginCardSubtitle}"
+                           Margin="0,0,0,18"/>
+
+                    <!-- Campo Correo -->
+                    <Border Style="{StaticResource IconFieldBorder}" Margin="0,0,0,12">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <!--<Image Grid.Column="0"
+                                   Source="icon_email.png"
+                                   WidthRequest="20"
+                                   HeightRequest="20"
+                                   VerticalOptions="Center"/>-->
+                            <Entry Grid.Column="1"
+                                   Style="{StaticResource FlatEntry}"
+                                   Placeholder="Correo electrónico"
+                                   Keyboard="Email"
+                                   Text="{Binding Email}"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Campo Contraseña -->
+                    <Border Style="{StaticResource IconFieldBorder}">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <!--<Image Grid.Column="0"
+                                   Source="icon_lock.png"
+                                   WidthRequest="20"
+                                   HeightRequest="20"
+                                   VerticalOptions="Center"/>-->
+                            <Entry Grid.Column="1"
+                                   Style="{StaticResource FlatEntry}"
+                                   Placeholder="Contraseña"
+                                   IsPassword="True"
+                                   Text="{Binding Password}"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Error -->
+                    <!--<Border Style="{StaticResource ErrorBubble}"
                             IsVisible="{Binding HasError}"
-                            HorizontalOptions="Center"/>
+                            Margin="0,12,0,0">
+                        <Label Text="{Binding ErrorMessage}"
+                               Style="{StaticResource ErrorBubbleText}"/>
+                    </Border>-->
 
-                        <!-- Botón principal -->
-                        <Button
-                            Text="Iniciar sesión"
-                            Style="{StaticResource PrimaryBtn}"
+                    <!-- Link olvidaste contraseña --><!--
+                    <Button Text="¿Olvidaste tu contraseña?"
+                            Style="{StaticResource LinkBtn}"
+                            HorizontalOptions="End"
+                            Margin="0,10,0,0"
+                            Command="{Binding ForgotPasswordCommand}"/>-->
+
+                    <!-- Botón principal -->
+                    <Button Text="Iniciar sesión"
+                            Style="{StaticResource LoginPrimaryBtn}"
+                            Margin="0,16,0,0"
                             Command="{Binding LoginCommand}"/>
 
-                        <!-- Separador -->
-                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="8">
-                            <BoxView Color="{StaticResource BorderLight}"
-                                     HeightRequest="1" WidthRequest="80"
-                                     VerticalOptions="Center"/>
-                            <Label Text="o" Style="{StaticResource MutedText}"/>
-                            <BoxView Color="{StaticResource BorderLight}"
-                                     HeightRequest="1" WidthRequest="80"
-                                     VerticalOptions="Center"/>
-                        </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
 
-                        <!-- Botón crear cuenta -->
-                        <Button
-                            Text="Crear cuenta nueva"
-                            Style="{StaticResource OutlineBtn}"
-                            Command="{Binding NavigateToRegisterCommand}"/>
+            <!-- Fila * intermedia vacía: el Grid la usa para empujar el footer al fondo -->
 
-                    </VerticalStackLayout>
-                </Border>
-
-                <Label
-                    Text="NotionFlow © 2026"
-                    Style="{StaticResource MutedText}"
-                    FontSize="11"
-                    HorizontalOptions="Center"/>
-
-            </VerticalStackLayout>
-        </ScrollView>
-
+            <!-- Footer: registro -->
+            <HorizontalStackLayout Grid.Row="2"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End"
+                                   Spacing="4"
+                                   Margin="0,0,0,28">
+                <Label Text="Disfruta de la mejor experiencia estudiando"
+                       TextColor="{StaticResource TextMuted}"
+                       FontSize="13"
+                       VerticalOptions="Center"/>
+                <!--<Button Text="Regístrate"
+                        Style="{StaticResource LinkBtn}"
+                        FontSize="13"
+                        FontAttributes="Bold"
+                        Command="{Binding NavigateToRegisterCommand}"/>-->
+            </HorizontalStackLayout>
+        </Grid>
     </Grid>
-
 </ContentPage>

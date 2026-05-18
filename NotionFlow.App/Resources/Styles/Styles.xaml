@@ -472,7 +472,166 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-  
+
+    <!-- ================================================ -->
+    <!--  ESTILOS LOGIN — Variante C (Verde Hero)         -->
+    <!--  Pegar dentro de Styles.xaml, antes del cierre   -->
+    <!--  </ResourceDictionary>                           -->
+    <!-- ================================================ -->
+
+    <!-- Brush del hero: gradiente verde 155° -->
+    <LinearGradientBrush x:Key="HeroGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{StaticResource PrimaryDark}" Offset="0.0" />
+        <GradientStop Color="{StaticResource PrimaryColor}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <!-- Titular grande serif del hero -->
+    <Style x:Key="HeroTitle" TargetType="Label">
+        <Setter Property="FontFamily" Value="FrauncesSemiBold" />
+        <Setter Property="FontSize" Value="34" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="LineHeight" Value="1.05" />
+        <Setter Property="CharacterSpacing" Value="-0.8" />
+    </Style>
+
+    <!-- Itálica del hero (para "de nuevo!") -->
+    <Style x:Key="HeroTitleItalic" TargetType="Label">
+        <Setter Property="FontFamily" Value="FrauncesItalic" />
+        <Setter Property="FontSize" Value="34" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="LineHeight" Value="1.05" />
+        <Setter Property="CharacterSpacing" Value="-0.8" />
+    </Style>
+
+    <!-- Wordmark "NotionFlow" sobre fondo verde (eyebrow) -->
+    <Style x:Key="HeroEyebrow" TargetType="Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="#D9F0E3" />
+        <Setter Property="CharacterSpacing" Value="2" />
+    </Style>
+
+    <!-- Tagline blanca semitransparente -->
+    <Style x:Key="HeroTagline" TargetType="Label">
+        <Setter Property="FontSize" Value="13.5" />
+        <Setter Property="TextColor" Value="#D9F0E3" />
+    </Style>
+
+    <!-- Card blanca flotante que se superpone al hero -->
+    <Style x:Key="LoginCard" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="White" />
+        <Setter Property="Stroke" Value="#EEF6F1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 26" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Padding" Value="22,26,22,24" />
+        <Setter Property="Shadow">
+            <Shadow Brush="{StaticResource PrimaryDarkText}"
+                Offset="0,12"
+                Radius="20"
+                Opacity="0.22" />
+        </Setter>
+    </Style>
+
+    <!-- Título de la card "Inicia sesión" -->
+    <Style x:Key="LoginCardTitle" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="TextColor" Value="{StaticResource TextDark}" />
+    </Style>
+
+    <!-- Subtítulo de la card "Continúa donde lo dejaste." -->
+    <Style x:Key="LoginCardSubtitle" TargetType="Label">
+        <Setter Property="FontSize" Value="12.5" />
+        <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+    </Style>
+
+    <!-- Border que envuelve cada Entry con su icono -->
+    <Style x:Key="IconFieldBorder" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource InputBackground}" />
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Padding" Value="14,0,12,0" />
+        <Setter Property="MinimumHeightRequest" Value="52" />
+    </Style>
+
+    <!-- Entry plano (sin fondo) para usar DENTRO del IconFieldBorder -->
+    <Style x:Key="FlatEntry" TargetType="Entry">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource TextLight}" />
+        <Setter Property="TextColor" Value="{StaticResource TextDark}" />
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="MinimumHeightRequest" Value="48" />
+    </Style>
+
+    <!-- Botón principal del login (verde con sombra suave) -->
+    <Style x:Key="LoginPrimaryBtn" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="HeightRequest" Value="52" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Shadow">
+            <Shadow Brush="{StaticResource PrimaryDark}"
+                Offset="0,6"
+                Radius="14"
+                Opacity="0.45" />
+        </Setter>
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryBorder}" />
+                            <Setter Property="TextColor" Value="White" />
+                            <Setter Property="Opacity" Value="0.7" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <!-- Link plano "¿Olvidaste tu contraseña?" / "Regístrate" -->
+    <Style x:Key="LinkBtn" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{StaticResource PrimaryDark}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderWidth" Value="0" />
+        <Setter Property="MinimumHeightRequest" Value="28" />
+    </Style>
+
+    <!-- Pill decorativa "ES ▾" del hero -->
+    <Style x:Key="LangPillBtn" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="#33FFFFFF" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="BorderColor" Value="#4DFFFFFF" />
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Padding" Value="12,6" />
+        <Setter Property="HeightRequest" Value="32" />
+    </Style>
+
+    <!-- Mensaje de error rosado -->
+    <Style x:Key="ErrorBubble" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="#FDE7EF" />
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 10" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Padding" Value="12,8" />
+    </Style>
+
+    <Style x:Key="ErrorBubbleText" TargetType="Label">
+        <Setter Property="TextColor" Value="#9F3A65" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
     <!--
     <Style TargetType="TitleBar">
         <Setter Property="MinimumHeightRequest" Value="32"/>

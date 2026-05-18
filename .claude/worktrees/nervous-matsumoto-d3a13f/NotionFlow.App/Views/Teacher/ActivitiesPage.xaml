@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.Teacher.ActivitiesPage"
+             Title="Actividades del Curso">
+    <Grid RowDefinitions="Auto,*"
+            RowSpacing="0">
+        <VerticalStackLayout Grid.Row="0"
+                Padding="20,16,20,8"
+                Spacing="4"
+                             BackgroundColor="{StaticResource Primary}">
+            <Label Text="{Binding CourseName}"
+                   FontSize="20"
+                    FontAttributes="Bold"
+                    TextColor="White"/>
+            <Label Text="Gestión de actividades"
+                   FontSize="13"
+                    TextColor="White"
+                    Opacity="0.85"/>
+        </VerticalStackLayout>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20"
+                    Spacing="12">
+                <Button Text="+ Nueva Actividad (Cuestionario)"
+                        Command="{Binding CreateActivityCommand}"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White"
+                        CornerRadius="10"
+                        Padding="0,14"/>
+                <Button Text="↻ Actualizar"
+                        Command="{Binding LoadActivitiesCommand}"
+                        BackgroundColor="{StaticResource Gray200}"
+                        TextColor="{StaticResource TextDark}"
+                        CornerRadius="10"
+                        Padding="0,10"/>
+                <Label Text="Actividades creadas"
+                       FontSize="16"
+                        FontAttributes="Bold"
+                        Margin="0,8,0,0"/>
+                <CollectionView ItemsSource="{Binding Activities}"
+                                EmptyView="No hay actividades creadas aún.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,6"
+                                    Padding="16"
+                                    StrokeThickness="1.5"
+                                    Stroke="{StaticResource Gray300}"
+                                    StrokeShape="RoundRectangle 12">
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="{Binding Title}"
+                                           FontAttributes="Bold"
+                                            FontSize="16"
+                                           TextColor="{StaticResource TextDark}"/>
+                                    <Label Text="{Binding Description}"
+                                           FontSize="13"
+                                            TextColor="{StaticResource Gray400}"/>
+                                    <Label Text="{Binding PercentageValue, StringFormat='Valor: {0}%'}"
+                                           FontSize="13"/>
+                                    <Label Text="{Binding DueDate, StringFormat='Fecha límite: {0:dd/MM/yyyy}'}"
+                                           FontSize="13"
+                                            TextColor="{StaticResource Gray400}"/>
+                                    <Label Text="{Binding Questions.Count, StringFormat='Preguntas: {0}'}"
+                                           FontSize="12"
+                                            TextColor="{StaticResource Primary}"/>
+                                    <HorizontalStackLayout Spacing="8"
+                                            Margin="0,8,0,0">
+                                        <Button Text="✏ Editar"
+                                                FontSize="12"
+                                                Padding="12,8"
+                                                CornerRadius="8"
+                                                BackgroundColor="{StaticResource Primary}"
+                                                TextColor="White"
+                                                CommandParameter="{Binding .}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditActivityCommand}"/>
+                                        <Button Text="👤 Asignar"
+                                                FontSize="12"
+                                                Padding="12,8"
+                                                CornerRadius="8"
+                                                BackgroundColor="{StaticResource AccentTeal}"
+                                                TextColor="White"
+                                                CommandParameter="{Binding .}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AssignActivityCommand}"/>
+                                        <Button Text="🗑 Eliminar"
+                                                FontSize="12"
+                                                Padding="12,8"
+                                                CornerRadius="8"
+                                                BackgroundColor="{StaticResource DeleteColor}"
+                                                TextColor="White"
+                                                CommandParameter="{Binding .}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteActivityCommand}"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
