@@ -129,3 +129,5 @@ node_modules/
 # Docker
 docker-compose.override.yml
 postgres_data/
+
+.claude

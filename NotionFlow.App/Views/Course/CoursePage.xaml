@@ -8,12 +8,12 @@
         <VerticalStackLayout Padding="20" Spacing="15">
 
             <Label Text="{Binding CourseName}"
-                   FontSize="22" FontAttributes="Bold"
+                   FontSize="{StaticResource FontSizeXL}" FontAttributes="Bold"
                    HorizontalOptions="Center"/>
 
             <!-- Botón + solo para profesor -->
             <Button Text="+"
-                    FontSize="24"
+                    FontSize="{StaticResource FontSizeXL}"
                     Command="{Binding ShowOptionsCommand}"
                     IsVisible="{Binding IsTeacher}"
                     HorizontalOptions="End"
@@ -21,19 +21,19 @@
                     HeightRequest="50"/>
 
             <!-- Evaluaciones -->
-            <Label Text="Evaluaciones" FontSize="18" FontAttributes="Bold"/>
+            <Label Text="Evaluaciones" FontSize="{StaticResource FontSizeLG}" FontAttributes="Bold"/>
 
             <CollectionView ItemsSource="{Binding Evaluations}"
                             EmptyView="Sin evaluaciones.">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Margin="0,4" Padding="12"
+                        <Border Margin="0,{StaticResource SpacingXS}" Padding="{StaticResource SpacingSM}"
                                 StrokeThickness="1" Stroke="{StaticResource Gray200}"
-                                StrokeShape="RoundRectangle 8">
+                                StrokeShape="RoundRectangle {StaticResource RadiusSM}">
                             <VerticalStackLayout>
                                 <Label Text="{Binding Title}" FontAttributes="Bold"/>
-                                <Label Text="{Binding Description}" FontSize="13" TextColor="{StaticResource TextMuted}"/>
-                                <Label Text="{Binding PercentageValue, StringFormat='Valor: {0}%'}" FontSize="13"/>
+                                <Label Text="{Binding Description}" FontSize="{StaticResource FontSizeXS}" TextColor="{StaticResource TextMuted}"/>
+                                <Label Text="{Binding PercentageValue, StringFormat='Valor: {0}%'}" FontSize="{StaticResource FontSizeXS}"/>
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
@@ -41,19 +41,19 @@
             </CollectionView>
 
             <!-- Contenidos -->
-            <Label Text="Contenidos" FontSize="18" FontAttributes="Bold"/>
+            <Label Text="Contenidos" FontSize="{StaticResource FontSizeLG}" FontAttributes="Bold"/>
 
             <CollectionView ItemsSource="{Binding Contents}"
                             EmptyView="Sin contenidos.">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Margin="0,4" Padding="12"
+                        <Border Margin="0,{StaticResource SpacingXS}" Padding="{StaticResource SpacingSM}"
                                 StrokeThickness="1" Stroke="{StaticResource Gray200}"
-                                StrokeShape="RoundRectangle 8">
+                                StrokeShape="RoundRectangle {StaticResource RadiusSM}">
                             <VerticalStackLayout>
                                 <Label Text="{Binding Title}" FontAttributes="Bold"/>
-                                <Label Text="{Binding Description}" FontSize="13" TextColor="{StaticResource TextMuted}"/>
-                                <Label Text="{Binding Type}" FontSize="12" TextColor="{StaticResource PrimaryDark}"/>
+                                <Label Text="{Binding Description}" FontSize="{StaticResource FontSizeXS}" TextColor="{StaticResource TextMuted}"/>
+                                <Label Text="{Binding Type}" FontSize="{StaticResource FontSizeXXS}" TextColor="{StaticResource PrimaryDark}"/>
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
@@ -61,49 +61,49 @@
             </CollectionView>
 
             <!-- Actividades -->
-            <Label Text="Actividades (Cuestionarios)" FontSize="18" FontAttributes="Bold"/>
+            <Label Text="Actividades (Cuestionarios)" FontSize="{StaticResource FontSizeLG}" FontAttributes="Bold"/>
 
             <CollectionView ItemsSource="{Binding Activities}"
                             EmptyView="Sin actividades asignadas.">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Margin="0,4" Padding="12"
+                        <Border Margin="0,{StaticResource SpacingXS}" Padding="{StaticResource SpacingSM}"
                                 StrokeThickness="1" Stroke="{StaticResource Gray200}"
-                                StrokeShape="RoundRectangle 8">
-                            <VerticalStackLayout Spacing="4">
+                                StrokeShape="RoundRectangle {StaticResource RadiusSM}">
+                            <VerticalStackLayout Spacing="{StaticResource SpacingXS}">
                                 <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="15"/>
-                                <Label Text="{Binding Description}" FontSize="13" TextColor="{StaticResource TextMuted}"/>
-                                <Label Text="{Binding PercentageValue, StringFormat='Valor: {0}%'}" FontSize="13"/>
-                                <Label Text="{Binding DueDate, StringFormat='Entrega: {0:dd/MM/yyyy}'}" FontSize="13" TextColor="{StaticResource TextMuted}"/>
-                                <Label Text="{Binding Questions.Count, StringFormat='Preguntas: {0}'}" FontSize="12" TextColor="{StaticResource PrimaryDark}"/>
+                                <Label Text="{Binding Description}" FontSize="{StaticResource FontSizeXS}" TextColor="{StaticResource TextMuted}"/>
+                                <Label Text="{Binding PercentageValue, StringFormat='Valor: {0}%'}" FontSize="{StaticResource FontSizeXS}"/>
+                                <Label Text="{Binding DueDate, StringFormat='Entrega: {0:dd/MM/yyyy}'}" FontSize="{StaticResource FontSizeXS}" TextColor="{StaticResource TextMuted}"/>
+                                <Label Text="{Binding Questions.Count, StringFormat='Preguntas: {0}'}" FontSize="{StaticResource FontSizeXXS}" TextColor="{StaticResource PrimaryDark}"/>
                                 <!-- Botones para Profesor -->
-                                <HorizontalStackLayout Spacing="8" Margin="0,6,0,0"
+                                <HorizontalStackLayout Spacing="{StaticResource SpacingSM}" Margin="0,{StaticResource SpacingMD},0,0"
                                     IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsTeacher}">
                                     <Button Text="✏ Editar"
-                                            FontSize="12" Padding="10,6" CornerRadius="8"
+                                            FontSize="{StaticResource FontSizeXXS}" Padding="10,6" CornerRadius="{StaticResource RadiusSM}"
                                             BackgroundColor="{StaticResource Primary}" TextColor="White"
                                             CommandParameter="{Binding .}"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditActivityCommand}"/>
                                     <Button Text="📊 Resultados"
-                                            FontSize="12" Padding="10,6" CornerRadius="8"
+                                            FontSize="{StaticResource FontSizeXXS}" Padding="10,6" CornerRadius="{StaticResource RadiusSM}"
                                             BackgroundColor="{StaticResource AccentTeal}" TextColor="White"
                                             CommandParameter="{Binding .}"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewResultsCommand}"/>
                                     <Button Text="🗑 Eliminar"
-                                            FontSize="12" Padding="10,6" CornerRadius="8"
+                                            FontSize="{StaticResource FontSizeXXS}" Padding="10,6" CornerRadius="{StaticResource RadiusSM}"
                                             BackgroundColor="{StaticResource DeleteColor}" TextColor="White"
                                             CommandParameter="{Binding .}"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteActivityCommand}"/>
                                 </HorizontalStackLayout>
                                 <!-- Botón para Estudiante -->
                                 <Button Text="📝 Responder actividad"
-                                        FontSize="12" Padding="10,6" CornerRadius="8"
+                                        FontSize="{StaticResource FontSizeXXS}" Padding="10,6" CornerRadius="{StaticResource RadiusSM}"
                                         BackgroundColor="{StaticResource AccentTeal}" TextColor="White"
                                         CommandParameter="{Binding .}"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.TakeActivityCommand}"
                                         IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsStudent}"
                                         HorizontalOptions="Start"
-                                        Margin="0,6,0,0"/>
+                                        Margin="0,{StaticResource SpacingMD},0,0"/>
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
@@ -112,7 +112,7 @@
 
             <!-- Lista estudiantes (solo profesor) -->
             <Label Text="Estudiantes del curso"
-                   FontSize="18" FontAttributes="Bold"
+                   FontSize="{StaticResource FontSizeLG}" FontAttributes="Bold"
                    IsVisible="{Binding IsTeacher}"/>
 
             <CollectionView ItemsSource="{Binding Students}"
@@ -120,13 +120,13 @@
                             EmptyView="Sin estudiantes.">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Margin="0,4" Padding="12"
+                        <Border Margin="0,{StaticResource SpacingXS}" Padding="{StaticResource SpacingSM}"
                                 StrokeThickness="1" Stroke="{StaticResource Gray200}"
-                                StrokeShape="RoundRectangle 8">
+                                StrokeShape="RoundRectangle {StaticResource RadiusSM}">
                             <Grid ColumnDefinitions="*,Auto">
                                 <VerticalStackLayout Grid.Column="0">
                                     <Label Text="{Binding Name}" FontAttributes="Bold"/>
-                                    <Label Text="{Binding Email}" FontSize="13" TextColor="{StaticResource TextMuted}"/>
+                                    <Label Text="{Binding Email}" FontSize="{StaticResource FontSizeXS}" TextColor="{StaticResource TextMuted}"/>
                                 </VerticalStackLayout>
                                 <Button Grid.Column="1"
                                         Text="Ver perfil"

@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#512BD4</color>
-    <color name="colorPrimaryDark">#2B0B98</color>
-    <color name="colorAccent">#2B0B98</color>
+    <!-- Sincronizado con MAUI Colors.xaml — Paleta Verde Kawaii -->
+    <color name="colorPrimary">#5BBF8A</color>
+    <color name="colorPrimaryDark">#2E8A5E</color>
+    <color name="colorAccent">#20B2AA</color>
+    <!-- Colores adicionales para referencia -->
+    <color name="colorBackground">#FBF8EF</color>
+    <color name="colorCard">#FFFFFF</color>
+    <color name="colorTextDark">#1A4A32</color>
+    <color name="colorError">#E53935</color>
 </resources>

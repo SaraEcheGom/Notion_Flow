@@ -6,26 +6,26 @@
 
     <Grid RowDefinitions="Auto,*" Padding="0">
         <!-- Header -->
-        <VerticalStackLayout Grid.Row="0" Padding="20" Spacing="10">
-            <Label Text="{Binding CourseName}" FontSize="24" FontAttributes="Bold" />
-            <Label Text="{Binding Subject, StringFormat='Subject: {0}'}" FontSize="14" TextColor="{StaticResource Gray400}" />
-            <Label Text="{Binding TeacherName, StringFormat='Teacher: {0}'}" FontSize="14" TextColor="{StaticResource Gray400}" />
-            <Label Text="{Binding Students.Count, StringFormat='Assigned Students: {0}'}" FontSize="14" TextColor="{StaticResource Gray400}" />
+        <VerticalStackLayout Grid.Row="0" Padding="{StaticResource SpacingLG}" Spacing="{StaticResource SpacingMD}">
+            <Label Text="{Binding CourseName}" FontSize="{StaticResource FontSizeXL}" FontAttributes="Bold" />
+            <Label Text="{Binding Subject, StringFormat='Subject: {0}'}" FontSize="{StaticResource FontSizeSM}" TextColor="{StaticResource Gray400}" />
+            <Label Text="{Binding TeacherName, StringFormat='Teacher: {0}'}" FontSize="{StaticResource FontSizeSM}" TextColor="{StaticResource Gray400}" />
+            <Label Text="{Binding Students.Count, StringFormat='Assigned Students: {0}'}" FontSize="{StaticResource FontSizeSM}" TextColor="{StaticResource Gray400}" />
         </VerticalStackLayout>
 
         <!-- Students List -->
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="20" Spacing="15">
-                <Label Text="Students in this course" FontSize="18" FontAttributes="Bold" />
-                
+            <VerticalStackLayout Padding="{StaticResource SpacingLG}" Spacing="{StaticResource SpacingLG}">
+                <Label Text="Students in this course" FontSize="{StaticResource FontSizeLG}" FontAttributes="Bold" />
+
                 <CollectionView ItemsSource="{Binding Students}" EmptyView="Ningún estudiante asignado">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Border Margin="0,5" Padding="15" StrokeThickness="1" Stroke="{StaticResource Gray300}" StrokeShape="RoundRectangle 8">
+                            <Border Margin="0,{StaticResource SpacingSM}" Padding="{StaticResource SpacingMD}" StrokeThickness="1" Stroke="{StaticResource Gray300}" StrokeShape="RoundRectangle {StaticResource RadiusSM}">
                                 <Grid ColumnDefinitions="*,Auto">
-                                    <VerticalStackLayout Grid.Column="0" Spacing="3">
-                                        <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
-                                        <Label Text="{Binding Email}" FontSize="13" TextColor="{StaticResource Gray400}" />
+                                    <VerticalStackLayout Grid.Column="0" Spacing="{StaticResource SpacingXS}">
+                                        <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="{StaticResource FontSizeMD}" />
+                                        <Label Text="{Binding Email}" FontSize="{StaticResource FontSizeXS}" TextColor="{StaticResource Gray400}" />
                                     </VerticalStackLayout>
                                     <Button Grid.Column="1" 
                                             Text="Remove" 
@@ -33,8 +33,8 @@
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveStudentCommand}" 
                                             IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CanRemoveStudents}"
                                             Padding="5" 
-                                            FontSize="12" 
-                                            BackgroundColor="{StaticResource Teal}"
+                                            FontSize="{StaticResource FontSizeXXS}" 
+                                            BackgroundColor="{StaticResource AccentTeal}"
                                             TextColor="White" />
                                 </Grid>
                             </Border>
@@ -42,7 +42,7 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-                <Button Text="← Back" Command="{Binding BackCommand}" Margin="0,20,0,0" />
+                <Button Text="← Back" Command="{Binding BackCommand}" Margin="0,{StaticResource SpacingLG},0,0" />
             </VerticalStackLayout>
         </ScrollView>
     </Grid>
