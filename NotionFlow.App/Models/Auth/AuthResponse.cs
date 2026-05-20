@@ -22,7 +22,7 @@ namespace NotionFlow.App.Models.Auth
         [JsonPropertyName("institutionId")]
         public int InstitutionId { get; set; }
 
-        // ── Derivadas para UI ────────────────────────────────
+        // ── Derivadas para UI ────────────────────────────────────────────────
         public string Initials => string.Concat(
             Name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
                 .Take(2)
@@ -164,7 +164,7 @@ namespace NotionFlow.App.Models.Auth
         public DateTime AssignedAt { get; set; }
     }
 
-    // ── Submit feedback (retroalimentación al estudiante) ────────────────────
+    // ── Submit feedback ──────────────────────────────────────────────────────
     public class SubmitFeedbackResponse
     {
         [JsonPropertyName("message")]
@@ -210,7 +210,7 @@ namespace NotionFlow.App.Models.Auth
         public string? TextAnswer { get; set; }
     }
 
-    // ── Resultados por actividad (para el profesor) ──────────────────────────
+    // ── Resultados por actividad (profesor) ──────────────────────────────────
     public class ActivityResultsResponse
     {
         [JsonPropertyName("activityId")]
@@ -254,5 +254,140 @@ namespace NotionFlow.App.Models.Auth
 
         [JsonPropertyName("questions")]
         public List<QuestionFeedback> Questions { get; set; } = new();
+    }
+
+    // ── HU#13 / HU#14: Progreso por estudiante ──────────────────────────────
+    public class StudentProgressResponse
+    {
+        [JsonPropertyName("studentId")]
+        public string StudentId { get; set; } = string.Empty;
+
+        [JsonPropertyName("studentName")]
+        public string StudentName { get; set; } = string.Empty;
+
+        [JsonPropertyName("totalActivities")]
+        public int TotalActivities { get; set; }
+
+        [JsonPropertyName("completedActivities")]
+        public int CompletedActivities { get; set; }
+
+        [JsonPropertyName("averageScore")]
+        public double AverageScore { get; set; }
+
+        [JsonPropertyName("totalPoints")]
+        public int TotalPoints { get; set; }
+
+        [JsonPropertyName("levelName")]
+        public string LevelName { get; set; } = string.Empty;
+
+        [JsonPropertyName("levelEmoji")]
+        public string LevelEmoji { get; set; } = string.Empty;
+
+        [JsonPropertyName("nextLevelPoints")]
+        public int NextLevelPoints { get; set; }
+
+        [JsonPropertyName("streak")]
+        public int Streak { get; set; }
+
+        [JsonPropertyName("activityDetails")]
+        public List<ActivityProgressDetail> ActivityDetails { get; set; } = new();
+
+        [JsonPropertyName("badges")]
+        public List<BadgeModel> Badges { get; set; } = new();
+    }
+
+    public class ActivityProgressDetail
+    {
+        [JsonPropertyName("activityId")]
+        public int ActivityId { get; set; }
+
+        [JsonPropertyName("activityTitle")]
+        public string ActivityTitle { get; set; } = string.Empty;
+
+        [JsonPropertyName("score")]
+        public int? Score { get; set; }
+
+        [JsonPropertyName("submittedAt")]
+        public DateTime? SubmittedAt { get; set; }
+
+        [JsonPropertyName("completed")]
+        public bool Completed { get; set; }
+    }
+
+    // ── HU#15: Reporte general del curso ────────────────────────────────────
+    public class CourseReportResponse
+    {
+        [JsonPropertyName("courseId")]
+        public int CourseId { get; set; }
+
+        [JsonPropertyName("courseName")]
+        public string CourseName { get; set; } = string.Empty;
+
+        [JsonPropertyName("totalStudents")]
+        public int TotalStudents { get; set; }
+
+        [JsonPropertyName("totalActivities")]
+        public int TotalActivities { get; set; }
+
+        [JsonPropertyName("averageCourseScore")]
+        public double AverageCourseScore { get; set; }
+
+        [JsonPropertyName("studentSummaries")]
+        public List<StudentSummaryItem> StudentSummaries { get; set; } = new();
+    }
+
+    public class StudentSummaryItem
+    {
+        [JsonPropertyName("rank")]
+        public int Rank { get; set; }
+
+        [JsonPropertyName("studentId")]
+        public string StudentId { get; set; } = string.Empty;
+
+        [JsonPropertyName("studentName")]
+        public string StudentName { get; set; } = string.Empty;
+
+        [JsonPropertyName("totalActivities")]
+        public int TotalActivities { get; set; }
+
+        [JsonPropertyName("completedActivities")]
+        public int CompletedActivities { get; set; }
+
+        [JsonPropertyName("averageScore")]
+        public double AverageScore { get; set; }
+
+        [JsonPropertyName("totalPoints")]
+        public int TotalPoints { get; set; }
+
+        [JsonPropertyName("levelName")]
+        public string LevelName { get; set; } = string.Empty;
+
+        [JsonPropertyName("levelEmoji")]
+        public string LevelEmoji { get; set; } = string.Empty;
+
+        [JsonPropertyName("badgeCount")]
+        public int BadgeCount { get; set; }
+
+        [JsonPropertyName("badges")]
+        public List<BadgeModel> Badges { get; set; } = new();
+    }
+
+    // ── HU#16 / HU#17: Insignias ────────────────────────────────────────────
+    public class BadgeModel
+    {
+        [JsonPropertyName("id")]
+        public string Id { get; set; } = string.Empty;
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("description")]
+        public string Description { get; set; } = string.Empty;
+
+        [JsonPropertyName("emoji")]
+        public string Emoji { get; set; } = string.Empty;
+
+        [JsonPropertyName("earnedAt")]
+        public DateTime? EarnedAt { get; set; }
     }
 }

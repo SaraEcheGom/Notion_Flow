@@ -29,8 +29,8 @@
                                    Color="{StaticResource PrimaryColor}"/>
 
                 <!-- Stats Grid -->
-                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12"
-                      IsVisible="{Binding IsBusy, Converter={x:StaticResource InvertedBoolConverter}}">
+				<Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12"
+                      IsVisible="{Binding IsNotBusy}">
 
                     <!-- Total Cursos -->
                     <Border Grid.Row="0" Grid.Column="0"
@@ -106,8 +106,8 @@
                 </Grid>
 
                 <!-- Recent Activities Section -->
-                <VerticalStackLayout Spacing="8"
-                                     IsVisible="{Binding IsBusy, Converter={x:StaticResource InvertedBoolConverter}}">
+				<VerticalStackLayout Spacing="8"
+                                     IsVisible="{Binding IsNotBusy}">
                     <Label Text="Cursos activos"
                            FontSize="14"
                            FontAttributes="Bold"
@@ -146,27 +146,27 @@
                 </VerticalStackLayout>
 
                 <!-- Quick Actions -->
-                <VerticalStackLayout Spacing="8"
-                                     IsVisible="{Binding IsBusy, Converter={x:StaticResource InvertedBoolConverter}}">
-                    <Label Text="Acciones rápidas"
-                           FontSize="14"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource TextDark}"/>
+			<VerticalStackLayout Spacing="8"
+								 IsVisible="{Binding IsNotBusy}">
+				<Label Text="Acciones rápidas"
+					   FontSize="14"
+					   FontAttributes="Bold"
+					   TextColor="{StaticResource TextDark}"/>
 
-                    <Button Text="📊 Ver Evaluaciones"
-                            Command="{Binding ViewEvaluationsCommand}"
-                            BackgroundColor="{StaticResource Primary}"
-                            TextColor="White"
-                            CornerRadius="8"
-                            Padding="12,12"/>
+				<Button Text="📊 Ver Evaluaciones"
+						Command="{Binding ViewEvaluationsCommand}"
+						BackgroundColor="{StaticResource Primary}"
+						TextColor="White"
+						CornerRadius="8"
+						Padding="12,12"/>
 
-                    <Button Text="📝 Ver Actividades"
-                            Command="{Binding ViewActivitiesCommand}"
-                            BackgroundColor="{StaticResource AccentTeal}"
-                            TextColor="White"
-                            CornerRadius="8"
-                            Padding="12,12"/>
-                </VerticalStackLayout>
+				<Button Text="📝 Ver Actividades"
+						Command="{Binding ViewActivitiesCommand}"
+						BackgroundColor="{StaticResource AccentTeal}"
+						TextColor="White"
+						CornerRadius="8"
+						Padding="12,12"/>
+			</VerticalStackLayout>
 
             </VerticalStackLayout>
         </ScrollView>

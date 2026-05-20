@@ -71,32 +71,56 @@ namespace NotionFlow.App.ViewModels.Teacher
 
         public async Task LoadDashboardAsync()
         {
-            await ExecuteAsync(
-                async () =>
+            if (IsBusy) return;
+
+            IsBusy = true;
+            try
+            {
+                var courses = await _api.GetCoursesByProfessorAsync(_teacherId);
+
+                if (courses == null || courses.Count == 0)
                 {
-                    var courses = await _api.GetCoursesByProfessorAsync(_teacherId);
-
-                    TotalCourses = courses.Count;
-                    
-                    // Contar estudiantes únicos
-                    var uniqueStudents = courses
-                        .SelectMany(c => c.Students)
-                        .DistinctBy(s => s.Id)
-                        .ToList();
-                    TotalStudents = uniqueStudents.Count;
-
-                    // Valores por defecto (no disponibles en CourseResponse)
+                    TotalCourses = 0;
+                    TotalStudents = 0;
                     PendingEvaluations = 0;
                     ActiveActivities = 0;
+                    RecentCourses.Clear();
+                    return;
+                }
 
-                    // Mostrar primeros 5 cursos
+                TotalCourses = courses.Count;
+
+                // Contar estudiantes únicos
+                var uniqueStudents = courses
+                    .SelectMany(c => c.Students ?? new List<StudentItem>())
+                    .DistinctBy(s => s.Id)
+                    .ToList();
+                TotalStudents = uniqueStudents.Count;
+
+                // Valores por defecto (no disponibles en CourseResponse)
+                PendingEvaluations = 0;
+                ActiveActivities = 0;
+
+                // Mostrar primeros 5 cursos
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
                     RecentCourses.Clear();
                     foreach (var course in courses.Take(5))
                     {
                         RecentCourses.Add(course);
                     }
-                },
-                "TeacherDashboardViewModel.LoadDashboardAsync");
+                });
+            }
+            catch (Exception ex)
+            {
+                CrashLog.Write("TeacherDashboardViewModel.LoadDashboardAsync", ex);
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                    await Shell.Current.DisplayAlert("Error", $"No se pudo cargar el dashboard: {ex.Message}", "OK"));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
 }
