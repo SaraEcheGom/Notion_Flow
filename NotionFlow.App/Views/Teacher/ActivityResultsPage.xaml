@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.Teacher.ActivityResultsPage"
+             Title="Resultados"
+             BackgroundColor="{StaticResource PageBackground}">
+
+    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="0">
+
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0" Padding="20,16,20,14" Spacing="4"
+                             BackgroundColor="{StaticResource PrimaryColor}">
+            <Label x:Name="ActivityTitleLabel" FontSize="18" FontAttributes="Bold" TextColor="White"/>
+            <Label x:Name="SummaryLabel" FontSize="13" TextColor="White" Opacity="0.9"/>
+        </VerticalStackLayout>
+
+        <!-- Stats bar -->
+        <Border Grid.Row="1" BackgroundColor="White" StrokeThickness="0" Padding="16,12">
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="2">
+                    <Label x:Name="SubmittedCountLabel" FontSize="24" FontAttributes="Bold"
+                           HorizontalOptions="Center" TextColor="{StaticResource PrimaryColor}"/>
+                    <Label Text="Respondieron" FontSize="10" HorizontalOptions="Center"
+                           TextColor="{StaticResource TextMuted}"/>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="2">
+                    <Label x:Name="GroupAverageLabel" FontSize="24" FontAttributes="Bold"
+                           HorizontalOptions="Center" TextColor="{StaticResource AccentOrange}"/>
+                    <Label Text="Promedio" FontSize="10" HorizontalOptions="Center"
+                           TextColor="{StaticResource TextMuted}"/>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="2">
+                    <Label x:Name="PassRateLabel" FontSize="24" FontAttributes="Bold"
+                           HorizontalOptions="Center" TextColor="{StaticResource PrimaryDark}"/>
+                    <Label Text="Aprobaron" FontSize="10" HorizontalOptions="Center"
+                           TextColor="{StaticResource TextMuted}"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Lista + spinner -->
+        <Grid Grid.Row="2">
+            <ScrollView>
+                <VerticalStackLayout x:Name="ResultsContainer" Padding="16,12" Spacing="14"/>
+            </ScrollView>
+            <ActivityIndicator x:Name="Loader" IsRunning="True"
+                               Color="{StaticResource PrimaryColor}"
+                               HorizontalOptions="Center" VerticalOptions="Center"/>
+        </Grid>
+
+    </Grid>
+</ContentPage>

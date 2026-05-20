@@ -1,0 +1,25 @@
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+bin/
+obj/
+*.csproj.user
+
+# Environment
+.env
+.env.local
+
+# Build outputs
+*.dll
+*.exe
+*.pdb
+*.log
+
+# IDE
+.idea/
+.DS_Store
+
+# Docker
+docker-compose.override.yml

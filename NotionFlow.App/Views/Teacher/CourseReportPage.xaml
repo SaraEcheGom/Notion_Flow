@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.Teacher.CourseReportPage"
+             Title="Reporte del Curso"
+             BackgroundColor="{StaticResource PageBackground}">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- Header verde -->
+        <VerticalStackLayout Grid.Row="0" Padding="20,16,20,14" Spacing="4"
+                             BackgroundColor="{StaticResource PrimaryColor}">
+            <Label x:Name="CourseTitleLabel" FontSize="20" FontAttributes="Bold" TextColor="White"/>
+            <Label Text="📋 Reporte General del Grupo" FontSize="13" TextColor="White" Opacity="0.9"/>
+        </VerticalStackLayout>
+
+        <!-- Tarjetas de estadísticas -->
+        <Border Grid.Row="1" BackgroundColor="White" StrokeThickness="0"
+                Padding="16,12">
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="4">
+                    <Label x:Name="TotalStudentsLabel" FontSize="26" FontAttributes="Bold"
+                           HorizontalOptions="Center" TextColor="{StaticResource PrimaryColor}"/>
+                    <Label Text="Estudiantes" FontSize="10" HorizontalOptions="Center"
+                           TextColor="{StaticResource TextMuted}"/>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
+                    <Label x:Name="TotalActivitiesLabel" FontSize="26" FontAttributes="Bold"
+                           HorizontalOptions="Center" TextColor="{StaticResource PrimaryDark}"/>
+                    <Label Text="Actividades" FontSize="10" HorizontalOptions="Center"
+                           TextColor="{StaticResource TextMuted}"/>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4">
+                    <Label x:Name="AverageCourseLabel" FontSize="26" FontAttributes="Bold"
+                           HorizontalOptions="Center" TextColor="{StaticResource AccentOrange}"/>
+                    <Label Text="Promedio" FontSize="10" HorizontalOptions="Center"
+                           TextColor="{StaticResource TextMuted}"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Lista + spinner -->
+        <Grid Grid.Row="2">
+            <ScrollView>
+                <VerticalStackLayout Padding="16,12" Spacing="12">
+                    <VerticalStackLayout x:Name="StudentsList" Spacing="10"/>
+                </VerticalStackLayout>
+            </ScrollView>
+            <ActivityIndicator x:Name="LoadingIndicator" IsRunning="True"
+                               Color="{StaticResource PrimaryColor}"
+                               HorizontalOptions="Center" VerticalOptions="Center"/>
+        </Grid>
+
+    </Grid>
+</ContentPage>

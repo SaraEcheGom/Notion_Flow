@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.Teacher.StudentProgressDetailPage"
+             Title="Progreso Individual"
+             BackgroundColor="{StaticResource PageBackground}">
+
+    <Grid RowDefinitions="*">
+        <ScrollView>
+            <VerticalStackLayout Padding="20,24" Spacing="16">
+
+                <Label x:Name="StudentTitleLabel" Style="{StaticResource Headline}"/>
+                <Label Text="📈 Progreso Individual" Style="{StaticResource SubHeadline}"/>
+
+                <!-- Estadísticas numéricas -->
+                <Border Style="{StaticResource KawaiiCard}">
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                        <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="4">
+                            <Label x:Name="CompletedLabel" FontSize="26" FontAttributes="Bold"
+                                   HorizontalOptions="Center" TextColor="{StaticResource PrimaryColor}"/>
+                            <Label Text="Completadas" FontSize="11" HorizontalOptions="Center"
+                                   TextColor="{StaticResource TextMuted}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
+                            <Label x:Name="AverageLabel" FontSize="26" FontAttributes="Bold"
+                                   HorizontalOptions="Center" TextColor="{StaticResource PrimaryDark}"/>
+                            <Label Text="Promedio" FontSize="11" HorizontalOptions="Center"
+                                   TextColor="{StaticResource TextMuted}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4">
+                            <Label x:Name="PointsLabel" FontSize="26" FontAttributes="Bold"
+                                   HorizontalOptions="Center" TextColor="{StaticResource AccentOrange}"/>
+                            <Label Text="Puntos 🏅" FontSize="11" HorizontalOptions="Center"
+                                   TextColor="{StaticResource TextMuted}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- Nivel y Racha -->
+                <Border Style="{StaticResource KawaiiCard}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label x:Name="LevelLabel" FontSize="18" FontAttributes="Bold"
+                               TextColor="{StaticResource PrimaryDark}" HorizontalOptions="Center"/>
+                        <ProgressBar x:Name="LevelProgress" ProgressColor="{StaticResource AccentOrange}" HeightRequest="8"/>
+                        <Label x:Name="LevelProgressLabel" FontSize="11" TextColor="{StaticResource TextMuted}"
+                               HorizontalOptions="Center"/>
+                        <Label x:Name="StreakLabel" FontSize="13" TextColor="{StaticResource TextMuted}"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label Text="🏆 Insignias obtenidas" Style="{StaticResource SectionTitle}"/>
+                <Border Style="{StaticResource KawaiiCard}">
+                    <VerticalStackLayout x:Name="BadgesList" Spacing="8"/>
+                </Border>
+
+                <Label Text="📋 Actividades" Style="{StaticResource SectionTitle}"/>
+                <VerticalStackLayout x:Name="ActivitiesList" Spacing="10"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
+        <ActivityIndicator x:Name="LoadingIndicator" IsRunning="True"
+                           Color="{StaticResource PrimaryColor}"
+                           HorizontalOptions="Center" VerticalOptions="Center"/>
+    </Grid>
+</ContentPage>

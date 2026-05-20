@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.Student.TakeActivityPage"
+             Title="Responder Actividad"
+             BackgroundColor="{StaticResource PageBackground}">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="0">
+
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0"
+                Padding="20,16,20,14"
+                Spacing="4"
+                BackgroundColor="{StaticResource Teal}">
+            <Label x:Name="ActivityTitleLabel"
+                   FontSize="20" FontAttributes="Bold" TextColor="White"/>
+            <Label x:Name="ActivityDescLabel"
+                   FontSize="13" TextColor="White" Opacity="0.85"/>
+            <Label x:Name="ActivityInfoLabel"
+                   FontSize="12" TextColor="White" Opacity="0.70"/>
+        </VerticalStackLayout>
+
+        <!-- Banner resultado (se muestra tras enviar — HU#10 calificación automática) -->
+        <Border Grid.Row="1"
+                x:Name="ScoreBanner"
+                IsVisible="False"
+                Margin="16,12,16,0"
+                Padding="0"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 14">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="0">
+                <!-- Barra de color lateral -->
+                <BoxView x:Name="ScoreAccent" Grid.Column="0"
+                         WidthRequest="8" CornerRadius="14,0,0,14"
+                         BackgroundColor="#10B981"/>
+                <!-- Contenido -->
+                <VerticalStackLayout Grid.Column="1" Padding="16,12" Spacing="4"
+                                     BackgroundColor="{StaticResource CardBackground}">
+                    <Label x:Name="ScoreEmojiLabel" FontSize="28" HorizontalOptions="Center"/>
+                    <Label x:Name="ScoreLabel"
+                           FontSize="20" FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                    <Label x:Name="ScoreSubLabel"
+                           FontSize="13" TextColor="{StaticResource TextMuted}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Preguntas -->
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout x:Name="QuestionsContainer"
+                    Padding="16,12" Spacing="14"/>
+        </ScrollView>
+
+        <!-- Botón enviar -->
+        <Button Grid.Row="3"
+                x:Name="SubmitButton"
+                Text="✅ Enviar respuestas"
+                Clicked="OnSubmit"
+                BackgroundColor="{StaticResource Teal}"
+                TextColor="White"
+                CornerRadius="12"
+                FontSize="16"
+                FontAttributes="Bold"
+                Padding="0,16"
+                Margin="16,12"/>
+    </Grid>
+</ContentPage>
