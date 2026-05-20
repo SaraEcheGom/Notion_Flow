@@ -1,27 +1,87 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:viewsAuth="clr-namespace:NotionFlow.App.Views.Auth"
-       xmlns:viewsAdmin="clr-namespace:NotionFlow.App.Views.Admin"
-       xmlns:viewsTeacher="clr-namespace:NotionFlow.App.Views.Teacher"
-       xmlns:viewsStud="clr-namespace:NotionFlow.App.Views.Student"
+       xmlns:auth="clr-namespace:NotionFlow.App.Views.Auth"
+       xmlns:admin="clr-namespace:NotionFlow.App.Views.Admin"
+       xmlns:teacher="clr-namespace:NotionFlow.App.Views.Teacher"
+       xmlns:student="clr-namespace:NotionFlow.App.Views.Student"
+       xmlns:course="clr-namespace:NotionFlow.App.Views.Course"
        x:Class="NotionFlow.App.AppShell"
        Shell.NavBarIsVisible="False">
 
-    <FlyoutItem Route="login" FlyoutItemIsVisible="False">
-        <ShellContent ContentTemplate="{DataTemplate viewsAuth:LoginPage}" />
+    <Shell.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TabBar">
+                <Setter Property="Shell.TabBarBackgroundColor" Value="#FFFFFF"/>
+                <Setter Property="Shell.TabBarForegroundColor" Value="#1A4A32"/>
+                <Setter Property="Shell.TabBarTitleColor"      Value="#1A4A32"/>
+                <Setter Property="Shell.TabBarUnselectedColor" Value="#90D4B0"/>
+            </Style>
+        </ResourceDictionary>
+    </Shell.Resources>
+
+    <!-- ── LOGIN ─────────────────────────────────────────────────────── -->
+    <FlyoutItem x:Name="LoginSection"
+                Route="login"
+                FlyoutItemIsVisible="False">
+        <ShellContent ContentTemplate="{DataTemplate auth:LoginPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Route="admin" FlyoutItemIsVisible="False">
-        <ShellContent ContentTemplate="{DataTemplate viewsAdmin:AdminPage}" />
-    </FlyoutItem>
+    <!-- ── ADMIN ─────────────────────────────────────────────────────── -->
+    <TabBar x:Name="AdminTabs" IsVisible="False">
+        <ShellContent
+            Title="Inicio"
+            Icon="icon_home.png"
+            Route="admin_home"
+            ContentTemplate="{DataTemplate admin:AdminPage}" />
+        <ShellContent
+            Title="Cursos"
+            Icon="icon_course.png"
+            Route="admin_courses"
+            ContentTemplate="{DataTemplate course:CoursePage}" />
+    </TabBar>
 
-    <FlyoutItem Route="teacher" FlyoutItemIsVisible="False">
-        <ShellContent ContentTemplate="{DataTemplate viewsTeacher:TeacherPage}" />
-    </FlyoutItem>
+    <!-- ── PROFESOR ───────────────────────────────────────────────────── -->
+    <TabBar x:Name="TeacherTabs" IsVisible="False">
+        <ShellContent
+            Title="Inicio"
+            Icon="icon_home.png"
+            Route="teacher_home"
+            ContentTemplate="{DataTemplate teacher:TeacherPage}" />
+        <ShellContent
+            Title="Mis Cursos"
+            Icon="icon_course.png"
+            Route="teacher_courses"
+            ContentTemplate="{DataTemplate course:CoursePage}" />
+        <ShellContent
+            Title="Actividades"
+            Icon="icon_activity.png"
+            Route="teacher_activities"
+            ContentTemplate="{DataTemplate teacher:ActivitiesPage}" />
+        <ShellContent
+            Title="Perfil"
+            Icon="icon_profile.png"
+            Route="teacher_profile"
+            ContentTemplate="{DataTemplate auth:UserProfilePage}" />
+    </TabBar>
 
-    <FlyoutItem Route="estudiante" FlyoutItemIsVisible="False">
-        <ShellContent ContentTemplate="{DataTemplate viewsStud:StudentPage}" />
-    </FlyoutItem>
+    <!-- ── ESTUDIANTE ─────────────────────────────────────────────────── -->
+    <TabBar x:Name="StudentTabs" IsVisible="False">
+        <ShellContent
+            Title="Inicio"
+            Icon="icon_home.png"
+            Route="student_home"
+            ContentTemplate="{DataTemplate student:StudentPage}" />
+        <ShellContent
+            Title="Cursos"
+            Icon="icon_course.png"
+            Route="student_courses"
+            ContentTemplate="{DataTemplate course:CoursePage}" />
+        <ShellContent
+            Title="Perfil"
+            Icon="icon_profile.png"
+            Route="student_profile"
+            ContentTemplate="{DataTemplate auth:UserProfilePage}" />
+    </TabBar>
 
 </Shell>

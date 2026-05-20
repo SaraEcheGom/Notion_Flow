@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="NotionFlow.App.Controls.TabChip"
+    x:Name="this">
+
+    
+    <Border Style="{Binding ChipStyle, Source={x:Reference this}}">
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer
+                Command="{Binding TapCommand, Source={x:Reference this}}"
+                CommandParameter="{Binding TapCommandParameter, Source={x:Reference this}}" />
+        </Border.GestureRecognizers>
+        <HorizontalStackLayout Spacing="6">
+            <Label
+                Text="{Binding Label, Source={x:Reference this}}"
+                FontSize="13"
+                FontAttributes="Bold"
+                TextColor="{Binding LabelColor, Source={x:Reference this}}"
+                VerticalOptions="Center" />
+            <Border
+                BackgroundColor="{Binding BadgeBg, Source={x:Reference this}}"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 99"
+                Padding="5,2">
+                <Label
+                    Text="{Binding Count, Source={x:Reference this}}"
+                    FontSize="11"
+                    FontAttributes="Bold"
+                    TextColor="{Binding BadgeText, Source={x:Reference this}}" />
+            </Border>
+        </HorizontalStackLayout>
+    </Border>
+</ContentView>

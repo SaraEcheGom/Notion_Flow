@@ -59,42 +59,15 @@ namespace NotionFlow.App.ViewModels.Auth
             {
                 Debug.WriteLine("🔐 [LoginViewModel] Calling AuthService.LoginAsync");
                 var user = await _authService.LoginAsync(Email, Password);
-
-                Debug.WriteLine($"✓ [LoginViewModel] Login successful. Role: {user.Role}");
-
-                // The API issues role names "Admin" / "Professor" / "Student" (see
-                // DataSeeder + AuthController). The Shell routes registered in
-                // AppShell.xaml are "admin" / "teacher" / "estudiante". Match
-                // case-insensitively and accept both English and Spanish spellings so
-                // navigation never silently no-ops, and use the routes that actually
-                // exist (the previous //professor and //student routes were not
-                // registered anywhere).
-                var role = (user.Role ?? string.Empty).Trim();
-
-                if (string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase))
+                if (Application.Current?.MainPage is AppShell shell)
                 {
-                    Debug.WriteLine("→ [LoginViewModel] Navigating to //admin");
-                    await Shell.Current.GoToAsync("//admin");
-                }
-                else if (string.Equals(role, "Professor", StringComparison.OrdinalIgnoreCase)
-                      || string.Equals(role, "Profesor", StringComparison.OrdinalIgnoreCase)
-                      || string.Equals(role, "Teacher", StringComparison.OrdinalIgnoreCase))
-                {
-                    Debug.WriteLine($"→ [LoginViewModel] Navigating to //teacher");
-                    await Shell.Current.GoToAsync($"//teacher?id={user.Id}");
-                }
-                else if (string.Equals(role, "Student", StringComparison.OrdinalIgnoreCase)
-                      || string.Equals(role, "Estudiante", StringComparison.OrdinalIgnoreCase))
-                {
-                    Debug.WriteLine($"→ [LoginViewModel] Navigating to //estudiante");
-                    await Shell.Current.GoToAsync($"//estudiante?id={user.Id}");
+                    await shell.ShowRoleTabsAsync(user.Role);
                 }
                 else
                 {
-                    Debug.WriteLine($"✗ [LoginViewModel] Unknown role '{role}' — no navigation");
                     await Shell.Current.DisplayAlert(
-                        "Login",
-                        $"El usuario inició sesión correctamente pero su rol ('{role}') no está mapeado a ninguna pantalla.",
+                        "Error",
+                        "No se pudo determinar la pantalla de inicio.",
                         "OK");
                 }
             }

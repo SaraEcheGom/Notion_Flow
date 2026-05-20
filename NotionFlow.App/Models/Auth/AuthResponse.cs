@@ -21,6 +21,12 @@ namespace NotionFlow.App.Models.Auth
 
         [JsonPropertyName("institutionId")]
         public int InstitutionId { get; set; }
+
+        // ── Derivadas para UI ────────────────────────────────
+        public string Initials => string.Concat(
+            Name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Take(2)
+                .Select(w => char.ToUpper(w[0])));
     }
 
     public class CourseResponse

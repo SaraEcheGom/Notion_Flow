@@ -377,7 +377,12 @@ namespace NotionFlow.App.ViewModels.Admin
         private async Task LogoutAsync()
         {
             await AuthService.LogoutAsync();
-            await Shell.Current.GoToAsync("//login");
+
+            if (Application.Current?.MainPage is AppShell shell)
+                await shell.LogoutAsync();
+            else
+                await Shell.Current.GoToAsync("//login");
         }
+
     }
 }

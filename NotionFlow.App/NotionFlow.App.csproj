@@ -28,6 +28,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AndroidResource Remove="Models\Task\**" />
+    <AndroidResource Remove="ViewModels\Professor\**" />
+    <Compile Remove="Models\Task\**" />
+    <Compile Remove="ViewModels\Professor\**" />
+    <EmbeddedResource Remove="Models\Task\**" />
+    <EmbeddedResource Remove="ViewModels\Professor\**" />
+    <MauiCss Remove="Models\Task\**" />
+    <MauiCss Remove="ViewModels\Professor\**" />
+    <MauiXaml Remove="Models\Task\**" />
+    <MauiXaml Remove="ViewModels\Professor\**" />
+    <None Remove="Models\Task\**" />
+    <None Remove="ViewModels\Professor\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <AndroidResource Include="Platforms\Android\Resources\xml\network_security_config.xml" />
   </ItemGroup>
 
@@ -38,10 +53,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <MauiXaml Update="Controls\AvatarView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Controls\PageHeader.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Controls\PageHeaderComponent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Controls\TabChip.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Views\Admin\CreateStudentPage.xaml">
@@ -74,10 +95,5 @@
     <MauiXaml Update="Views\Teacher\TeacherPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\Task\" />
-    <Folder Include="ViewModels\Professor\" />
   </ItemGroup>
 </Project>

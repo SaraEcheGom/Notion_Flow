@@ -25,22 +25,21 @@ namespace NotionFlow.App
                     fonts.AddFont("Fraunces_72pt-SemiBold.ttf", "FrauncesSemiBold");
                 });
 
-            // Register Services
+            // ── Servicios ─────────────────────────────────────────────────
             builder.Services.AddSingleton<ApiService>();
             builder.Services.AddSingleton<AuthService>();
 
-            // Register Auth ViewModels
+            // ── Shell — Singleton para que DI lo resuelva en App ──────────
+            builder.Services.AddSingleton<AppShell>();
+
+            // ── ViewModels ────────────────────────────────────────────────
             builder.Services.AddSingleton<LoginViewModel>();
             builder.Services.AddSingleton<RegisterViewModel>();
-
-            // Register Role ViewModels
             builder.Services.AddSingleton<AdminViewModel>();
             builder.Services.AddSingleton<TeacherViewModel>();
             builder.Services.AddSingleton<StudentViewModel>();
 
-            // Register Pages whose constructors require DI (needed for Shell on Windows/WinUI;
-            // without this, MAUI on Windows tries to instantiate them via parameterless ctor
-            // and crashes at startup with a XAML/handler init failure (0xc000027b)).
+            // ── Páginas con dependencias ──────────────────────────────────
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<RegisterPage>();
             builder.Services.AddTransient<CreateCoursePage>();
