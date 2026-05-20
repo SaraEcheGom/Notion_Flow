@@ -438,8 +438,10 @@ namespace NotionFlow.App.Services
 
             if (!response.IsSuccessStatusCode)
             {
+                Debug.WriteLine($"🔍 GET courses/{courseId}/progress/{studentId}");
+                Debug.WriteLine($"📊 Status: {(int)response.StatusCode} {response.StatusCode}");
                 var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Error al obtener progreso: {error}");
+                Debug.WriteLine($"❌ Body: {error}");
             }
 
             var json = await response.Content.ReadAsStringAsync();

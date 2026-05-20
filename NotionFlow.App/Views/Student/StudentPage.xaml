@@ -53,23 +53,30 @@
                                                  CornerRadius="2"/>
                                         <VerticalStackLayout Spacing="2">
                                             <Label Text="{Binding Name}"
-                                                   Style="{StaticResource ItemTitle}"/>
+                                                   Style="{StaticResource SectionTitle}"/>
                                             <Label Text="{Binding Subject}"
-                                                   Style="{StaticResource ItemSubtitle}"/>
+                                                   Style="{StaticResource BodyText}"
+                                                   TextColor="{StaticResource TextMuted}"/>
                                         </VerticalStackLayout>
                                     </HorizontalStackLayout>
 
                                     <!-- Profesor -->
-                                    <Label Text="{Binding TeacherName, StringFormat='👤 {0}'}"
-                                           Style="{StaticResource ItemSubtitle}"
-                                           Margin="14,0,0,0"/>
+                                    <Label Text="{Binding TeacherName, StringFormat='Profesor: {0}'}"
+                                           Style="{StaticResource MutedText}"
+                                           Margin="14,4,0,0"/>
 
-                                    <!-- Botón ir al curso -->
-                                    <Button Text="Ir al curso →"
-                                            Style="{StaticResource PrimaryBtn}"
-                                            HorizontalOptions="Start"
-                                            CommandParameter="{Binding .}"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.GoToCourseCommand}"/>
+                                    <!-- Botones de acción -->
+                                    <HorizontalStackLayout Spacing="10" Margin="14,6,0,0">
+                                        <Button Text="Ir al curso 🎓"
+                                                Style="{StaticResource PrimaryBtn}"
+                                                CommandParameter="{Binding .}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.GoToCourseCommand}"/>
+
+                                        <Button Text="📊 Mi progreso"
+                                                Style="{StaticResource OutlineBtn}"
+                                                CommandParameter="{Binding .}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.GoToProgressCommand}"/>
+                                    </HorizontalStackLayout>
 
                                 </VerticalStackLayout>
                             </Border>
