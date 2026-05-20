@@ -290,11 +290,11 @@ namespace NotionFlow.App.Services
         }
 
         public async Task CreateEvaluationAsync(int courseId, string title,
-            string description, double percentage)
+            string description, double percentage, DateTime date)
         {
             await RefreshAuthHeaderAsync();
             var response = await _httpClient.PostAsync($"courses/{courseId}/evaluations",
-                CreateJsonContent(new { title, description, date = DateTime.Now, percentageValue = percentage }));
+                CreateJsonContent(new { title, description, date, percentageValue = percentage }));
             response.EnsureSuccessStatusCode();
         }
 
