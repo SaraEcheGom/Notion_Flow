@@ -40,15 +40,10 @@ builder.Services.AddAuthentication(opt =>
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 
-builder.Services.AddHttpClient<AnthropicService>(client =>
+builder.Services.AddHttpClient<GeminiService>(client =>
 {
-    client.BaseAddress = new Uri("https://api.anthropic.com/");
-    client.DefaultRequestHeaders.Add("anthropic-version", "2023-06-01");
+    client.BaseAddress = new Uri("https://generativelanguage.googleapis.com/");
     client.Timeout = TimeSpan.FromSeconds(120);
-
-    var apiKey = builder.Configuration["Anthropic:ApiKey"];
-    if (!string.IsNullOrWhiteSpace(apiKey))
-        client.DefaultRequestHeaders.Add("x-api-key", apiKey);
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

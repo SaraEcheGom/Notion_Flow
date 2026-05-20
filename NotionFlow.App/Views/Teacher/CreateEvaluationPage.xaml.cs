@@ -10,7 +10,7 @@ public partial class CreateEvaluationPage : ContentPage
     {
         InitializeComponent();
         _vm = vm;
-        DatePicker.Date = DateTime.Today;
+        EvalDatePicker.Date = DateTime.Today;
     }
 
     private async void OnSave(object sender, EventArgs e)
@@ -39,7 +39,7 @@ public partial class CreateEvaluationPage : ContentPage
                 TitleEntry.Text.Trim(),
                 DescriptionEditor.Text?.Trim() ?? string.Empty,
                 pct,
-                DatePicker.Date);
+                EvalDatePicker.Date ?? DateTime.Today);
 
             await DisplayAlert("Éxito", "Evaluación creada correctamente.", "OK");
             await Navigation.PopAsync();

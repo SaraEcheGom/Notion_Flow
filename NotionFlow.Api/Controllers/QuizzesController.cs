@@ -9,12 +9,12 @@ namespace NotionFlow.Api.Controllers
     [Authorize]
     public class QuizzesController : ControllerBase
     {
-        private readonly AnthropicService _anthropic;
+        private readonly GeminiService _gemini;
         private readonly ILogger<QuizzesController> _logger;
 
-        public QuizzesController(AnthropicService anthropic, ILogger<QuizzesController> logger)
+        public QuizzesController(GeminiService gemini, ILogger<QuizzesController> logger)
         {
-            _anthropic = anthropic;
+            _gemini = gemini;
             _logger = logger;
         }
 
@@ -27,7 +27,7 @@ namespace NotionFlow.Api.Controllers
 
             try
             {
-                var quiz = await _anthropic.GenerateQuizFromImageAsync(image);
+                var quiz = await _gemini.GenerateQuizFromImageAsync(image);
                 return Ok(quiz);
             }
             catch (Exception ex)

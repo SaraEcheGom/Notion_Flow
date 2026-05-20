@@ -36,7 +36,7 @@
             <Label Text="Fecha de la evaluación *"
                    FontSize="14"
                    FontAttributes="Bold"/>
-            <DatePicker x:Name="DatePicker"
+            <DatePicker x:Name="EvalDatePicker"
                         Format="dd/MM/yyyy"
                         MinimumDate="01/01/2020"/>
 
