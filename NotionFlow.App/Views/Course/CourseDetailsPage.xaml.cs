@@ -6,9 +6,9 @@ namespace NotionFlow.App.Views.Course;
 
 public partial class CourseDetailsPage : ContentPage
 {
-    public CourseDetailsPage(CourseResponse course, ApiService apiService)
+    public CourseDetailsPage(CourseResponse course, ApiService apiService, AuthService authService)
     {
         InitializeComponent();
-        BindingContext = new CourseDetailsViewModel(apiService, course);
+        BindingContext = new CourseDetailsViewModel(apiService, authService, course);
     }
 }

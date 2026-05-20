@@ -1,4 +1,5 @@
-﻿using NotionFlow.App.Views.Admin;
+using NotionFlow.App.Constants;
+using NotionFlow.App.Views.Admin;
 using NotionFlow.App.Views.Teacher;
 using NotionFlow.App.Views.Student;
 using NotionFlow.App.Views.Course;
@@ -16,36 +17,30 @@ public partial class AppShell : Shell
         InitializeComponent();
         _apiService = apiService;
 
-        // ── Rutas de detalle — accesibles desde cualquier rol ─────────────
-        Routing.RegisterRoute("register", typeof(RegisterPage));
+        Routing.RegisterRoute(Routes.Register, typeof(RegisterPage));
 
         // Admin
-        Routing.RegisterRoute("admin/create-course", typeof(CreateCoursePage));
-        Routing.RegisterRoute("admin/create-teacher", typeof(CreateTeacherPage));
-        Routing.RegisterRoute("admin/create-student", typeof(CreateStudentPage));
-        Routing.RegisterRoute("admin/course-detail", typeof(CourseDetailsPage));
+        Routing.RegisterRoute(Routes.AdminCreateCourse, typeof(CreateCoursePage));
+        Routing.RegisterRoute(Routes.AdminCreateTeacher, typeof(CreateTeacherPage));
+        Routing.RegisterRoute(Routes.AdminCreateStudent, typeof(CreateStudentPage));
+        Routing.RegisterRoute(Routes.AdminCourseDetail, typeof(CourseDetailsPage));
 
         // Profesor
-        Routing.RegisterRoute("teacher/course-detail", typeof(CourseDetailsPage));
-        Routing.RegisterRoute("teacher/create-activity", typeof(CreateActivityPage));
-        Routing.RegisterRoute("teacher/edit-activity", typeof(EditActivityPage));
-        Routing.RegisterRoute("teacher/assign-activity", typeof(AssignActivityPage));
-        Routing.RegisterRoute("teacher/publish-content", typeof(PublishContentPage));
-        Routing.RegisterRoute("teacher/create-eval", typeof(CreateEvaluationPage));
-        Routing.RegisterRoute("teacher/activity-results", typeof(ActivityResultsPage));
+        Routing.RegisterRoute(Routes.TeacherCourseDetail, typeof(CourseDetailsPage));
+        Routing.RegisterRoute(Routes.TeacherCreateActivity, typeof(CreateActivityPage));
+        Routing.RegisterRoute(Routes.TeacherEditActivity, typeof(EditActivityPage));
+        Routing.RegisterRoute(Routes.TeacherAssignActivity, typeof(AssignActivityPage));
+        Routing.RegisterRoute(Routes.TeacherPublishContent, typeof(PublishContentPage));
+        Routing.RegisterRoute(Routes.TeacherCreateEval, typeof(CreateEvaluationPage));
+        Routing.RegisterRoute(Routes.TeacherActivityResults, typeof(ActivityResultsPage));
 
         // Estudiante
-        Routing.RegisterRoute("student/course-detail", typeof(CourseDetailsPage));
-        Routing.RegisterRoute("student/take-activity", typeof(TakeActivityPage));
+        Routing.RegisterRoute(Routes.StudentCourseDetail, typeof(CourseDetailsPage));
+        Routing.RegisterRoute(Routes.StudentTakeActivity, typeof(TakeActivityPage));
     }
 
-    /// <summary>
-    /// Llamado desde LoginViewModel después de autenticar.
-    /// Oculta el login, muestra los tabs del rol y navega al inicio.
-    /// </summary>
     public async Task ShowRoleTabsAsync(string role)
     {
-        // Ocultar todo
         LoginSection.IsVisible = false;
         AdminTabs.IsVisible = false;
         TeacherTabs.IsVisible = false;
@@ -53,42 +48,34 @@ public partial class AppShell : Shell
 
         switch (role.Trim())
         {
-            case "Admin":
+            case Roles.Admin:
                 AdminTabs.IsVisible = true;
-                await GoToAsync("//admin_home");
+                await GoToAsync(Routes.AdminHome);
                 break;
 
-            case "Professor":
-            case "Profesor":
+            case Roles.Professor:
                 TeacherTabs.IsVisible = true;
-                await GoToAsync("//teacher_home");
+                await GoToAsync(Routes.TeacherHome);
                 break;
 
-            case "Student":
-            case "Estudiante":
+            case Roles.Student:
                 StudentTabs.IsVisible = true;
-                await GoToAsync("//student_home");
+                await GoToAsync(Routes.StudentHome);
                 break;
 
             default:
-                await DisplayAlert(
-                    "Error",
-                    $"Rol '{role}' no reconocido.",
-                    "OK");
+                await DisplayAlert("Error", $"Rol '{role}' no reconocido.", "OK");
                 LoginSection.IsVisible = true;
                 break;
         }
     }
 
-    /// <summary>
-    /// Llamado desde logout — regresa al login y limpia los tabs.
-    /// </summary>
     public async Task LogoutAsync()
     {
         AdminTabs.IsVisible = false;
         TeacherTabs.IsVisible = false;
         StudentTabs.IsVisible = false;
         LoginSection.IsVisible = true;
-        await GoToAsync("//login");
+        await GoToAsync(Routes.Login);
     }
 }

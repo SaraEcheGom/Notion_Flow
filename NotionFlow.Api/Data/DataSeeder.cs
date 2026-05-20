@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NotionFlow.Api.Models;
 
 namespace NotionFlow.Api.Data
@@ -9,17 +10,22 @@ namespace NotionFlow.Api.Data
         private readonly AppDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILogger<DataSeeder> _logger;
 
-        public DataSeeder(AppDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public DataSeeder(
+            AppDbContext context,
+            UserManager<User> userManager,
+            RoleManager<IdentityRole> roleManager,
+            ILogger<DataSeeder> logger)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _logger = logger;
         }
 
         public async Task SeedAsync()
         {
-            // Usamos una estrategia de ejecución para manejar reintentos si es necesario
             var strategy = _context.Database.CreateExecutionStrategy();
 
             await strategy.ExecuteAsync(async () =>
@@ -27,41 +33,34 @@ namespace NotionFlow.Api.Data
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 try
                 {
-                    Console.WriteLine("\n🔄 Iniciando proceso de seeding...");
+                    _logger.LogInformation("Iniciando proceso de seeding...");
 
-                    // 0. Limpieza total
                     await CleanAndResetDatabaseAsync();
 
-                    // 1. Datos Maestros
                     await SeedRolesAsync();
                     await SeedInstitutionsAsync();
                     await SeedUsersAsync();
 
-                    // 2. Estructura Académica
                     await SeedInstitutionAdministratorsAsync();
                     await SeedCoursesAsync();
                     await SeedCourseTeachersAsync();
                     await SeedCourseStudentsAsync();
 
-                    // 3. Contenido y Progreso
                     await SeedContentsAsync();
                     await SeedEvaluationsAsync();
                     await SeedGradesAsync();
 
-                    // 4. Sincronización de Identidad (PostgreSQL)
                     await ResetSequencesAsync();
 
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    Console.WriteLine("✅ SEED COMPLETADO EXITOSAMENTE.\n");
+                    _logger.LogInformation("Seed completado exitosamente");
                 }
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    Console.WriteLine($"❌ ERROR CRÍTICO EN SEED: {ex.Message}");
-                    if (ex.InnerException != null)
-                        Console.WriteLine($"   Inner: {ex.InnerException.Message}");
+                    _logger.LogError(ex, "Error crítico durante el seed");
                     throw;
                 }
             });
@@ -69,10 +68,14 @@ namespace NotionFlow.Api.Data
 
         private async Task CleanAndResetDatabaseAsync()
         {
-            Console.WriteLine("   🗑️ Limpiando tablas...");
+            _logger.LogDebug("Limpiando tablas...");
             await _context.Database.ExecuteSqlRawAsync("SET session_replication_role = 'replica'");
 
-            var tables = new[] { "Grades", "Evaluations", "Contents", "CourseStudents", "CourseTeachers", "Courses", "InstitutionAdministrators", "AspNetUserRoles", "AspNetUsers", "Institutions" };
+            var tables = new[]
+            {
+                "Grades", "Evaluations", "Contents", "CourseStudents", "CourseTeachers",
+                "Courses", "InstitutionAdministrators", "AspNetUserRoles", "AspNetUsers", "Institutions"
+            };
 
             foreach (var table in tables)
             {
@@ -92,7 +95,7 @@ namespace NotionFlow.Api.Data
                 if (!await _roleManager.RoleExistsAsync(role))
                     await _roleManager.CreateAsync(new IdentityRole(role));
             }
-            Console.WriteLine("   ✓ Roles creados.");
+            _logger.LogDebug("Roles creados");
         }
 
         private async Task SeedInstitutionsAsync()
@@ -105,7 +108,7 @@ namespace NotionFlow.Api.Data
 
             _context.Institutions!.AddRange(institutions);
             await _context.SaveChangesAsync();
-            Console.WriteLine("   ✓ Instituciones creadas.");
+            _logger.LogDebug("Instituciones creadas");
         }
 
         private async Task SeedUsersAsync()
@@ -123,7 +126,7 @@ namespace NotionFlow.Api.Data
                 var existingUser = await _userManager.FindByEmailAsync(u.Email);
                 if (existingUser != null)
                 {
-                    Console.WriteLine($"      ℹ {u.Email} ya existe, omitiendo...");
+                    _logger.LogDebug("Usuario {Email} ya existe, omitiendo", u.Email);
                     continue;
                 }
 
@@ -145,15 +148,16 @@ namespace NotionFlow.Api.Data
                 var result = await _userManager.CreateAsync(user, "NotionFlow123!");
                 if (result.Succeeded)
                 {
-                    var roleResult = await _userManager.AddToRoleAsync(user, u.Role);
-                    Console.WriteLine($"      ✓ {u.Email} ({u.Role})");
+                    await _userManager.AddToRoleAsync(user, u.Role);
+                    _logger.LogDebug("Usuario creado: {Email} ({Role})", u.Email, u.Role);
                 }
                 else
                 {
-                    Console.WriteLine($"      ✗ {u.Email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                    _logger.LogWarning("Error creando {Email}: {Errors}", u.Email,
+                        string.Join(", ", result.Errors.Select(e => e.Description)));
                 }
             }
-            Console.WriteLine("   ✓ Usuarios e Identity configurados.");
+            _logger.LogDebug("Usuarios e Identity configurados");
         }
 
         private async Task SeedInstitutionAdministratorsAsync()
@@ -172,7 +176,7 @@ namespace NotionFlow.Api.Data
                 new Course { Id = 2, InstitutionId = 1, Name = "Programación con .NET", Subject = "Programación", Description = "C# y ASP.NET", CreatedAt = DateTime.UtcNow, IsActive = true }
             );
             await _context.SaveChangesAsync();
-            Console.WriteLine("   ✓ Cursos creados.");
+            _logger.LogDebug("Cursos creados");
         }
 
         private async Task SeedCourseTeachersAsync()
@@ -217,14 +221,13 @@ namespace NotionFlow.Api.Data
 
         private async Task ResetSequencesAsync()
         {
-            Console.WriteLine("   🔄 Sincronizando secuencias de PostgreSQL...");
+            _logger.LogDebug("Sincronizando secuencias de PostgreSQL...");
             var tables = new[] { "Institutions", "Courses", "Contents", "CourseTeachers", "Evaluations", "Grades", "InstitutionAdministrators" };
 
             foreach (var table in tables)
             {
                 try
                 {
-                    // Obtener el máximo ID de la tabla y resetear la secuencia correspondiente
                     var sql = $@"
                         DO $$
                         DECLARE
@@ -239,14 +242,13 @@ namespace NotionFlow.Api.Data
                         END $$;";
 
                     await _context.Database.ExecuteSqlRawAsync(sql);
-                    Console.WriteLine($"      ✓ {table}");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"      ⚠ {table}: {ex.Message}");
+                    _logger.LogWarning(ex, "No se pudo sincronizar secuencia de {Table}", table);
                 }
             }
-            Console.WriteLine("   ✓ Secuencias sincronizadas.");
+            _logger.LogDebug("Secuencias sincronizadas");
         }
     }
 }

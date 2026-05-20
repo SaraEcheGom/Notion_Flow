@@ -1,12 +1,11 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using System.Threading.Tasks;
-using System.Diagnostics;
+using NotionFlow.App.Constants;
+using NotionFlow.App.Models.Auth;
 using NotionFlow.App.Services;
 using NotionFlow.App.Views.Admin;
 using NotionFlow.App.Views.Auth;
 using NotionFlow.App.Views.Course;
-using NotionFlow.App.Models.Auth;
 using NotionFlow.App.ViewModels.Auth;
 using NotionFlow.App.ViewModels.Course;
 
@@ -15,6 +14,7 @@ namespace NotionFlow.App.ViewModels.Admin
     public class AdminViewModel : BaseViewModel
     {
         private readonly ApiService _api;
+        private readonly AuthService _auth;
 
         public ObservableCollection<AuthResponse> Teachers { get; } = new();
         public ObservableCollection<AuthResponse> Students { get; } = new();
@@ -117,9 +117,11 @@ namespace NotionFlow.App.ViewModels.Admin
         public ICommand ViewProfileCommand { get; }
         public ICommand ViewCourseDetailsCommand { get; }
 
-        public AdminViewModel(ApiService apiService)
+        public AdminViewModel(ApiService apiService, AuthService authService)
         {
             _api = apiService;
+            _auth = authService;
+
             LoadDataCommand = new Command(async () => await LoadDataAsync());
             CreateCourseCommand = new Command(async () => await CreateCourseAsync());
             AssignStudentCommand = new Command(async () => await AssignStudentAsync());
@@ -139,45 +141,36 @@ namespace NotionFlow.App.ViewModels.Admin
 
             ViewProfileCommand = new Command<AuthResponse>(async (u) =>
                 await Shell.Current.Navigation.PushAsync(
-                    new UserProfilePage(new UserProfileViewModel(u))));
+                    new UserProfilePage(new UserProfileViewModel(u, _api))));
 
             ViewCourseDetailsCommand = new Command<CourseResponse>(async (course) =>
             {
                 if (course == null) return;
                 await Shell.Current.Navigation.PushAsync(
-                    new CourseDetailsPage(course, _api));
+                    new CourseDetailsPage(course, _api, _auth));
             });
 
-            Debug.WriteLine("✓ [AdminViewModel] Constructor initialized");
             _ = ValidateAndLoadDataAsync();
         }
 
         private async Task ValidateAndLoadDataAsync()
         {
-            Debug.WriteLine("\n🔐 [AdminViewModel] Validating user role...");
-            var currentUser = AuthService.CurrentUser;
+            var currentUser = _auth.CurrentUser;
 
             if (currentUser == null)
             {
-                Debug.WriteLine("❌ [AdminViewModel] CurrentUser is null - user not authenticated");
                 await Shell.Current.DisplayAlert("Error", "User not authenticated. Please login again.", "OK");
-                await Shell.Current.GoToAsync("//login");
+                await Shell.Current.GoToAsync(Routes.Login);
                 return;
             }
 
-            Debug.WriteLine($"✓ [AdminViewModel] CurrentUser: {currentUser.Name}, ID: {currentUser.Id}");
-            Debug.WriteLine($"  Role: {currentUser.Role}");
-            Debug.WriteLine($"  Institution: {currentUser.InstitutionId}");
-
-            if (currentUser.Role != "Admin")
+            if (currentUser.Role != Roles.Admin)
             {
-                Debug.WriteLine($"❌ [AdminViewModel] User role is '{currentUser.Role}', but 'Admin' is required");
                 await Shell.Current.DisplayAlert("Error", "Only administrators can access this page.", "OK");
-                await Shell.Current.GoToAsync("//login");
+                await Shell.Current.GoToAsync(Routes.Login);
                 return;
             }
 
-            Debug.WriteLine("✓ [AdminViewModel] User is authenticated and has Admin role");
             await LoadDataAsync();
         }
 
@@ -185,68 +178,44 @@ namespace NotionFlow.App.ViewModels.Admin
         {
             try
             {
-                Debug.WriteLine("📊 [AdminViewModel] Starting LoadDataAsync");
-
-                // Get current admin's InstitutionId
-                var currentUser = AuthService.CurrentUser;
+                var currentUser = _auth.CurrentUser;
                 if (currentUser == null)
                 {
-                    Debug.WriteLine("⚠️ [AdminViewModel] CurrentUser is null");
                     await Shell.Current.DisplayAlert("Error", "User not authenticated", "OK");
                     return;
                 }
 
-                Debug.WriteLine($"👤 [AdminViewModel] CurrentUser: {currentUser.Name}, ID: {currentUser.Id}, Institution: {currentUser.InstitutionId}");
-
-                var adminInstitutionId = currentUser.InstitutionId;
-                if (adminInstitutionId <= 0)
+                if (currentUser.InstitutionId <= 0)
                 {
-                    Debug.WriteLine($"⚠️ [AdminViewModel] Invalid InstitutionId: {adminInstitutionId}. This may indicate a database sync issue.");
-                    Debug.WriteLine("💡 [AdminViewModel] Hint: Check if the user was created with InstitutionId set in the database");
-                    await Shell.Current.DisplayAlert("Error", 
-                        $"Invalid Institution ID ({adminInstitutionId}). Please logout and login again.", "OK");
+                    await Shell.Current.DisplayAlert("Error",
+                        $"Invalid Institution ID ({currentUser.InstitutionId}). Please logout and login again.", "OK");
                     return;
                 }
-                Debug.WriteLine($"🏢 [AdminViewModel] Loading data for Institution ID: {adminInstitutionId}");
 
-                Debug.WriteLine("🔍 [AdminViewModel] Calling GetUsersByRoleAsync('Professor')");
-                var teachers = await _api.GetUsersByRoleAsync("Professor");
-                Debug.WriteLine($"✓ [AdminViewModel] Got {teachers.Count} teachers from API (filtered by institution)");
-
-                Debug.WriteLine("🔍 [AdminViewModel] Calling GetUsersByRoleAsync('Student')");
-                var students = await _api.GetUsersByRoleAsync("Student");
-                Debug.WriteLine($"✓ [AdminViewModel] Got {students.Count} students from API (filtered by institution)");
-
-                Debug.WriteLine("🔍 [AdminViewModel] Calling GetAllCoursesAsync()");
+                var teachers = await _api.GetUsersByRoleAsync(Roles.Professor);
+                var students = await _api.GetUsersByRoleAsync(Roles.Student);
                 var courses = await _api.GetAllCoursesAsync();
-                Debug.WriteLine($"✓ [AdminViewModel] Got {courses.Count} courses from API (filtered by institution {adminInstitutionId})");
 
-                foreach (var course in courses)
+                MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    Debug.WriteLine($"  - Course: {course.Name} (ID: {course.Id}, Subject: {course.Subject})");
-                }
+                    Teachers.Clear();
+                    foreach (var t in teachers) Teachers.Add(t);
 
-                Teachers.Clear();
-                foreach (var teacher in teachers) Teachers.Add(teacher);
+                    Students.Clear();
+                    foreach (var s in students) Students.Add(s);
 
-                Students.Clear();
-                foreach (var student in students) Students.Add(student);
-
-                Courses.Clear();
-                foreach (var course in courses) Courses.Add(course);
-
-                Debug.WriteLine($"✓ [AdminViewModel] LoadDataAsync completed. Teachers: {Teachers.Count}, Students: {Students.Count}, Courses: {Courses.Count}");
+                    Courses.Clear();
+                    foreach (var c in courses) Courses.Add(c);
+                });
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                Debug.WriteLine($"✗ [AdminViewModel] Error in LoadDataAsync: {exception.GetType().Name}");
-                Debug.WriteLine($"✗ [AdminViewModel] Message: {exception.Message}");
-                Debug.WriteLine($"✗ [AdminViewModel] StackTrace: {exception.StackTrace}");
-                await Shell.Current.DisplayAlert("Error", exception.Message, "OK");
+                CrashLog.Write("AdminViewModel.LoadDataAsync", ex);
+                await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
             }
         }
 
-        private async System.Threading.Tasks.Task CreateCourseAsync()
+        private async Task CreateCourseAsync()
         {
             if (SelectedTeacher == null ||
                 string.IsNullOrWhiteSpace(CourseName) ||
@@ -269,11 +238,12 @@ namespace NotionFlow.App.ViewModels.Admin
             }
             catch (Exception ex)
             {
+                CrashLog.Write("AdminViewModel.CreateCourse", ex);
                 await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
             }
         }
 
-        private async System.Threading.Tasks.Task CreateTeacherAsync()
+        private async Task CreateTeacherAsync()
         {
             if (string.IsNullOrWhiteSpace(TeacherName) ||
                 string.IsNullOrWhiteSpace(TeacherEmail) ||
@@ -285,10 +255,7 @@ namespace NotionFlow.App.ViewModels.Admin
 
             try
             {
-                await _api.RegisterAsync(
-                    TeacherName, TeacherEmail, TeacherPassword,
-                    "Professor", "ADMIN");
-
+                await _api.RegisterAsync(TeacherName, TeacherEmail, TeacherPassword, Roles.Professor, "ADMIN");
                 await Shell.Current.DisplayAlert("Success", "Teacher created successfully", "OK");
                 TeacherName = string.Empty;
                 TeacherEmail = string.Empty;
@@ -298,11 +265,12 @@ namespace NotionFlow.App.ViewModels.Admin
             }
             catch (Exception ex)
             {
+                CrashLog.Write("AdminViewModel.CreateTeacher", ex);
                 await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
             }
         }
 
-        private async System.Threading.Tasks.Task CreateStudentAsync()
+        private async Task CreateStudentAsync()
         {
             if (string.IsNullOrWhiteSpace(StudentName) ||
                 string.IsNullOrWhiteSpace(StudentEmail) ||
@@ -314,10 +282,7 @@ namespace NotionFlow.App.ViewModels.Admin
 
             try
             {
-                await _api.RegisterAsync(
-                    StudentName, StudentEmail, StudentPassword,
-                    "Student", "ADMIN");
-
+                await _api.RegisterAsync(StudentName, StudentEmail, StudentPassword, Roles.Student, "ADMIN");
                 await Shell.Current.DisplayAlert("Success", "Student created successfully", "OK");
                 StudentName = string.Empty;
                 StudentEmail = string.Empty;
@@ -327,62 +292,47 @@ namespace NotionFlow.App.ViewModels.Admin
             }
             catch (Exception ex)
             {
+                CrashLog.Write("AdminViewModel.CreateStudent", ex);
                 await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
             }
         }
 
         private async Task AssignStudentAsync()
         {
-            Debug.WriteLine("\n📝 [AdminViewModel] AssignStudentAsync called");
-
             if (SelectedCourse == null)
             {
-                Debug.WriteLine("❌ [AdminViewModel] SelectedCourse is null");
                 await Shell.Current.DisplayAlert("Error", "Select a course", "OK");
                 return;
             }
 
             if (SelectedStudent == null)
             {
-                Debug.WriteLine("❌ [AdminViewModel] SelectedStudent is null");
                 await Shell.Current.DisplayAlert("Error", "Select a student", "OK");
                 return;
             }
 
-            Debug.WriteLine($"✓ [AdminViewModel] Course selected: {SelectedCourse.Name} (ID: {SelectedCourse.Id})");
-            Debug.WriteLine($"✓ [AdminViewModel] Student selected: {SelectedStudent.Name} (ID: {SelectedStudent.Id})");
-            Debug.WriteLine($"  Student email: {SelectedStudent.Email}");
-            Debug.WriteLine($"  Student role: {SelectedStudent.Role}");
-
             try
             {
-                Debug.WriteLine($"📤 [AdminViewModel] Calling API.AssignStudentAsync...");
                 await _api.AssignStudentAsync(SelectedCourse.Id, SelectedStudent.Id);
-
-                Debug.WriteLine($"✅ [AdminViewModel] Assignment successful");
                 await Shell.Current.DisplayAlert("Success",
                     $"{SelectedStudent.Name} has been assigned to {SelectedCourse.Name}", "OK");
-
                 await LoadDataAsync();
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                Debug.WriteLine($"❌ [AdminViewModel] Error: {exception.GetType().Name}");
-                Debug.WriteLine($"   Message: {exception.Message}");
-                Debug.WriteLine($"   StackTrace: {exception.StackTrace}");
-                await Shell.Current.DisplayAlert("Error", exception.Message, "OK");
+                CrashLog.Write("AdminViewModel.AssignStudent", ex);
+                await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
             }
         }
 
         private async Task LogoutAsync()
         {
-            await AuthService.LogoutAsync();
+            await _auth.LogoutAsync();
 
             if (Application.Current?.MainPage is AppShell shell)
                 await shell.LogoutAsync();
             else
-                await Shell.Current.GoToAsync("//login");
+                await Shell.Current.GoToAsync(Routes.Login);
         }
-
     }
 }

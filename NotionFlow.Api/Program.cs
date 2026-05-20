@@ -46,24 +46,28 @@ builder.Logging.AddConsole();
 
 var app = builder.Build();
 
-// Seed de datos de forma async
-await Task.Run(async () =>
+using (var scope = app.Services.CreateScope())
 {
-    using (var scope = app.Services.CreateScope())
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    try
     {
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-        // Ejecutar migraciones
         await db.Database.MigrateAsync();
-        Console.WriteLine("✓ Migraciones completadas.");
+        logger.LogInformation("Migraciones completadas");
 
-        // Ejecutar seeding
-        var seeder = new DataSeeder(db, userManager, roleManager);
+        var seeder = new DataSeeder(db, userManager, roleManager,
+            scope.ServiceProvider.GetRequiredService<ILogger<DataSeeder>>());
         await seeder.SeedAsync();
     }
-});
+    catch (Exception ex)
+    {
+        logger.LogCritical(ex, "Error durante la inicialización de la aplicación");
+        throw;
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {

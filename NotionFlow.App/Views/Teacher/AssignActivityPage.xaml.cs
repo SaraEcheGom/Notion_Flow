@@ -12,19 +12,19 @@ public partial class AssignActivityPage : ContentPage
     public string ActivityTitle => _activity.Title;
     public List<SelectableStudent> SelectableStudents { get; private set; } = new();
 
-    public AssignActivityPage(ApiService api, ActivityViewModel vm, ActivityModel activity)
+    public AssignActivityPage(ApiService api, AuthService auth, ActivityViewModel vm, ActivityModel activity)
     {
         InitializeComponent();
         _vm = vm; _activity = activity;
         BindingContext = this;
-        _ = LoadStudentsAsync(api);
+        _ = LoadStudentsAsync(api, auth);
     }
 
-    private async Task LoadStudentsAsync(ApiService api)
+    private async Task LoadStudentsAsync(ApiService api, AuthService auth)
     {
         try
         {
-            var courses = await api.GetCoursesByProfessorAsync(AuthService.CurrentUser?.Id ?? string.Empty);
+            var courses = await api.GetCoursesByProfessorAsync(auth.CurrentUser?.Id ?? string.Empty);
             var course = courses.FirstOrDefault(c => c.Id == _vm.CourseId);
             if (course == null) return;
             var assignedIds = _activity.Assignments.Select(a => a.StudentId).ToHashSet();

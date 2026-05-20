@@ -1,3 +1,4 @@
+using NotionFlow.App.Services;
 using NotionFlow.App.ViewModels.Course;
 
 namespace NotionFlow.App.Views.Course;
@@ -33,14 +34,17 @@ public partial class CoursePage : ContentPage
 
     private void TryLoadViewModel()
     {
-        // If BindingContext was set externally (e.g. TeacherViewModel push) don't overwrite it
         if (_vmLoaded || BindingContext is CourseViewModel) return;
 
         if (!string.IsNullOrEmpty(_courseId) &&
             !string.IsNullOrEmpty(_courseName) &&
             !string.IsNullOrEmpty(_role))
         {
-            BindingContext = new CourseViewModel(_courseId, _courseName, _role);
+            var services = IPlatformApplication.Current!.Services;
+            BindingContext = new CourseViewModel(
+                services.GetRequiredService<ApiService>(),
+                services.GetRequiredService<AuthService>(),
+                _courseId, _courseName, _role);
             _vmLoaded = true;
         }
     }

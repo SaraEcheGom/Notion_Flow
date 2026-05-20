@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+using NotionFlow.App.Constants;
 using NotionFlow.App.Models;
 using NotionFlow.App.Models.Auth;
 using NotionFlow.App.Services;
@@ -8,7 +8,7 @@ namespace NotionFlow.App.ViewModels.Auth
 {
     public class UserProfileViewModel : BaseViewModel
     {
-        private readonly ApiService _api = new();
+        private readonly ApiService _api;
 
         public string Name { get; }
         public string Email { get; }
@@ -18,29 +18,23 @@ namespace NotionFlow.App.ViewModels.Auth
 
         public ObservableCollection<CourseResponse> Courses { get; } = new();
 
-        public UserProfileViewModel(AuthResponse user)
+        public UserProfileViewModel(AuthResponse user, ApiService apiService)
         {
+            _api = apiService ?? throw new ArgumentNullException(nameof(apiService));
             Name = user.Name;
             Email = user.Email;
             Role = user.Role;
             _ = LoadCoursesAsync(user);
         }
 
-        private async System.Threading.Tasks.Task LoadCoursesAsync(AuthResponse user)
+        private async Task LoadCoursesAsync(AuthResponse user)
         {
-            try
-            {
-                List<CourseResponse> coursesList;
+            var isProfessor = user.Role == Roles.Professor;
+            var fetchFunc = isProfessor
+                ? () => _api.GetCoursesByProfessorAsync(user.Id)
+                : (Func<Task<List<CourseResponse>>>)(() => _api.GetCoursesByStudentAsync(user.Id));
 
-                if (user.Role == "Profesor")
-                    coursesList = await _api.GetCoursesByProfessorAsync(user.Id);
-                else
-                    coursesList = await _api.GetCoursesByStudentAsync(user.Id);
-
-                Courses.Clear();
-                foreach (var course in coursesList) Courses.Add(course);
-            }
-            catch { }
+            await ExecuteLoadAsync(fetchFunc, Courses, "UserProfileViewModel.LoadCoursesAsync");
         }
     }
 }

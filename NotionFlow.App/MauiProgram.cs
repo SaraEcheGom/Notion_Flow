@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NotionFlow.App.Services;
 using NotionFlow.App.ViewModels.Auth;
 using NotionFlow.App.ViewModels.Admin;
@@ -25,21 +25,22 @@ namespace NotionFlow.App
                     fonts.AddFont("Fraunces_72pt-SemiBold.ttf", "FrauncesSemiBold");
                 });
 
-            // ── Servicios ─────────────────────────────────────────────────
+            // ── Servicios (Singleton: una sola instancia compartida) ───────────
             builder.Services.AddSingleton<ApiService>();
             builder.Services.AddSingleton<AuthService>();
 
-            // ── Shell — Singleton para que DI lo resuelva en App ──────────
+            // ── Shell ─────────────────────────────────────────────────────────
             builder.Services.AddSingleton<AppShell>();
 
-            // ── ViewModels ────────────────────────────────────────────────
+            // ── ViewModels ────────────────────────────────────────────────────
+            // Singleton: mantienen estado de sesión entre navegaciones
             builder.Services.AddSingleton<LoginViewModel>();
             builder.Services.AddSingleton<RegisterViewModel>();
             builder.Services.AddSingleton<AdminViewModel>();
             builder.Services.AddSingleton<TeacherViewModel>();
             builder.Services.AddSingleton<StudentViewModel>();
 
-            // ── Páginas con dependencias ──────────────────────────────────
+            // ── Páginas con dependencias ──────────────────────────────────────
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<RegisterPage>();
             builder.Services.AddTransient<CreateCoursePage>();

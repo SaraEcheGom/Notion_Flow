@@ -12,18 +12,19 @@ namespace NotionFlow.App.Services
         private readonly HttpClient _httpClient;
         private readonly string _baseUrl;
 
+        private static readonly JsonSerializerOptions JsonOptions =
+            new() { PropertyNameCaseInsensitive = true };
+
         public ApiService()
         {
-            // Determine base URL based on platform
             _baseUrl = GetApiBaseUrl();
-            Debug.WriteLine($"🌐 [ApiService] BaseUrl: {_baseUrl}");
 
-            // Configure HttpClient with timeout and handler
             var handler = new HttpClientHandler();
 
 #if DEBUG
-            // In development, allow HTTP connections without HTTPS
-            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+            // Permite certificados self-signed solo en debug
+            handler.ServerCertificateCustomValidationCallback =
+                (message, cert, chain, errors) => true;
 #endif
 
             _httpClient = new HttpClient(handler)
@@ -31,117 +32,78 @@ namespace NotionFlow.App.Services
                 BaseAddress = new Uri(_baseUrl),
                 Timeout = TimeSpan.FromSeconds(30)
             };
-            SetAuthorizationHeader();
-            Debug.WriteLine("✓ ApiService initialized");
         }
 
         private static string GetApiBaseUrl()
         {
-            // Android emulator: 10.0.2.2 = host machine
-            // iOS: localhost or IP address
-            // Windows: localhost (MAUI Windows runs as a native Windows process,
-            //                     so docker-compose's published port 5000 is reachable
-            //                     directly on the host).
-
-            // Runtime override: lets the user point the app at any API URL without
-            // recompiling. Set it once from anywhere with:
-            //   Microsoft.Maui.Storage.Preferences.Set("api_base_url",
-            //                                          "http://192.168.1.42:5000/api/");
-            var overrideUrl = Preferences.Get("api_base_url", string.Empty);
-            if (!string.IsNullOrWhiteSpace(overrideUrl))
-                return overrideUrl;
-
 #if __ANDROID__
             return "http://10.0.2.2:5000/api/";
 #elif __IOS__
             return "http://localhost:5000/api/";
 #elif WINDOWS
-            // To prevent IPv6 resolution issues (where localhost resolves to ::1
-            // instead of 127.0.0.1 which Docker binds to), we explicitly use 127.0.0.1.
-            // If you are using WSL without Docker Desktop, you may need to use the WSL IP instead.
             return "http://127.0.0.1:5000/api/";
 #else
             return "http://127.0.0.1:5000/api/";
 #endif
         }
 
-        private void SetAuthorizationHeader()
+        /// <summary>Carga el JWT desde SecureStorage y configura el header Authorization.</summary>
+        public async Task RefreshAuthHeaderAsync()
         {
-            var token = Preferences.Get("jwt_token", string.Empty);
-            if (!string.IsNullOrEmpty(token))
+            try
             {
-                Debug.WriteLine("🔑 [ApiService] JWT token found in Preferences");
-                _httpClient.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
+                var token = await SecureStorage.GetAsync("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", token);
+                }
+                else
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = null;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Debug.WriteLine("⚠️ [ApiService] No JWT token in Preferences");
+                Debug.WriteLine($"[ApiService] Error leyendo token seguro: {ex.GetType().Name}");
+                _httpClient.DefaultRequestHeaders.Authorization = null;
             }
         }
 
         private static StringContent CreateJsonContent(object obj) =>
-            new StringContent(
-                JsonSerializer.Serialize(obj),
-                Encoding.UTF8,
-                "application/json");
+            new StringContent(JsonSerializer.Serialize(obj), Encoding.UTF8, "application/json");
 
         public async Task<AuthResponse> LoginAsync(string email, string password)
         {
-            Debug.WriteLine($"📡 [ApiService] Starting POST to auth/login");
-            Debug.WriteLine($"📧 [ApiService] Email: {email}");
-
             try
             {
                 var response = await _httpClient.PostAsync("auth/login",
                     CreateJsonContent(new { email, password }));
 
-                Debug.WriteLine($"📊 [ApiService] Status Code: {response.StatusCode}");
-
                 response.EnsureSuccessStatusCode();
 
                 var jsonContent = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine($"📄 [ApiService] JSON received (length: {jsonContent.Length})");
-                Debug.WriteLine($"📄 [ApiService] JSON Content: {jsonContent}");
+                var data = JsonSerializer.Deserialize<AuthResponse>(jsonContent, JsonOptions)!;
 
-                var data = JsonSerializer.Deserialize<AuthResponse>(jsonContent,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+                // Guardar token en SecureStorage (cifrado por el OS)
+                await SecureStorage.SetAsync("jwt_token", data.Token);
+                await RefreshAuthHeaderAsync();
 
-                Debug.WriteLine($"✓ [ApiService] AuthResponse deserialized:");
-                Debug.WriteLine($"  - Token: {data.Token.Substring(0, Math.Min(20, data.Token.Length))}...");
-                Debug.WriteLine($"  - Name: {data.Name}");
-                Debug.WriteLine($"  - Email: {data.Email}");
-                Debug.WriteLine($"  - Role: {data.Role}");
-                Debug.WriteLine($"  - Id: {data.Id}");
-                Debug.WriteLine($"  - InstitutionId: {data.InstitutionId}");
-
-                Preferences.Set("jwt_token", data.Token);
-                SetAuthorizationHeader();
-
-                Debug.WriteLine($"✓ [ApiService] Token saved to Preferences");
                 return data;
             }
             catch (HttpRequestException ex)
             {
-                Debug.WriteLine($"✗ [ApiService] HttpRequestException: {ex.Message}");
-                Debug.WriteLine($"✗ [ApiService] InnerException: {ex.InnerException?.Message}");
-                throw new Exception($"Connection error: {ex.Message}", ex);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"✗ [ApiService] Exception: {ex.GetType().Name} - {ex.Message}");
-                throw;
+                throw new Exception($"Error de conexión: {ex.Message}", ex);
             }
         }
 
         public async Task<List<CourseResponse>> GetCoursesForAdminAsync()
         {
-            SetAuthorizationHeader();
+            await RefreshAuthHeaderAsync();
             var response = await _httpClient.GetAsync("courses");
             response.EnsureSuccessStatusCode();
-            var jsonContent = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<CourseResponse>>(jsonContent,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<CourseResponse>>(json, JsonOptions)!;
         }
 
         public async Task RegisterAsync(string name, string email,
@@ -159,151 +121,77 @@ namespace NotionFlow.App.Services
 
         public async Task<List<AuthResponse>> GetUsersByRoleAsync(string role)
         {
-            try
+            await RefreshAuthHeaderAsync();
+            var response = await _httpClient.GetAsync($"auth/users?role={role}");
+
+            if (!response.IsSuccessStatusCode)
             {
-                SetAuthorizationHeader();
-                var endpoint = $"auth/users?role={role}";
-                var fullUrl = $"{_baseUrl}{endpoint}";
-                Debug.WriteLine($"🔍 [ApiService] GET request to: {fullUrl}");
-                Debug.WriteLine($"🔐 [ApiService] Authorization header: {_httpClient.DefaultRequestHeaders.Authorization?.Scheme} {(_httpClient.DefaultRequestHeaders.Authorization?.Parameter != null ? "***" : "MISSING")}");
-
-                var response = await _httpClient.GetAsync(endpoint);
-                Debug.WriteLine($"📊 [ApiService] Response status: {(int)response.StatusCode} {response.StatusCode}");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    Debug.WriteLine($"✗ [ApiService] Error response body: {errorContent}");
-                }
-
-                response.EnsureSuccessStatusCode();
-                var jsonContent = await response.Content.ReadAsStringAsync();
-                var result = JsonSerializer.Deserialize<List<AuthResponse>>(jsonContent,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-                Debug.WriteLine($"✓ [ApiService] GetUsersByRoleAsync('{role}') returned {result.Count} users");
-                return result;
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error {(int)response.StatusCode}: {errorContent}");
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"✗ [ApiService] GetUsersByRoleAsync('{role}') exception: {ex.GetType().Name}");
-                Debug.WriteLine($"✗ [ApiService] Message: {ex.Message}");
-                throw;
-            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<AuthResponse>>(json, JsonOptions)!;
         }
 
         public async Task<List<CourseResponse>> GetCoursesByProfessorAsync(string professorId)
         {
-            SetAuthorizationHeader();
-            // The API exposes [HttpGet("teacher/{teacherId}")] in CoursesController, not
-            // "professor/{...}". The previous URL produced a 404 right after a Professor
-            // logged in (TeacherViewModel calls this in its ctor), so the user saw the
-            // error toast "status code doesnt indicate success 404 not found".
+            await RefreshAuthHeaderAsync();
             var response = await _httpClient.GetAsync($"courses/teacher/{professorId}");
             response.EnsureSuccessStatusCode();
-            var jsonContent = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<CourseResponse>>(jsonContent,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<CourseResponse>>(json, JsonOptions)!;
         }
 
         public async Task<List<CourseResponse>> GetCoursesByStudentAsync(string studentId)
         {
-            SetAuthorizationHeader();
+            await RefreshAuthHeaderAsync();
             var response = await _httpClient.GetAsync($"courses/student/{studentId}");
             response.EnsureSuccessStatusCode();
-            var jsonContent = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<CourseResponse>>(jsonContent,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<CourseResponse>>(json, JsonOptions)!;
         }
 
         public async Task CreateCourseAsync(string name, string subject, string description, string teacherId)
         {
-            try
+            await RefreshAuthHeaderAsync();
+            var response = await _httpClient.PostAsync("courses",
+                CreateJsonContent(new { Name = name, Subject = subject, Description = description, TeacherId = teacherId }));
+
+            if (!response.IsSuccessStatusCode)
             {
-                SetAuthorizationHeader();
-                Debug.WriteLine($"🔍 [ApiService] Creating course: Name='{name}', Subject='{subject}', TeacherId='{teacherId}'");
-
-                var payload = new { Name = name, Subject = subject, Description = description, TeacherId = teacherId };
-                Debug.WriteLine($"📦 [ApiService] Payload: {JsonSerializer.Serialize(payload)}");
-
-                var response = await _httpClient.PostAsync("courses",
-                    CreateJsonContent(payload));
-
-                Debug.WriteLine($"📊 [ApiService] Response status: {(int)response.StatusCode} {response.StatusCode}");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    Debug.WriteLine($"✗ [ApiService] Error response body: {errorContent}");
-                }
-
-                response.EnsureSuccessStatusCode();
-                Debug.WriteLine($"✓ [ApiService] Course created successfully");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"✗ [ApiService] CreateCourseAsync exception: {ex.GetType().Name}");
-                Debug.WriteLine($"✗ [ApiService] Message: {ex.Message}");
-                throw;
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al crear curso: {errorContent}");
             }
         }
 
         public async Task AssignStudentAsync(int courseId, string studentId)
         {
-            try
+            await RefreshAuthHeaderAsync();
+            var response = await _httpClient.PostAsync(
+                $"courses/{courseId}/students",
+                CreateJsonContent(new { studentId }));
+
+            if (!response.IsSuccessStatusCode)
             {
-                SetAuthorizationHeader();
-                var endpoint = $"courses/{courseId}/students";
-                var fullUrl = $"{_baseUrl}{endpoint}";
-                var payload = new { studentId };
-
-                Debug.WriteLine($"\n📡 [ApiService] AssignStudentAsync called");
-                Debug.WriteLine($"  Course ID: {courseId}");
-                Debug.WriteLine($"  Student ID: {studentId}");
-                Debug.WriteLine($"  URL: {fullUrl}");
-                Debug.WriteLine($"  Payload: {JsonSerializer.Serialize(payload)}");
-                Debug.WriteLine($"  Authorization header present: {_httpClient.DefaultRequestHeaders.Authorization != null}");
-
-                var response = await _httpClient.PostAsync(endpoint,
-                    CreateJsonContent(payload));
-
-                Debug.WriteLine($"  Status Code: {(int)response.StatusCode} {response.StatusCode}");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    Debug.WriteLine($"✗ [ApiService] Error response body: {errorContent}");
-                    throw new Exception($"API returned {(int)response.StatusCode}: {errorContent}");
-                }
-
-                var content = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine($"✓ [ApiService] AssignStudentAsync successful: {content}");
-            }
-            catch (HttpRequestException ex)
-            {
-                Debug.WriteLine($"✗ [ApiService] HttpRequestException: {ex.Message}");
-                throw new Exception($"Connection error: {ex.Message}", ex);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"✗ [ApiService] Exception: {ex.GetType().Name} - {ex.Message}");
-                throw;
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error {(int)response.StatusCode}: {errorContent}");
             }
         }
 
         public async Task<List<Evaluation>> GetEvaluationsAsync(int courseId)
         {
-            SetAuthorizationHeader();
+            await RefreshAuthHeaderAsync();
             var response = await _httpClient.GetAsync($"courses/{courseId}/evaluations");
             response.EnsureSuccessStatusCode();
-            var jsonContent = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<Evaluation>>(jsonContent,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<Evaluation>>(json, JsonOptions)!;
         }
 
         public async Task CreateEvaluationAsync(int courseId, string title,
             string description, double percentage)
         {
-            SetAuthorizationHeader();
+            await RefreshAuthHeaderAsync();
             var response = await _httpClient.PostAsync($"courses/{courseId}/evaluations",
                 CreateJsonContent(new { title, description, date = DateTime.Now, percentageValue = percentage }));
             response.EnsureSuccessStatusCode();
@@ -311,107 +199,75 @@ namespace NotionFlow.App.Services
 
         public async Task<List<Content>> GetContentsAsync(int courseId)
         {
-            SetAuthorizationHeader();
+            await RefreshAuthHeaderAsync();
             var response = await _httpClient.GetAsync($"courses/{courseId}/contents");
             response.EnsureSuccessStatusCode();
-            var jsonContent = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<Content>>(jsonContent,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<Content>>(json, JsonOptions)!;
         }
 
         public async Task RemoveStudentAsync(int courseId, string studentId)
         {
-            try
+            await RefreshAuthHeaderAsync();
+            var response = await _httpClient.DeleteAsync($"courses/{courseId}/students/{studentId}");
+
+            if (!response.IsSuccessStatusCode)
             {
-                SetAuthorizationHeader();
-                var endpoint = $"courses/{courseId}/students/{studentId}";
-                var fullUrl = $"{_baseUrl}{endpoint}";
-
-                Debug.WriteLine($"\n📡 [ApiService] RemoveStudentAsync called");
-                Debug.WriteLine($"  Course ID: {courseId}");
-                Debug.WriteLine($"  Student ID: {studentId}");
-                Debug.WriteLine($"  URL: {fullUrl}");
-                Debug.WriteLine($"  Authorization header present: {_httpClient.DefaultRequestHeaders.Authorization != null}");
-
-                var response = await _httpClient.DeleteAsync(endpoint);
-
-                Debug.WriteLine($"  Status Code: {(int)response.StatusCode} {response.StatusCode}");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    Debug.WriteLine($"✗ [ApiService] Error response body: {errorContent}");
-                    throw new Exception($"API returned {(int)response.StatusCode}: {errorContent}");
-                }
-
-                var content = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine($"✓ [ApiService] RemoveStudentAsync successful: {content}");
-            }
-            catch (HttpRequestException ex)
-            {
-                Debug.WriteLine($"✗ [ApiService] HttpRequestException: {ex.Message}");
-                throw new Exception($"Connection error: {ex.Message}", ex);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"✗ [ApiService] Exception: {ex.GetType().Name} - {ex.Message}");
-                throw;
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error {(int)response.StatusCode}: {errorContent}");
             }
         }
 
         public async Task<List<ActivityModel>> GetActivitiesAsync(int courseId)
         {
-            SetAuthorizationHeader();
+            await RefreshAuthHeaderAsync();
             var response = await _httpClient.GetAsync($"courses/{courseId}/activities");
             if (!response.IsSuccessStatusCode)
-            {
-                System.Diagnostics.Debug.WriteLine(
-                    $"[ApiService] GetActivitiesAsync {(int)response.StatusCode} {response.StatusCode}");
-                return new List<ActivityModel>();   // devuelve lista vacía en vez de crash
-            }
+                return new List<ActivityModel>();
+
             var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<ActivityModel>>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+            return JsonSerializer.Deserialize<List<ActivityModel>>(json, JsonOptions)
                 ?? new List<ActivityModel>();
         }
 
         public async Task<ActivityModel> CreateActivityAsync(int courseId, object activityPayload)
         {
-            SetAuthorizationHeader();
+            await RefreshAuthHeaderAsync();
             var response = await _httpClient.PostAsync(
                 $"courses/{courseId}/activities",
                 CreateJsonContent(activityPayload));
+
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
                 throw new Exception($"Error al crear actividad: {error}");
             }
             var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<ActivityModel>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            return JsonSerializer.Deserialize<ActivityModel>(json, JsonOptions)!;
         }
 
         public async Task<ActivityModel> UpdateActivityAsync(int courseId, int activityId, object activityPayload)
         {
-            SetAuthorizationHeader();
+            await RefreshAuthHeaderAsync();
             var response = await _httpClient.PutAsync(
                 $"courses/{courseId}/activities/{activityId}",
                 CreateJsonContent(activityPayload));
+
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
                 throw new Exception($"Error al editar actividad: {error}");
             }
             var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<ActivityModel>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            return JsonSerializer.Deserialize<ActivityModel>(json, JsonOptions)!;
         }
 
         public async Task DeleteActivityAsync(int courseId, int activityId)
         {
-            SetAuthorizationHeader();
+            await RefreshAuthHeaderAsync();
             var response = await _httpClient.DeleteAsync(
                 $"courses/{courseId}/activities/{activityId}");
+
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
@@ -421,10 +277,11 @@ namespace NotionFlow.App.Services
 
         public async Task AssignActivityAsync(int courseId, int activityId, List<string> studentIds)
         {
-            SetAuthorizationHeader();
+            await RefreshAuthHeaderAsync();
             var response = await _httpClient.PostAsync(
                 $"courses/{courseId}/activities/{activityId}/assign",
                 CreateJsonContent(new { studentIds }));
+
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
@@ -435,7 +292,7 @@ namespace NotionFlow.App.Services
         public async Task<SubmitFeedbackResponse> SubmitActivityAsync(int courseId, int activityId,
             List<NotionFlow.App.Views.Student.AnswerPayload> answers)
         {
-            SetAuthorizationHeader();
+            await RefreshAuthHeaderAsync();
             var payload = answers.Select(a => new
             {
                 questionId = a.QuestionId,
@@ -445,37 +302,37 @@ namespace NotionFlow.App.Services
             var response = await _httpClient.PostAsync(
                 $"courses/{courseId}/activities/{activityId}/submit",
                 CreateJsonContent(new { answers = payload }));
+
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
                 throw new Exception($"Error al enviar actividad: {error}");
             }
             var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<SubmitFeedbackResponse>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+            return JsonSerializer.Deserialize<SubmitFeedbackResponse>(json, JsonOptions)
                 ?? new SubmitFeedbackResponse();
         }
 
         public async Task<ActivityResultsResponse> GetActivityResultsAsync(int courseId, int activityId)
         {
-            SetAuthorizationHeader();
+            await RefreshAuthHeaderAsync();
             var response = await _httpClient.GetAsync(
                 $"courses/{courseId}/activities/{activityId}/results");
+
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
                 throw new Exception($"Error al obtener resultados: {error}");
             }
             var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<ActivityResultsResponse>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+            return JsonSerializer.Deserialize<ActivityResultsResponse>(json, JsonOptions)
                 ?? new ActivityResultsResponse();
         }
 
         public async Task PublishContentAsync(int courseId, string title,
             string description, string type, string url)
         {
-            SetAuthorizationHeader();
+            await RefreshAuthHeaderAsync();
             var response = await _httpClient.PostAsync($"courses/{courseId}/contents",
                 CreateJsonContent(new { title, description, type, url }));
             response.EnsureSuccessStatusCode();
@@ -483,36 +340,17 @@ namespace NotionFlow.App.Services
 
         public async Task<List<CourseResponse>> GetAllCoursesAsync()
         {
-            try
+            await RefreshAuthHeaderAsync();
+            var response = await _httpClient.GetAsync("courses");
+
+            if (!response.IsSuccessStatusCode)
             {
-                SetAuthorizationHeader();
-                var endpoint = "courses";
-                var fullUrl = $"{_baseUrl}{endpoint}";
-                Debug.WriteLine($"🔍 [ApiService] GET request to: {fullUrl}");
-                Debug.WriteLine($"🔐 [ApiService] Authorization header: {_httpClient.DefaultRequestHeaders.Authorization?.Scheme} {(_httpClient.DefaultRequestHeaders.Authorization?.Parameter != null ? "***" : "MISSING")}");
-
-                var response = await _httpClient.GetAsync(endpoint);
-                Debug.WriteLine($"📊 [ApiService] Response status: {(int)response.StatusCode} {response.StatusCode}");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    Debug.WriteLine($"✗ [ApiService] Error response body: {errorContent}");
-                }
-
-                response.EnsureSuccessStatusCode();
-                var jsonContent = await response.Content.ReadAsStringAsync();
-                var result = JsonSerializer.Deserialize<List<CourseResponse>>(jsonContent,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-                Debug.WriteLine($"✓ [ApiService] GetAllCoursesAsync() returned {result.Count} courses");
-                return result;
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error {(int)response.StatusCode}: {errorContent}");
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"✗ [ApiService] GetAllCoursesAsync() exception: {ex.GetType().Name}");
-                Debug.WriteLine($"✗ [ApiService] Message: {ex.Message}");
-                throw;
-            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<CourseResponse>>(json, JsonOptions)!;
         }
     }
 }

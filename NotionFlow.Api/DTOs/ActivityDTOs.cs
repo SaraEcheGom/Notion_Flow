@@ -96,4 +96,16 @@ namespace NotionFlow.Api.DTOs
         List<OptionResponseDto> Options,
         string? TextAnswer
     );
+
+    // ── Resultado tipado por pregunta en GetResults (reemplaza objeto anónimo + Reflection) ─
+    public record QuestionResultDto(
+        int QuestionId,
+        string QuestionText,
+        string QuestionType,
+        bool IsCorrect,
+        List<int> SelectedOptionIds,
+        List<int> CorrectOptionIds,
+        List<OptionResponseDto> Options,
+        string? TextAnswer
+    );
 }

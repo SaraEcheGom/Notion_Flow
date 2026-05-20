@@ -17,7 +17,7 @@ public partial class ActivitiesPage : ContentPage
     public string CourseName => _vm.CourseName;
     public System.Collections.ObjectModel.ObservableCollection<ActivityModel> Activities => _vm.Activities;
 
-    public ActivitiesPage(ApiService api, int courseId, string courseName)
+    public ActivitiesPage(ApiService api, AuthService auth, int courseId, string courseName)
     {
         InitializeComponent();
         _vm = new ActivityViewModel(api, courseId, courseName);
@@ -34,7 +34,7 @@ public partial class ActivitiesPage : ContentPage
         AssignActivityCommand = new Command<ActivityModel>(async (activity) =>
         {
             if (activity == null) return;
-            await Navigation.PushAsync(new AssignActivityPage(api, _vm, activity));
+            await Navigation.PushAsync(new AssignActivityPage(api, auth, _vm, activity));
         });
 
         BindingContext = this;

@@ -15,20 +15,24 @@ namespace NotionFlow.Api.Controllers
     {
         private readonly AppDbContext _db;
         private readonly UserManager<User> _userManager;
+        private readonly ILogger<ActivitiesController> _logger;
 
-        public ActivitiesController(AppDbContext db, UserManager<User> userManager)
+        public ActivitiesController(
+            AppDbContext db,
+            UserManager<User> userManager,
+            ILogger<ActivitiesController> logger)
         {
             _db = db;
             _userManager = userManager;
+            _logger = logger;
         }
-
-        // ── GET (abierto a cualquier usuario autenticado) ────────────────────
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetActivities(int courseId)
         {
             var activities = await _db.Activities
+                .AsNoTracking()
                 .Where(a => a.CourseId == courseId)
                 .Include(a => a.Questions).ThenInclude(q => q.Options)
                 .Include(a => a.Assignments)
@@ -47,40 +51,33 @@ namespace NotionFlow.Api.Controllers
             return Ok(MapToDto(activity));
         }
 
-        // ── POST: Crear actividad (HU #5) ────────────────────────────────────
-        // Sin restricción de rol para que funcione con cualquier valor que tenga el JWT
         [HttpPost]
         public async Task<IActionResult> CreateActivity(int courseId, [FromBody] CreateActivityDto dto)
         {
             try
             {
-                Console.WriteLine($"\n[Activities] POST courseId={courseId}");
-
                 var course = await _db.Courses.FindAsync(courseId);
                 if (course == null)
                     return NotFound(new { error = $"Curso {courseId} no encontrado" });
 
                 var userId = UserId();
-                Console.WriteLine($"[Activities] userId={userId}");
-
-                // Verificar que el usuario es profesor de este curso
                 var isTeacher = await _db.CourseTeachers
                     .AnyAsync(ct => ct.CourseId == courseId && ct.TeacherId == userId);
-
-                Console.WriteLine($"[Activities] isTeacher={isTeacher}");
 
                 if (!isTeacher)
                     return StatusCode(403, new { error = "No eres profesor de este curso", userId, courseId });
 
                 var activity = new Activity
                 {
-                    CourseId    = courseId,
-                    Title       = dto.Title,
+                    CourseId = courseId,
+                    Title = dto.Title,
                     Description = dto.Description,
-                    DueDate     = dto.DueDate.HasValue ? DateTime.SpecifyKind(dto.DueDate.Value, DateTimeKind.Utc) : (DateTime?)null,
+                    DueDate = dto.DueDate.HasValue
+                        ? DateTime.SpecifyKind(dto.DueDate.Value, DateTimeKind.Utc)
+                        : (DateTime?)null,
                     PercentageValue = dto.PercentageValue,
-                    CreatedAt   = DateTime.UtcNow,
-                    Questions   = dto.Questions.Select(q => new ActivityQuestion
+                    CreatedAt = DateTime.UtcNow,
+                    Questions = dto.Questions.Select(q => new ActivityQuestion
                     {
                         QuestionText = q.Text,
                         Type = q.QuestionType == "OpenText"
@@ -89,7 +86,7 @@ namespace NotionFlow.Api.Controllers
                         Options = q.Options.Select(o => new ActivityOption
                         {
                             OptionText = o.Text,
-                            IsCorrect  = o.IsCorrect
+                            IsCorrect = o.IsCorrect
                         }).ToList()
                     }).ToList()
                 };
@@ -97,17 +94,16 @@ namespace NotionFlow.Api.Controllers
                 _db.Activities.Add(activity);
                 await _db.SaveChangesAsync();
 
-                Console.WriteLine($"[Activities] Created id={activity.Id}");
+                _logger.LogInformation("Actividad creada: {ActivityId} en curso {CourseId}", activity.Id, courseId);
                 return Ok(MapToDto(activity));
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Activities] ERROR: {ex.Message}\n{ex.InnerException?.Message}");
+                _logger.LogError(ex, "Error en CreateActivity para curso {CourseId}", courseId);
                 return StatusCode(500, new { error = ex.Message, inner = ex.InnerException?.Message });
             }
         }
 
-        // ── PUT: Editar actividad (HU #6) ────────────────────────────────────
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateActivity(int courseId, int id, [FromBody] UpdateActivityDto dto)
         {
@@ -122,9 +118,11 @@ namespace NotionFlow.Api.Controllers
                 if (!isTeacher)
                     return StatusCode(403, new { error = "No eres profesor de este curso" });
 
-                activity.Title          = dto.Title;
-                activity.Description    = dto.Description;
-                activity.DueDate        = dto.DueDate.HasValue ? DateTime.SpecifyKind(dto.DueDate.Value, DateTimeKind.Utc) : (DateTime?)null;
+                activity.Title = dto.Title;
+                activity.Description = dto.Description;
+                activity.DueDate = dto.DueDate.HasValue
+                    ? DateTime.SpecifyKind(dto.DueDate.Value, DateTimeKind.Utc)
+                    : (DateTime?)null;
                 activity.PercentageValue = dto.PercentageValue;
 
                 _db.ActivityQuestions.RemoveRange(activity.Questions);
@@ -137,7 +135,7 @@ namespace NotionFlow.Api.Controllers
                     Options = q.Options.Select(o => new ActivityOption
                     {
                         OptionText = o.Text,
-                        IsCorrect  = o.IsCorrect
+                        IsCorrect = o.IsCorrect
                     }).ToList()
                 }).ToList();
 
@@ -146,12 +144,11 @@ namespace NotionFlow.Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Activities] UpdateActivity ERROR: {ex.Message}");
+                _logger.LogError(ex, "Error en UpdateActivity {ActivityId}", id);
                 return StatusCode(500, new { error = ex.Message });
             }
         }
 
-        // ── DELETE: Eliminar actividad (HU #7) ───────────────────────────────
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteActivity(int courseId, int id)
         {
@@ -172,12 +169,11 @@ namespace NotionFlow.Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Activities] DeleteActivity ERROR: {ex.Message}");
+                _logger.LogError(ex, "Error en DeleteActivity {ActivityId}", id);
                 return StatusCode(500, new { error = ex.Message });
             }
         }
 
-        // ── POST /{id}/assign: Asignar actividad (HU #8) ─────────────────────
         [HttpPost("{id}/assign")]
         public async Task<IActionResult> AssignActivity(int courseId, int id, [FromBody] AssignActivityDto dto)
         {
@@ -207,7 +203,7 @@ namespace NotionFlow.Api.Controllers
                     activity.Assignments.Add(new ActivityAssignment
                     {
                         StudentId = studentId,
-                        Status    = ActivityStatus.Pending
+                        Status = ActivityStatus.Pending
                     });
                     assigned++;
                 }
@@ -217,12 +213,11 @@ namespace NotionFlow.Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Activities] AssignActivity ERROR: {ex.Message}");
+                _logger.LogError(ex, "Error en AssignActivity {ActivityId}", id);
                 return StatusCode(500, new { error = ex.Message });
             }
         }
 
-        // ── POST /{id}/submit: Estudiante responde la actividad ───────────────
         [HttpPost("{id}/submit")]
         public async Task<IActionResult> SubmitActivity(int courseId, int id, [FromBody] SubmitActivityDto dto)
         {
@@ -239,13 +234,11 @@ namespace NotionFlow.Api.Controllers
                 if (string.IsNullOrEmpty(userId))
                     return Unauthorized(new { error = "Usuario no autenticado" });
 
-                // Verify student is enrolled in the course
                 var enrolled = await _db.CourseStudents
                     .AnyAsync(cs => cs.CourseId == courseId && cs.StudentId == userId);
                 if (!enrolled)
                     return StatusCode(403, new { error = "No estás matriculado en este curso" });
 
-                // Get or create assignment for this student
                 var assignment = activity.Assignments.FirstOrDefault(a => a.StudentId == userId);
                 if (assignment == null)
                 {
@@ -256,21 +249,19 @@ namespace NotionFlow.Api.Controllers
                         Status = ActivityStatus.Pending,
                     };
                     _db.ActivityAssignments.Add(assignment);
-                    await _db.SaveChangesAsync(); // need ID for StudentAnswers FK
+                    await _db.SaveChangesAsync();
                 }
 
                 if (assignment.Status == ActivityStatus.Submitted || assignment.Status == ActivityStatus.Graded)
                     return BadRequest(new { error = "Ya enviaste esta actividad." });
 
-                // Remove any previous partial answers
                 var existingAnswers = await _db.StudentAnswers
                     .Where(sa => sa.AssignmentId == assignment.Id)
                     .ToListAsync();
                 _db.StudentAnswers.RemoveRange(existingAnswers);
 
-                // Save per-question answers and auto-grade
                 int correct = 0, total = 0;
-                var savedAnswers = new List<object>();
+                var savedAnswers = new List<QuestionResultDto>();
 
                 foreach (var answer in dto.Answers)
                 {
@@ -299,24 +290,17 @@ namespace NotionFlow.Api.Controllers
                     };
                     _db.StudentAnswers.Add(studentAnswer);
 
-                    // Build result per question for the response
                     var correctIds = question.Options.Where(o => o.IsCorrect).Select(o => o.Id).ToList();
-                    savedAnswers.Add(new
-                    {
-                        questionId = question.Id,
-                        questionText = question.QuestionText,
-                        questionType = question.Type == QuestionType.ShortAnswer ? "OpenText" : "MultipleChoice",
+                    savedAnswers.Add(new QuestionResultDto(
+                        question.Id,
+                        question.QuestionText,
+                        question.Type == QuestionType.ShortAnswer ? "OpenText" : "MultipleChoice",
                         isCorrect,
-                        selectedOptionIds = answer.SelectedOptionIds ?? new List<int>(),
-                        correctOptionIds = correctIds,
-                        options = question.Options.Select(o => new
-                        {
-                            id = o.Id,
-                            text = o.OptionText,
-                            isCorrect = o.IsCorrect,
-                        }).ToList(),
-                        textAnswer = answer.TextAnswer,
-                    });
+                        answer.SelectedOptionIds ?? new List<int>(),
+                        correctIds,
+                        question.Options.Select(o => new OptionResponseDto(o.Id, o.OptionText, o.IsCorrect)).ToList(),
+                        answer.TextAnswer
+                    ));
                 }
 
                 assignment.SubmittedAt = DateTime.UtcNow;
@@ -337,12 +321,11 @@ namespace NotionFlow.Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Activities] SubmitActivity ERROR: {ex.Message}");
+                _logger.LogError(ex, "Error en SubmitActivity {ActivityId}", id);
                 return StatusCode(500, new { error = ex.Message });
             }
         }
 
-        // ── GET /{id}/results: Profesor ve resultados de todos los estudiantes ─
         [HttpGet("{id}/results")]
         public async Task<IActionResult> GetResults(int courseId, int id)
         {
@@ -362,12 +345,15 @@ namespace NotionFlow.Api.Controllers
                 if (activity == null) return NotFound();
 
                 var results = new List<object>();
-                foreach (var asgn in activity.Assignments.Where(a => a.Status == ActivityStatus.Submitted || a.Status == ActivityStatus.Graded))
+                foreach (var asgn in activity.Assignments.Where(a =>
+                    a.Status == ActivityStatus.Submitted || a.Status == ActivityStatus.Graded))
                 {
                     var studentAnswers = await _db.StudentAnswers
+                        .AsNoTracking()
                         .Where(sa => sa.AssignmentId == asgn.Id)
                         .ToListAsync();
 
+                    // Tipado con QuestionResultDto — sin Reflection
                     var questionResults = activity.Questions.Select(q =>
                     {
                         var sa = studentAnswers.FirstOrDefault(a => a.QuestionId == q.Id);
@@ -377,26 +363,20 @@ namespace NotionFlow.Api.Controllers
                             .Where(n => n > 0)
                             .ToList() ?? new List<int>();
 
-                        return new
-                        {
-                            questionId = q.Id,
-                            questionText = q.QuestionText,
-                            questionType = q.Type == QuestionType.ShortAnswer ? "OpenText" : "MultipleChoice",
-                            isCorrect = sa?.IsCorrect ?? false,
-                            selectedOptionIds = selectedIds,
-                            correctOptionIds = q.Options.Where(o => o.IsCorrect).Select(o => o.Id).ToList(),
-                            options = q.Options.Select(o => new
-                            {
-                                id = o.Id,
-                                text = o.OptionText,
-                                isCorrect = o.IsCorrect,
-                            }).ToList(),
-                            textAnswer = sa?.TextAnswer,
-                        };
+                        return new QuestionResultDto(
+                            q.Id,
+                            q.QuestionText,
+                            q.Type == QuestionType.ShortAnswer ? "OpenText" : "MultipleChoice",
+                            sa?.IsCorrect ?? false,
+                            selectedIds,
+                            q.Options.Where(o => o.IsCorrect).Select(o => o.Id).ToList(),
+                            q.Options.Select(o => new OptionResponseDto(o.Id, o.OptionText, o.IsCorrect)).ToList(),
+                            sa?.TextAnswer
+                        );
                     }).ToList();
 
                     var mcTotal = activity.Questions.Count(q => q.Type == QuestionType.MultipleChoice);
-                    var mcCorrect = questionResults.Count(q => (string)q.GetType().GetProperty("questionType")!.GetValue(q)! == "MultipleChoice" && (bool)q.GetType().GetProperty("isCorrect")!.GetValue(q)!);
+                    var mcCorrect = questionResults.Count(q => q.QuestionType == "MultipleChoice" && q.IsCorrect);
 
                     results.Add(new
                     {
@@ -405,7 +385,7 @@ namespace NotionFlow.Api.Controllers
                         studentEmail = asgn.Student?.Email ?? "",
                         submittedAt = asgn.SubmittedAt,
                         score = asgn.Score,
-                        correct = questionResults.Count(r => (bool)r.GetType().GetProperty("isCorrect")!.GetValue(r)!),
+                        correct = questionResults.Count(r => r.IsCorrect),
                         total = mcTotal,
                         questions = questionResults,
                     });
@@ -422,12 +402,10 @@ namespace NotionFlow.Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Activities] GetResults ERROR: {ex.Message}");
+                _logger.LogError(ex, "Error en GetResults actividad {ActivityId}", id);
                 return StatusCode(500, new { error = ex.Message });
             }
         }
-
-        // ── Helpers ──────────────────────────────────────────────────────────
 
         private string? UserId() =>
             User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -444,7 +422,7 @@ namespace NotionFlow.Api.Controllers
             a.Title,
             a.Description,
             a.DueDate,
-            a.PercentageValue,   // ← ahora usa el valor real
+            a.PercentageValue,
             a.CreatedAt,
             a.Questions.Select(q => new QuestionResponseDto(
                 q.Id,

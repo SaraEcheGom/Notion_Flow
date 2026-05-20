@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using System.Threading.Tasks;
-using System.Linq;
+using NotionFlow.App.Constants;
 using NotionFlow.App.Models.Auth;
 using NotionFlow.App.Services;
 using NotionFlow.App.Views.Course;
@@ -13,7 +12,8 @@ namespace NotionFlow.App.ViewModels.Course
 {
     public class CourseViewModel : BaseViewModel
     {
-        private readonly ApiService _api = new();
+        private readonly ApiService _api;
+        private readonly AuthService _auth;
         private readonly string _courseId;
 
         public string CourseName { get; }
@@ -34,12 +34,13 @@ namespace NotionFlow.App.ViewModels.Course
 
         private NotionFlow.App.ViewModels.Teacher.ActivityViewModel? _actVm;
 
-        public CourseViewModel(string courseId, string courseName, string role)
+        public CourseViewModel(ApiService api, AuthService auth, string courseId, string courseName, string role)
         {
+            _api = api;
+            _auth = auth;
             _courseId = courseId;
             CourseName = courseName;
-            // accept both "Teacher" and "Profesor" so navigation from both flows works
-            IsTeacher = role == "Teacher" || role == "Profesor" || role == "Professor";
+            IsTeacher = role == Roles.Professor;
 
             ShowOptionsCommand = new Command(async () =>
             {
@@ -54,7 +55,7 @@ namespace NotionFlow.App.ViewModels.Course
                 else if (option == "Crear Actividad")
                 {
                     var actVm = new NotionFlow.App.ViewModels.Teacher.ActivityViewModel(_api, int.Parse(_courseId), CourseName);
-                    var createPage = new NotionFlow.App.Views.Teacher.CreateActivityPage(actVm);
+                    var createPage = new CreateActivityPage(actVm);
                     createPage.ActivityCreated += async () => await LoadDataAsync();
                     await Shell.Current.Navigation.PushAsync(createPage);
                 }
@@ -68,20 +69,19 @@ namespace NotionFlow.App.ViewModels.Course
                     Id = student.Id,
                     Name = student.Name,
                     Email = student.Email,
-                    Role = "Estudiante"
+                    Role = Roles.Student
                 };
                 await Shell.Current.Navigation.PushAsync(
-                    new UserProfilePage(new UserProfileViewModel(user)));
+                    new UserProfilePage(new UserProfileViewModel(user, _api)));
             });
 
             EditActivityCommand = new Command<ActivityModel>(async (activity) =>
             {
                 if (activity == null) return;
                 _actVm ??= new NotionFlow.App.ViewModels.Teacher.ActivityViewModel(_api, int.Parse(_courseId), CourseName);
-                // Sync current activities into actVm
                 _actVm.Activities.Clear();
                 foreach (var a in Activities) _actVm.Activities.Add(a);
-                var editPage = new NotionFlow.App.Views.Teacher.EditActivityPage(_actVm, activity);
+                var editPage = new EditActivityPage(_actVm, activity);
                 editPage.ActivityUpdated += async () => await LoadDataAsync();
                 await Shell.Current.Navigation.PushAsync(editPage);
             });
@@ -100,6 +100,7 @@ namespace NotionFlow.App.ViewModels.Course
                 }
                 catch (Exception ex)
                 {
+                    CrashLog.Write("CourseViewModel.DeleteActivity", ex);
                     await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
                 }
             });
@@ -115,8 +116,7 @@ namespace NotionFlow.App.ViewModels.Course
             {
                 if (activity == null) return;
                 await Shell.Current.Navigation.PushAsync(
-                    new NotionFlow.App.Views.Teacher.ActivityResultsPage(
-                        _api, int.Parse(_courseId), activity.Id, activity.Title));
+                    new ActivityResultsPage(_api, int.Parse(_courseId), activity.Id, activity.Title));
             });
 
             _ = LoadDataAsync();
@@ -141,7 +141,7 @@ namespace NotionFlow.App.ViewModels.Course
                 if (IsTeacher)
                 {
                     var courses = await _api.GetCoursesByProfessorAsync(
-                        AuthService.CurrentUser?.Id ?? string.Empty);
+                        _auth.CurrentUser?.Id ?? string.Empty);
                     var course = courses.FirstOrDefault(c => c.Id.ToString() == _courseId);
                     if (course != null)
                     {
@@ -152,7 +152,7 @@ namespace NotionFlow.App.ViewModels.Course
             }
             catch (Exception ex)
             {
-                global::NotionFlow.App.CrashLog.Write("CourseViewModel.LoadDataAsync", ex);
+                CrashLog.Write("CourseViewModel.LoadDataAsync", ex);
                 await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
             }
         }

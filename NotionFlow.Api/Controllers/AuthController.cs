@@ -19,33 +19,46 @@ namespace NotionFlow.Api.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _config;
         private readonly AppDbContext _context;
-        private const string AdminToken = "ADMIN";
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(UserManager<User> userManager, IConfiguration config, AppDbContext context)
+        public AuthController(
+            UserManager<User> userManager,
+            IConfiguration config,
+            AppDbContext context,
+            ILogger<AuthController> logger)
         {
             _userManager = userManager;
             _config = config;
             _context = context;
+            _logger = logger;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            // Map legacy "Teacher" role to "Professor" for consistency
             var role = dto.Role == "Teacher" ? "Professor" : dto.Role;
 
-            if (role == "Admin" && dto.Token != AdminToken)
-                return BadRequest("Invalid administrator token");
+            // Token de registro de roles privilegiados viene de configuración
+            var adminToken = _config["Auth:AdminRegistrationToken"];
+            if (string.IsNullOrEmpty(adminToken))
+            {
+                _logger.LogError("Auth:AdminRegistrationToken no está configurado");
+                return StatusCode(500, "Configuración de seguridad incompleta");
+            }
 
-            if (role == "Professor" && dto.Token != AdminToken)
-                return BadRequest("Only an administrator can create professors");
+            if (role == "Admin" && dto.Token != adminToken)
+                return BadRequest("Token de administrador inválido");
 
-            // Get the current user's InstitutionId (if authenticated)
+            if (role == "Professor" && dto.Token != adminToken)
+                return BadRequest("Solo un administrador puede crear profesores");
+
             int? institutionId = null;
             var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!string.IsNullOrEmpty(currentUserId))
             {
-                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == currentUserId);
+                var currentUser = await _context.Users
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(u => u.Id == currentUserId);
                 institutionId = currentUser?.InstitutionId;
             }
 
@@ -64,8 +77,9 @@ namespace NotionFlow.Api.Controllers
                 return BadRequest(result.Errors.Select(e => e.Description));
 
             await _userManager.AddToRoleAsync(user, role);
+            _logger.LogInformation("Usuario registrado: {Email} con rol {Role}", dto.Email, role);
 
-            return Ok("User registered successfully");
+            return Ok("Usuario registrado exitosamente");
         }
 
         [HttpPost("login")]
@@ -74,9 +88,13 @@ namespace NotionFlow.Api.Controllers
             var user = await _userManager.FindByEmailAsync(dto.Email);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
-                return Unauthorized("Invalid credentials");
+            {
+                _logger.LogWarning("Intento de login fallido para {Email}", dto.Email);
+                return Unauthorized("Credenciales inválidas");
+            }
 
             var token = GenerateToken(user);
+            _logger.LogInformation("Login exitoso para {Email}", dto.Email);
 
             return Ok(new AuthResponseDto(
                 token, user.Name, user.Email!, user.Role, user.Id, user.InstitutionId ?? 0));
@@ -86,17 +104,16 @@ namespace NotionFlow.Api.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUsersByRole([FromQuery] string role)
         {
-            // Get the current authenticated user
             var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(currentUserId))
-                return Unauthorized("User not authenticated");
+                return Unauthorized("Usuario no autenticado");
 
-            // Find the current user to get their InstitutionId
-            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == currentUserId);
+            var currentUser = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == currentUserId);
             if (currentUser == null)
-                return NotFound("User not found");
+                return NotFound("Usuario no encontrado");
 
-            // Get users in the specified role and filter by the admin's institution
             var users = await _userManager.GetUsersInRoleAsync(role);
             var institutionUsers = users
                 .Where(u => u.InstitutionId == currentUser.InstitutionId)

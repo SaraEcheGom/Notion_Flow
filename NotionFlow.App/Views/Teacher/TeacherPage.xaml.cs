@@ -1,14 +1,13 @@
-using NotionFlow.App.Services;
 using NotionFlow.App.ViewModels.Teacher;
 
 namespace NotionFlow.App.Views.Teacher;
 
 public partial class TeacherPage : ContentPage
 {
-    public TeacherPage(ApiService apiService)
+    public TeacherPage(TeacherViewModel vm)
     {
         InitializeComponent();
-        BindingContext = new TeacherViewModel(apiService);
+        BindingContext = vm;
     }
 
     protected override void OnAppearing()

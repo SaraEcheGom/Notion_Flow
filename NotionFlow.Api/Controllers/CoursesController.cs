@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using NotionFlow.Api.Data;
 using NotionFlow.Api.DTOs;
 using NotionFlow.Api.Models;
+using System.Security.Claims;
 
 namespace NotionFlow.Api.Controllers
 {
@@ -15,11 +16,16 @@ namespace NotionFlow.Api.Controllers
     {
         private readonly AppDbContext _db;
         private readonly UserManager<User> _userManager;
+        private readonly ILogger<CoursesController> _logger;
 
-        public CoursesController(AppDbContext db, UserManager<User> userManager)
+        public CoursesController(
+            AppDbContext db,
+            UserManager<User> userManager,
+            ILogger<CoursesController> logger)
         {
             _db = db;
             _userManager = userManager;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -28,61 +34,24 @@ namespace NotionFlow.Api.Controllers
         {
             try
             {
-                Console.WriteLine($"\n📥 [CoursesController] CreateCourse called");
-                Console.WriteLine($"  Name: '{dto.Name}'");
-                Console.WriteLine($"  Subject: '{dto.Subject}'");
-                Console.WriteLine($"  Description: '{dto.Description}'");
-                Console.WriteLine($"  TeacherId: '{dto.TeacherId}'");
-
-                // Step 1: Get current user
-                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                Console.WriteLine($"  Current UserId: '{userId}'");
-
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userId))
-                {
-                    Console.WriteLine("✗ [CoursesController] User not authenticated");
-                    return Unauthorized("User not authenticated");
-                }
+                    return Unauthorized("Usuario no autenticado");
 
-                // Step 2: Find user in database
-                Console.WriteLine($"  Looking up user '{userId}' in database...");
                 var user = await _userManager.FindByIdAsync(userId);
-
                 if (user == null)
-                {
-                    Console.WriteLine($"✗ [CoursesController] User '{userId}' not found in database");
-                    return NotFound($"Usuario '{userId}' no encontrado en la base de datos");
-                }
-
-                Console.WriteLine($"  User found: {user.Name}, InstitutionId: {user.InstitutionId}");
+                    return NotFound($"Usuario '{userId}' no encontrado");
 
                 if (!user.InstitutionId.HasValue)
-                {
-                    Console.WriteLine("✗ [CoursesController] User has no InstitutionId");
                     return Unauthorized("Usuario no pertenece a institución");
-                }
 
-                // Step 3: Find teacher
-                Console.WriteLine($"  Looking up teacher '{dto.TeacherId}' in database...");
                 var teacher = await _userManager.FindByIdAsync(dto.TeacherId);
-
                 if (teacher == null)
-                {
-                    Console.WriteLine($"✗ [CoursesController] Teacher '{dto.TeacherId}' not found");
                     return NotFound($"Profesor '{dto.TeacherId}' no encontrado");
-                }
 
-                Console.WriteLine($"  Teacher found: {teacher.Name}, InstitutionId: {teacher.InstitutionId}");
-
-                // Step 4: Validate teacher belongs to same institution
                 if (teacher.InstitutionId != user.InstitutionId)
-                {
-                    Console.WriteLine($"✗ [CoursesController] Teacher InstitutionId ({teacher.InstitutionId}) != User InstitutionId ({user.InstitutionId})");
-                    return BadRequest($"Profesor no pertenece a esta institución. Teacher: {teacher.InstitutionId}, User: {user.InstitutionId}");
-                }
+                    return BadRequest("El profesor no pertenece a esta institución");
 
-                // Step 5: Create course
-                Console.WriteLine($"  Creating course in database...");
                 var course = new Course
                 {
                     Name = dto.Name,
@@ -95,48 +64,28 @@ namespace NotionFlow.Api.Controllers
 
                 _db.Courses.Add(course);
                 await _db.SaveChangesAsync();
-                Console.WriteLine($"✓ [CoursesController] Course created with ID: {course.Id}");
 
-                // Step 6: Assign teacher to course
-                Console.WriteLine($"  Assigning teacher to course...");
-                var courseTeacher = new CourseTeacher
+                _db.CourseTeachers.Add(new CourseTeacher
                 {
                     CourseId = course.Id,
                     TeacherId = dto.TeacherId,
                     IsPrimary = true,
                     AssignedAt = DateTime.UtcNow
-                };
-                _db.CourseTeachers.Add(courseTeacher);
+                });
                 await _db.SaveChangesAsync();
-                Console.WriteLine($"✓ [CoursesController] Teacher assigned to course");
 
-                Console.WriteLine($"✓ [CoursesController] Course created successfully!");
+                _logger.LogInformation("Curso creado: {CourseId} '{CourseName}' por {UserId}", course.Id, course.Name, userId);
                 return Ok(new { course.Id, course.Name, course.Subject, message = "Curso creado exitosamente" });
             }
             catch (DbUpdateException dbEx)
             {
-                Console.WriteLine($"\n✗ [CoursesController] DbUpdateException: {dbEx.Message}");
-                Console.WriteLine($"  Inner Exception: {dbEx.InnerException?.Message}");
-                Console.WriteLine($"  StackTrace: {dbEx.StackTrace}");
-                return StatusCode(500, new { 
-                    error = "Error al guardar en la base de datos", 
-                    details = dbEx.InnerException?.Message ?? dbEx.Message 
-                });
+                _logger.LogError(dbEx, "DbUpdateException en CreateCourse");
+                return StatusCode(500, new { error = "Error al guardar en la base de datos", details = dbEx.InnerException?.Message ?? dbEx.Message });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"\n✗ [CoursesController] Unexpected Exception: {ex.GetType().Name}");
-                Console.WriteLine($"  Message: {ex.Message}");
-                Console.WriteLine($"  StackTrace: {ex.StackTrace}");
-                if (ex.InnerException != null)
-                {
-                    Console.WriteLine($"  Inner Exception: {ex.InnerException.Message}");
-                }
-                return StatusCode(500, new { 
-                    error = "Error al crear el curso", 
-                    details = ex.Message,
-                    exceptionType = ex.GetType().Name
-                });
+                _logger.LogError(ex, "Excepción inesperada en CreateCourse");
+                return StatusCode(500, new { error = "Error al crear el curso", details = ex.Message });
             }
         }
 
@@ -146,76 +95,40 @@ namespace NotionFlow.Api.Controllers
         {
             try
             {
-                Console.WriteLine($"\n📥 [CoursesController] AssignStudent called");
-                Console.WriteLine($"  CourseId: {courseId}");
-                Console.WriteLine($"  StudentId: {dto?.StudentId}");
-                Console.WriteLine($"  DTO is null: {dto == null}");
-
-                // Validar DTO
                 if (dto == null || string.IsNullOrWhiteSpace(dto.StudentId))
-                {
-                    Console.WriteLine("✗ [CoursesController] Invalid DTO or StudentId is null/empty");
-                    return BadRequest("StudentId is required");
-                }
+                    return BadRequest("StudentId es requerido");
 
-                // Validar que el curso existe
                 var course = await _db.Courses.FindAsync(courseId);
                 if (course == null)
-                {
-                    Console.WriteLine($"✗ [CoursesController] Course {courseId} not found");
-                    return NotFound($"Course {courseId} not found");
-                }
-                Console.WriteLine($"✓ [CoursesController] Course found: {course.Name}");
+                    return NotFound($"Curso {courseId} no encontrado");
 
-                // Validar que el estudiante existe
                 var student = await _userManager.FindByIdAsync(dto.StudentId);
                 if (student == null)
-                {
-                    Console.WriteLine($"✗ [CoursesController] Student {dto.StudentId} not found");
-                    return NotFound($"Student {dto.StudentId} not found");
-                }
-                Console.WriteLine($"✓ [CoursesController] Student found: {student.Name}");
+                    return NotFound($"Estudiante {dto.StudentId} no encontrado");
 
-                // Validar que el estudiante pertenece a la misma institución
                 if (student.InstitutionId != course.InstitutionId)
-                {
-                    Console.WriteLine($"✗ [CoursesController] Institution mismatch. Student institution: {student.InstitutionId}, Course institution: {course.InstitutionId}");
-                    return BadRequest("Student does not belong to the same institution as the course");
-                }
-                Console.WriteLine($"✓ [CoursesController] Institution match verified (Institution: {course.InstitutionId})");
+                    return BadRequest("El estudiante no pertenece a la misma institución que el curso");
 
-                // Verificar si ya está asignado
                 var exists = await _db.CourseStudents
                     .AnyAsync(cs => cs.CourseId == courseId && cs.StudentId == dto.StudentId);
-
                 if (exists)
-                {
-                    Console.WriteLine($"⚠️ [CoursesController] Student {dto.StudentId} is already assigned to course {courseId}");
-                    return BadRequest("Student is already assigned to this course");
-                }
+                    return BadRequest("El estudiante ya está asignado a este curso");
 
-                // Asignar estudiante
-                _db.CourseStudents.Add(new CourseStudent
-                {
-                    CourseId = courseId,
-                    StudentId = dto.StudentId
-                });
-
+                _db.CourseStudents.Add(new CourseStudent { CourseId = courseId, StudentId = dto.StudentId });
                 await _db.SaveChangesAsync();
-                Console.WriteLine($"✓ [CoursesController] Student {student.Name} assigned to course {course.Name}");
-                return Ok(new { message = "Student assigned successfully", courseId, studentId = dto.StudentId, studentName = student.Name });
+
+                _logger.LogInformation("Estudiante {StudentId} asignado al curso {CourseId}", dto.StudentId, courseId);
+                return Ok(new { message = "Estudiante asignado exitosamente", courseId, studentId = dto.StudentId, studentName = student.Name });
             }
             catch (DbUpdateException dbEx)
             {
-                Console.WriteLine($"✗ [CoursesController] DbUpdateException: {dbEx.Message}");
-                Console.WriteLine($"  Inner: {dbEx.InnerException?.Message}");
-                return StatusCode(500, new { error = "Database error", details = dbEx.InnerException?.Message ?? dbEx.Message });
+                _logger.LogError(dbEx, "DbUpdateException en AssignStudent");
+                return StatusCode(500, new { error = "Error de base de datos", details = dbEx.InnerException?.Message ?? dbEx.Message });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"✗ [CoursesController] Unexpected Exception: {ex.GetType().Name}");
-                Console.WriteLine($"  Message: {ex.Message}");
-                return StatusCode(500, new { error = "Unexpected error", details = ex.Message });
+                _logger.LogError(ex, "Excepción inesperada en AssignStudent");
+                return StatusCode(500, new { error = "Error inesperado", details = ex.Message });
             }
         }
 
@@ -225,84 +138,56 @@ namespace NotionFlow.Api.Controllers
         {
             try
             {
-                Console.WriteLine($"\n📥 [CoursesController] RemoveStudent called");
-                Console.WriteLine($"  CourseId: {courseId}");
-                Console.WriteLine($"  StudentId: {studentId}");
-
-                // Validar StudentId
                 if (string.IsNullOrWhiteSpace(studentId))
-                {
-                    Console.WriteLine("✗ [CoursesController] StudentId is null/empty");
-                    return BadRequest("StudentId is required");
-                }
+                    return BadRequest("StudentId es requerido");
 
-                // Validar que el curso existe
                 var course = await _db.Courses.FindAsync(courseId);
                 if (course == null)
-                {
-                    Console.WriteLine($"✗ [CoursesController] Course {courseId} not found");
-                    return NotFound($"Course {courseId} not found");
-                }
-                Console.WriteLine($"✓ [CoursesController] Course found: {course.Name}");
+                    return NotFound($"Curso {courseId} no encontrado");
 
-                // Validar que el estudiante existe
                 var student = await _userManager.FindByIdAsync(studentId);
                 if (student == null)
-                {
-                    Console.WriteLine($"✗ [CoursesController] Student {studentId} not found");
-                    return NotFound($"Student {studentId} not found");
-                }
-                Console.WriteLine($"✓ [CoursesController] Student found: {student.Name}");
+                    return NotFound($"Estudiante {studentId} no encontrado");
 
-                // Buscar la asignación del estudiante al curso
                 var courseStudent = await _db.CourseStudents
                     .FirstOrDefaultAsync(cs => cs.CourseId == courseId && cs.StudentId == studentId);
-
                 if (courseStudent == null)
-                {
-                    Console.WriteLine($"⚠️ [CoursesController] Student {studentId} is not assigned to course {courseId}");
-                    return NotFound("Student is not assigned to this course");
-                }
-                Console.WriteLine($"✓ [CoursesController] CourseStudent relationship found");
+                    return NotFound("El estudiante no está asignado a este curso");
 
-                // Remover la asignación
                 _db.CourseStudents.Remove(courseStudent);
                 await _db.SaveChangesAsync();
 
-                Console.WriteLine($"✓ [CoursesController] Student {student.Name} removed from course {course.Name}");
-                return Ok(new { message = "Student removed successfully", courseId, studentId, studentName = student.Name });
+                _logger.LogInformation("Estudiante {StudentId} removido del curso {CourseId}", studentId, courseId);
+                return Ok(new { message = "Estudiante removido exitosamente", courseId, studentId, studentName = student.Name });
             }
             catch (DbUpdateException dbEx)
             {
-                Console.WriteLine($"✗ [CoursesController] DbUpdateException: {dbEx.Message}");
-                Console.WriteLine($"  Inner: {dbEx.InnerException?.Message}");
-                return StatusCode(500, new { error = "Database error", details = dbEx.InnerException?.Message ?? dbEx.Message });
+                _logger.LogError(dbEx, "DbUpdateException en RemoveStudent");
+                return StatusCode(500, new { error = "Error de base de datos", details = dbEx.InnerException?.Message ?? dbEx.Message });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"✗ [CoursesController] Unexpected Exception: {ex.GetType().Name}");
-                Console.WriteLine($"  Message: {ex.Message}");
-                return StatusCode(500, new { error = "Unexpected error", details = ex.Message });
+                _logger.LogError(ex, "Excepción inesperada en RemoveStudent");
+                return StatusCode(500, new { error = "Error inesperado", details = ex.Message });
             }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized("User not authenticated");
+                return Unauthorized("Usuario no autenticado");
 
             var user = await _userManager.FindByIdAsync(userId);
-
             if (user?.InstitutionId == null)
                 return Unauthorized("Usuario no pertenece a institución");
 
             var courses = await _db.Courses
+                .AsNoTracking()
                 .Where(c => c.InstitutionId == user.InstitutionId)
                 .Include(c => c.CourseStudents)
-                .Include(c => c.Teachers)
-                    .ThenInclude(ct => ct.Teacher)
+                .Include(c => c.Teachers).ThenInclude(ct => ct.Teacher)
                 .ToListAsync();
 
             var result = courses.Select(c => new CourseResponseDto(
@@ -310,7 +195,7 @@ namespace NotionFlow.Api.Controllers
                 c.Name,
                 c.Subject,
                 c.Teachers.FirstOrDefault(t => t.IsPrimary)?.TeacherId ?? "",
-                c.Teachers.FirstOrDefault(t => t.IsPrimary)?.Teacher?.Name ?? "No teacher",
+                c.Teachers.FirstOrDefault(t => t.IsPrimary)?.Teacher?.Name ?? "Sin profesor",
                 c.CourseStudents.Select(ce => new StudentDto(
                     ce.StudentId,
                     _userManager.Users.FirstOrDefault(u => u.Id == ce.StudentId)?.Name ?? "",
@@ -322,38 +207,30 @@ namespace NotionFlow.Api.Controllers
         }
 
         [HttpGet("teacher/{teacherId}")]
-        [Authorize]
         public async Task<IActionResult> CoursesForTeacher(string teacherId)
-        {
-            return await CoursesForTeacherInternal(teacherId);
-        }
+            => await CoursesForTeacherInternal(teacherId);
 
         [HttpGet("professor/{teacherId}")]
-        [Authorize]
         public async Task<IActionResult> CoursesForProfessor(string teacherId)
-        {
-            return await CoursesForTeacherInternal(teacherId);
-        }
+            => await CoursesForTeacherInternal(teacherId);
 
         private async Task<IActionResult> CoursesForTeacherInternal(string teacherId)
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized("User not authenticated");
+                return Unauthorized("Usuario no autenticado");
 
             var user = await _userManager.FindByIdAsync(userId);
-
             if (user?.InstitutionId == null)
                 return Unauthorized("Usuario no pertenece a institución");
 
             var courses = await _db.Courses
+                .AsNoTracking()
                 .Where(c => c.InstitutionId == user.InstitutionId)
                 .Include(c => c.CourseStudents)
-                .Include(c => c.Teachers)
-                    .ThenInclude(ct => ct.Teacher)
+                .Include(c => c.Teachers).ThenInclude(ct => ct.Teacher)
                 .ToListAsync();
 
-            // Filtrar por profesor
             var coursesByTeacher = courses
                 .Where(c => c.Teachers.Any(t => t.TeacherId == teacherId))
                 .ToList();
@@ -363,7 +240,7 @@ namespace NotionFlow.Api.Controllers
                 c.Name,
                 c.Subject,
                 teacherId,
-                _userManager.Users.FirstOrDefault(u => u.Id == teacherId)?.Name ?? "No teacher",
+                _userManager.Users.FirstOrDefault(u => u.Id == teacherId)?.Name ?? "Sin profesor",
                 c.CourseStudents.Select(ce => new StudentDto(
                     ce.StudentId,
                     _userManager.Users.FirstOrDefault(u => u.Id == ce.StudentId)?.Name ?? "",
@@ -375,23 +252,20 @@ namespace NotionFlow.Api.Controllers
         }
 
         [HttpGet("student/{studentId}")]
-        [Authorize]
         public async Task<IActionResult> CoursesForStudent(string studentId)
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized("User not authenticated");
+                return Unauthorized("Usuario no autenticado");
 
             var user = await _userManager.FindByIdAsync(userId);
-
             if (user?.InstitutionId == null)
                 return Unauthorized("Usuario no pertenece a institución");
 
             var courses = await _db.CourseStudents
+                .AsNoTracking()
                 .Where(ce => ce.StudentId == studentId)
-                .Include(ce => ce.Course)
-                    .ThenInclude(c => c!.Teachers)
-                        .ThenInclude(ct => ct.Teacher)
+                .Include(ce => ce.Course).ThenInclude(c => c!.Teachers).ThenInclude(ct => ct.Teacher)
                 .Select(ce => ce.Course)
                 .Where(c => c!.InstitutionId == user.InstitutionId)
                 .ToListAsync();
@@ -401,7 +275,7 @@ namespace NotionFlow.Api.Controllers
                 c.Name,
                 c.Subject,
                 c.Teachers.FirstOrDefault(t => t.IsPrimary)?.TeacherId ?? "",
-                c.Teachers.FirstOrDefault(t => t.IsPrimary)?.Teacher?.Name ?? "No teacher",
+                c.Teachers.FirstOrDefault(t => t.IsPrimary)?.Teacher?.Name ?? "Sin profesor",
                 new List<StudentDto>()
             ));
 
@@ -409,9 +283,11 @@ namespace NotionFlow.Api.Controllers
         }
 
         [HttpGet("{courseId}/evaluations")]
+        [Authorize]
         public async Task<IActionResult> GetEvaluations(int courseId)
         {
             var evaluations = await _db.Evaluations
+                .AsNoTracking()
                 .Where(e => e.CourseId == courseId)
                 .ToListAsync();
             return Ok(evaluations);
@@ -421,6 +297,15 @@ namespace NotionFlow.Api.Controllers
         [Authorize(Roles = "Professor")]
         public async Task<IActionResult> CreateEvaluation(int courseId, CreateEvaluationDto dto)
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("Usuario no autenticado");
+
+            var isTeacherOfCourse = await _db.CourseTeachers
+                .AnyAsync(ct => ct.CourseId == courseId && ct.TeacherId == userId);
+            if (!isTeacherOfCourse)
+                return StatusCode(403, new { error = "No eres profesor de este curso" });
+
             var evaluation = new Evaluation
             {
                 CourseId = courseId,
@@ -431,6 +316,8 @@ namespace NotionFlow.Api.Controllers
             };
             _db.Evaluations.Add(evaluation);
             await _db.SaveChangesAsync();
+
+            _logger.LogInformation("Evaluación creada en curso {CourseId} por profesor {UserId}", courseId, userId);
             return Ok(evaluation);
         }
 
@@ -438,18 +325,32 @@ namespace NotionFlow.Api.Controllers
         [Authorize(Roles = "Professor")]
         public async Task<IActionResult> SaveGrade(int evaluationId, SaveGradeDto dto)
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("Usuario no autenticado");
+
+            var evaluation = await _db.Evaluations.FindAsync(evaluationId);
+            if (evaluation == null)
+                return NotFound(new { error = "Evaluación no encontrada" });
+
+            // El profesor debe ser docente del curso de esta evaluación
+            var isTeacherOfCourse = await _db.CourseTeachers
+                .AnyAsync(ct => ct.CourseId == evaluation.CourseId && ct.TeacherId == userId);
+            if (!isTeacherOfCourse)
+                return StatusCode(403, new { error = "No eres profesor del curso de esta evaluación" });
+
+            // El estudiante debe estar matriculado en el curso
+            var isStudentEnrolled = await _db.CourseStudents
+                .AnyAsync(cs => cs.CourseId == evaluation.CourseId && cs.StudentId == dto.StudentId);
+            if (!isStudentEnrolled)
+                return BadRequest(new { error = "El estudiante no está matriculado en este curso" });
+
             var grade = await _db.Grades
-                .FirstOrDefaultAsync(n => n.EvaluationId == evaluationId
-                    && n.StudentId == dto.StudentId);
+                .FirstOrDefaultAsync(n => n.EvaluationId == evaluationId && n.StudentId == dto.StudentId);
 
             if (grade == null)
             {
-                grade = new Grade
-                {
-                    EvaluationId = evaluationId,
-                    StudentId = dto.StudentId,
-                    Value = dto.Value
-                };
+                grade = new Grade { EvaluationId = evaluationId, StudentId = dto.StudentId, Value = dto.Value };
                 _db.Grades.Add(grade);
             }
             else
@@ -458,6 +359,7 @@ namespace NotionFlow.Api.Controllers
             }
 
             await _db.SaveChangesAsync();
+            _logger.LogInformation("Nota guardada para estudiante {StudentId} en evaluación {EvaluationId}", dto.StudentId, evaluationId);
             return Ok(grade);
         }
 
@@ -465,6 +367,7 @@ namespace NotionFlow.Api.Controllers
         public async Task<IActionResult> GetContents(int courseId)
         {
             var contents = await _db.Contents
+                .AsNoTracking()
                 .Where(c => c.CourseId == courseId)
                 .OrderByDescending(c => c.PublicationDate)
                 .ToListAsync();
