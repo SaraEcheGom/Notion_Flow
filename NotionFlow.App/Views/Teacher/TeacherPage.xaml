@@ -83,7 +83,7 @@
                                             VerticalOptions="Center">
                                         <Border.GestureRecognizers>
                                             <TapGestureRecognizer
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewCourseDetailsCommand}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.GoToCourseCommand}"
                                                 CommandParameter="{Binding .}"/>
                                         </Border.GestureRecognizers>
                                         <Label Text="Ver →" FontSize="12" FontAttributes="Bold"

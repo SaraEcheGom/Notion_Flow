@@ -44,25 +44,15 @@
     <!-- ── PROFESOR ───────────────────────────────────────────────────── -->
     <TabBar x:Name="TeacherTabs" IsVisible="False">
         <ShellContent
-            Title="Inicio"
-            Icon="icon_home.png"
-            Route="teacher_home"
-            ContentTemplate="{DataTemplate teacher:TeacherPage}" />
-        <ShellContent
             Title="Mis Cursos"
             Icon="icon_course.png"
             Route="teacher_courses"
-            ContentTemplate="{DataTemplate course:CoursePage}" />
+            ContentTemplate="{DataTemplate teacher:TeacherPage}" />
         <ShellContent
-            Title="Actividades"
-            Icon="icon_activity.png"
-            Route="teacher_activities"
-            ContentTemplate="{DataTemplate teacher:ActivitiesPage}" />
-        <ShellContent
-            Title="Perfil"
-            Icon="icon_profile.png"
-            Route="teacher_profile"
-            ContentTemplate="{DataTemplate auth:UserProfilePage}" />
+            Title="Inicio"
+            Icon="icon_home.png"
+            Route="teacher_home"
+            ContentTemplate="{DataTemplate teacher:TeacherDashboardPage}" />
     </TabBar>
 
     <!-- ── ESTUDIANTE ─────────────────────────────────────────────────── -->

@@ -57,5 +57,34 @@ namespace NotionFlow.App.ViewModels
                 IsBusy = false;
             }
         }
+
+        protected async Task ExecuteAsync(Func<Task> operation, string context)
+        {
+            if (IsBusy) return;
+            IsBusy = true;
+            try
+            {
+                await operation();
+            }
+            catch (Exception ex)
+            {
+                CrashLog.Write(context, ex);
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                    await Shell.Current.DisplayAlert("Error", ex.Message, "OK"));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        protected void SetProperty<T>(ref T backingField, T value, [CallerMemberName] string? propertyName = null)
+        {
+            if (!EqualityComparer<T>.Default.Equals(backingField, value))
+            {
+                backingField = value;
+                OnPropertyChanged(propertyName);
+            }
+        }
     }
 }

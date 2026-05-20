@@ -12,7 +12,7 @@ namespace NotionFlow.App.ViewModels.Auth
         private string _name = string.Empty;
         private string _email = string.Empty;
         private string _password = string.Empty;
-        private string _selectedRole = Roles.Student;
+        private string _selectedRole = Constants.Roles.Student;
         private string _token = string.Empty;
         private bool _showToken = false;
 
@@ -53,7 +53,7 @@ namespace NotionFlow.App.ViewModels.Auth
             {
                 _selectedRole = value;
                 OnPropertyChanged();
-                ShowToken = value == Roles.Admin || value == Roles.Professor;
+                ShowToken = value == Constants.Roles.Admin || value == Constants.Roles.Professor;
             }
         }
 
@@ -87,7 +87,7 @@ namespace NotionFlow.App.ViewModels.Auth
             try
             {
                 await _authService.RegisterAsync(Name, Email, Password, SelectedRole, Token);
-                await Shell.Current.DisplayAlert("Cuenta creada", "Ya puedes iniciar sesión", "OK");
+                await Shell.Current.DisplayAlert("Cuenta creada", "Ya puedes iniciar sesión", "OK");    
                 await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)

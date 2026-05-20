@@ -92,6 +92,9 @@
     <MauiXaml Update="Views\Teacher\CreateEvaluationPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="Views\Teacher\TeacherDashboardPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Views\Teacher\TeacherPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
