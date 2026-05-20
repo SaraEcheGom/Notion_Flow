@@ -27,6 +27,12 @@
                         TextColor="White"
                         CornerRadius="{StaticResource RadiusMD}"
                         Padding="0,{StaticResource SpacingMD}"/>
+                <Button Text="Generar cuestionario desde foto"
+                        Command="{Binding GenerateQuizCommand}"
+                        BackgroundColor="{StaticResource AccentTeal}"
+                        TextColor="White"
+                        CornerRadius="{StaticResource RadiusMD}"
+                        Padding="0,{StaticResource SpacingMD}"/>
                 <Button Text="↻ Actualizar"
                         Command="{Binding LoadActivitiesCommand}"
                         BackgroundColor="{StaticResource Gray200}"

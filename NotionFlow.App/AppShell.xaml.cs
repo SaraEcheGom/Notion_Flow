@@ -33,6 +33,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(Routes.TeacherPublishContent, typeof(PublishContentPage));
         Routing.RegisterRoute(Routes.TeacherCreateEval, typeof(CreateEvaluationPage));
         Routing.RegisterRoute(Routes.TeacherActivityResults, typeof(ActivityResultsPage));
+        Routing.RegisterRoute(Routes.TeacherGenerateQuiz, typeof(GenerateQuizFromImagePage));
 
         // Estudiante
         Routing.RegisterRoute(Routes.StudentCourseDetail, typeof(CourseDetailsPage));

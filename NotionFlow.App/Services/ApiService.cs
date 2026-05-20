@@ -10,6 +10,7 @@ namespace NotionFlow.App.Services
     public class ApiService
     {
         private readonly HttpClient _httpClient;
+        private readonly HttpClient _aiHttpClient;
         private readonly string _baseUrl;
 
         // JsonOptions estático — evita instanciar uno nuevo por cada llamada
@@ -32,6 +33,17 @@ namespace NotionFlow.App.Services
             {
                 BaseAddress = new Uri(_baseUrl),
                 Timeout = TimeSpan.FromSeconds(30)
+            };
+
+            var aiHandler = new HttpClientHandler();
+#if DEBUG
+            aiHandler.ServerCertificateCustomValidationCallback =
+                (message, cert, chain, errors) => true;
+#endif
+            _aiHttpClient = new HttpClient(aiHandler)
+            {
+                BaseAddress = new Uri(_baseUrl),
+                Timeout = TimeSpan.FromSeconds(120)
             };
 
             Debug.WriteLine("✓ ApiService initialized");
@@ -467,6 +479,38 @@ namespace NotionFlow.App.Services
             var json = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<CourseReportResponse>(json, JsonOptions)
                 ?? new CourseReportResponse();
+        }
+
+        // ── Generación de cuestionario desde imagen (IA) ──────────────────────
+
+        public async Task<GeneratedQuizResponse> GenerateQuizFromImageAsync(
+            byte[] imageData, string fileName, string contentType)
+        {
+            var token = await SecureStorage.GetAsync("jwt_token");
+            if (!string.IsNullOrEmpty(token))
+                _aiHttpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            using var multipart = new MultipartFormDataContent();
+            var imageContent = new ByteArrayContent(imageData);
+            imageContent.Headers.ContentType =
+                new System.Net.Http.Headers.MediaTypeHeaderValue(
+                    string.IsNullOrEmpty(contentType) ? "image/jpeg" : contentType);
+            multipart.Add(imageContent, "image", fileName);
+
+            Debug.WriteLine($"📡 [ApiService] POST quizzes/generate-from-image ({imageData.Length} bytes)");
+            var response = await _aiHttpClient.PostAsync("quizzes/generate-from-image", multipart);
+            Debug.WriteLine($"📊 [ApiService] Status: {response.StatusCode}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al procesar imagen: {error}");
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<GeneratedQuizResponse>(json, JsonOptions)
+                ?? throw new Exception("Respuesta inválida del servidor.");
         }
     }
 }

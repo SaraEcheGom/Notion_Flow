@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NotionFlow.Api.Data;
 using NotionFlow.Api.Models;
+using NotionFlow.Api.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +39,17 @@ builder.Services.AddAuthentication(opt =>
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
+
+builder.Services.AddHttpClient<AnthropicService>(client =>
+{
+    client.BaseAddress = new Uri("https://api.anthropic.com/");
+    client.DefaultRequestHeaders.Add("anthropic-version", "2023-06-01");
+    client.Timeout = TimeSpan.FromSeconds(120);
+
+    var apiKey = builder.Configuration["Anthropic:ApiKey"];
+    if (!string.IsNullOrWhiteSpace(apiKey))
+        client.DefaultRequestHeaders.Add("x-api-key", apiKey);
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

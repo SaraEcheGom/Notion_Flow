@@ -390,4 +390,30 @@ namespace NotionFlow.App.Models.Auth
         [JsonPropertyName("earnedAt")]
         public DateTime? EarnedAt { get; set; }
     }
+
+    // ── Cuestionario generado por IA desde imagen ─────────────────────────────
+    public class GeneratedQuizResponse
+    {
+        [JsonPropertyName("title")]
+        public string Title { get; set; } = string.Empty;
+
+        [JsonPropertyName("questions")]
+        public List<GeneratedQuestionItem> Questions { get; set; } = new();
+    }
+
+    public class GeneratedQuestionItem
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+
+        [JsonPropertyName("text")]
+        public string Text { get; set; } = string.Empty;
+
+        // "open" | "single_choice" | "multiple_choice"
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = "open";
+
+        [JsonPropertyName("options")]
+        public List<string>? Options { get; set; }
+    }
 }

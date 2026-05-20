@@ -12,6 +12,7 @@ public partial class ActivitiesPage : ContentPage
     public ICommand CreateActivityCommand { get; }
     public ICommand EditActivityCommand { get; }
     public ICommand AssignActivityCommand { get; }
+    public ICommand GenerateQuizCommand { get; }
     public ICommand LoadActivitiesCommand => _vm.LoadActivitiesCommand;
     public ICommand DeleteActivityCommand => _vm.DeleteActivityCommand;
     public string CourseName => _vm.CourseName;
@@ -36,6 +37,9 @@ public partial class ActivitiesPage : ContentPage
             if (activity == null) return;
             await Navigation.PushAsync(new AssignActivityPage(api, auth, _vm, activity));
         });
+
+        GenerateQuizCommand = new Command(async () =>
+            await Navigation.PushAsync(new GenerateQuizFromImagePage(api, _vm)));
 
         BindingContext = this;
     }

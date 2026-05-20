@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.Teacher.GenerateQuizFromImagePage"
+             Title="Generar cuestionario desde foto">
+    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0"
+                             Padding="{StaticResource SpacingLG},{StaticResource SpacingMD},{StaticResource SpacingLG},{StaticResource SpacingSM}"
+                             Spacing="{StaticResource SpacingXS}"
+                             BackgroundColor="{StaticResource Primary}">
+            <Label Text="Generar cuestionario desde foto"
+                   FontSize="{StaticResource FontSizeLG}"
+                   FontAttributes="Bold"
+                   TextColor="White"/>
+            <Label Text="Analiza exámenes o talleres escritos a mano"
+                   FontSize="{StaticResource FontSizeXS}"
+                   TextColor="White"
+                   Opacity="0.85"/>
+        </VerticalStackLayout>
+
+        <!-- Scrollable content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="{StaticResource SpacingLG}"
+                                 Spacing="{StaticResource SpacingMD}">
+
+                <!-- Image picker section -->
+                <Border StrokeThickness="1.5"
+                        Stroke="{StaticResource Gray300}"
+                        StrokeShape="RoundRectangle {StaticResource RadiusMD}">
+                    <VerticalStackLayout Padding="{StaticResource SpacingLG}"
+                                         Spacing="{StaticResource SpacingMD}">
+                        <Label Text="Imagen del examen o taller"
+                               FontSize="{StaticResource FontSizeMD}"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextDark}"/>
+                        <Button x:Name="PickImageButton"
+                                Text="Seleccionar imagen"
+                                Clicked="OnPickImage"
+                                BackgroundColor="{StaticResource Gray200}"
+                                TextColor="{StaticResource TextDark}"
+                                CornerRadius="{StaticResource RadiusMD}"
+                                Padding="0,{StaticResource SpacingMD}"/>
+                        <Image x:Name="ImagePreview"
+                               IsVisible="False"
+                               HeightRequest="220"
+                               Aspect="AspectFit"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Generate button -->
+                <Button x:Name="GenerateButton"
+                        Text="Generar cuestionario"
+                        IsEnabled="False"
+                        Clicked="OnGenerate"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White"
+                        CornerRadius="{StaticResource RadiusMD}"
+                        Padding="0,{StaticResource SpacingMD}"/>
+
+                <!-- Loading section -->
+                <VerticalStackLayout x:Name="LoadingSection"
+                                     IsVisible="False"
+                                     HorizontalOptions="Center"
+                                     Spacing="{StaticResource SpacingMD}">
+                    <ActivityIndicator IsRunning="True"
+                                       Color="{StaticResource Primary}"
+                                       HorizontalOptions="Center"/>
+                    <Label Text="Analizando imagen..."
+                           FontSize="{StaticResource FontSizeMD}"
+                           HorizontalOptions="Center"
+                           TextColor="{StaticResource TextDark}"/>
+                </VerticalStackLayout>
+
+                <!-- Error message -->
+                <Label x:Name="ErrorLabel"
+                       IsVisible="False"
+                       TextColor="#E53935"
+                       FontSize="{StaticResource FontSizeXS}"
+                       HorizontalOptions="Center"/>
+
+                <!-- Quiz preview section -->
+                <Border x:Name="QuizPreviewSection"
+                        IsVisible="False"
+                        StrokeThickness="1.5"
+                        Stroke="{StaticResource Gray300}"
+                        StrokeShape="RoundRectangle {StaticResource RadiusMD}">
+                    <VerticalStackLayout Padding="{StaticResource SpacingLG}"
+                                         Spacing="{StaticResource SpacingMD}">
+                        <Label x:Name="QuizTitleLabel"
+                               FontSize="{StaticResource FontSizeLG}"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextDark}"/>
+                        <BoxView HeightRequest="1"
+                                 BackgroundColor="{StaticResource Gray300}"/>
+                        <VerticalStackLayout x:Name="QuestionsContainer"
+                                             Spacing="{StaticResource SpacingMD}"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Save button -->
+                <Button x:Name="SaveButton"
+                        Text="Guardar cuestionario"
+                        IsVisible="False"
+                        Clicked="OnSave"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White"
+                        CornerRadius="{StaticResource RadiusMD}"
+                        Padding="0,{StaticResource SpacingMD}"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+</ContentPage>

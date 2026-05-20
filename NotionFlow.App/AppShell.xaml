@@ -62,11 +62,11 @@
             Icon="icon_home.png"
             Route="student_home"
             ContentTemplate="{DataTemplate student:StudentPage}" />
-        <ShellContent
+        <!--<ShellContent
             Title="Cursos"
             Icon="icon_course.png"
             Route="student_courses"
-            ContentTemplate="{DataTemplate course:CoursePage}" />
+            ContentTemplate="{DataTemplate course:CoursePage}" />-->
     </TabBar>
 
 </Shell>
