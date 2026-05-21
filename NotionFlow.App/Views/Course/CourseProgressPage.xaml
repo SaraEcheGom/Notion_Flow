@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NotionFlow.App.Views.Course.CourseProgressPage"
+             Title="Progreso del curso"
+             BackgroundColor="{StaticResource PageBackground}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,24" Spacing="16">
+
+            <Label Text="📊 Progreso del curso" Style="{StaticResource Headline}"/>
+            <Label Text="{Binding CourseName}" Style="{StaticResource SubHeadline}"/>
+
+            <Border Style="{StaticResource KawaiiCard}">
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="4">
+                        <Label Text="{Binding TotalStudents}" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{StaticResource PrimaryColor}"/>
+                        <Label Text="Estudiantes" FontSize="11" HorizontalOptions="Center" TextColor="{StaticResource TextMuted}"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
+                        <Label Text="{Binding TotalActivities}" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{StaticResource PrimaryDark}"/>
+                        <Label Text="Actividades" FontSize="11" HorizontalOptions="Center" TextColor="{StaticResource TextMuted}"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4">
+                        <Label Text="{Binding AverageCourseScore, StringFormat='{}{0}%'}" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{StaticResource AccentOrange}"/>
+                        <Label Text="Promedio curso" FontSize="11" HorizontalOptions="Center" TextColor="{StaticResource TextMuted}"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource KawaiiCard}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Resumen general" Style="{StaticResource SectionTitle}"/>
+                    <Label Text="Aquí ves el avance total del curso y puedes abrir el progreso individual de cualquier estudiante." FontSize="13" TextColor="{StaticResource TextMuted}"/>
+                    <ProgressBar Progress="{Binding OverallCompletionFraction}" ProgressColor="{StaticResource PrimaryColor}" HeightRequest="10"/>
+                    <Label Text="{Binding OverallCompletionText}" FontSize="12" TextColor="{StaticResource TextMuted}" HorizontalOptions="End"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="👩‍🎓 Progreso por estudiante" Style="{StaticResource SectionTitle}"/>
+
+            <CollectionView ItemsSource="{Binding StudentSummaries}" SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource KawaiiCard}" Padding="16">
+                            <VerticalStackLayout Spacing="10">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" VerticalOptions="Center">
+                                    <Label Text="{Binding Rank}" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center"/>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                        <Label Text="{Binding StudentName}" FontAttributes="Bold" FontSize="16"/>
+                                        <Label Text="{Binding SummaryText}" FontSize="12" TextColor="{StaticResource TextMuted}"/>
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="2" Text="Ver" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewStudentProgressCommand}" CommandParameter="{Binding .}" Style="{StaticResource OutlineBtn}" HorizontalOptions="End" VerticalOptions="Center"/>
+                                </Grid>
+
+                                <Border BackgroundColor="{StaticResource PageBackground}" StrokeThickness="1" Stroke="{StaticResource Gray200}" StrokeShape="RoundRectangle 10">
+                                    <VerticalStackLayout Padding="12" Spacing="6">
+                                        <Label Text="{Binding ProgressText}" FontSize="12" TextColor="{StaticResource TextMuted}"/>
+                                        <ProgressBar Progress="{Binding ProgressFraction}" ProgressColor="{StaticResource PrimaryColor}" HeightRequest="8"/>
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                            <Label Text="{Binding TotalPoints, StringFormat='Puntos: {0}'}" FontSize="12" TextColor="{StaticResource PrimaryDark}"/>
+                                            <Label Text="{Binding LevelDisplay}" FontSize="12" HorizontalOptions="End" TextColor="{StaticResource AccentOrange}"/>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

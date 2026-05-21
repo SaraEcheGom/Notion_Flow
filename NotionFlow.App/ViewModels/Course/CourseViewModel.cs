@@ -31,6 +31,7 @@ namespace NotionFlow.App.ViewModels.Course
         public ICommand DeleteActivityCommand { get; }
         public ICommand TakeActivityCommand { get; }
         public ICommand ViewResultsCommand { get; }
+        public ICommand GoToProgressCommand { get; }
 
         private NotionFlow.App.ViewModels.Teacher.ActivityViewModel? _actVm;
 
@@ -124,6 +125,12 @@ namespace NotionFlow.App.ViewModels.Course
                 if (activity == null) return;
                 await Shell.Current.Navigation.PushAsync(
                     new ActivityResultsPage(_api, int.Parse(_courseId), activity.Id, activity.Title));
+            });
+
+            GoToProgressCommand = new Command(async () =>
+            {
+                await Shell.Current.Navigation.PushAsync(
+                    new NotionFlow.App.Views.Course.CourseProgressPage(_api, int.Parse(_courseId), CourseName));
             });
 
             _ = LoadDataAsync();

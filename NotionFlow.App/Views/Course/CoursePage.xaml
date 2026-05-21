@@ -20,6 +20,14 @@
                     WidthRequest="50"
                     HeightRequest="50"/>
 
+                <!-- Botón Ver progreso (profesor) -->
+                <Button Text="📈 Ver progreso"
+                    FontSize="14"
+                    Command="{Binding GoToProgressCommand}"
+                    IsVisible="{Binding IsTeacher}"
+                    HorizontalOptions="End"
+                    Margin="0,6,0,0"/>
+
             <!-- Evaluaciones -->
             <Label Text="Evaluaciones" FontSize="{StaticResource FontSizeLG}" FontAttributes="Bold"/>
 
