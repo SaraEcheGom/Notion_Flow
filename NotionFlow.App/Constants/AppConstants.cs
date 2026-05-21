@@ -37,6 +37,7 @@ namespace NotionFlow.App.Constants
         public const string TeacherPublishContent = "teacher/publish-content";
         public const string TeacherCreateEval = "teacher/create-eval";
         public const string TeacherActivityResults = "teacher/activity-results";
+        public const string TeacherGenerateQuiz = "teacher/generate-quiz";
 
         public const string StudentCourseDetail = "student/course-detail";
         public const string StudentTakeActivity = "student/take-activity";

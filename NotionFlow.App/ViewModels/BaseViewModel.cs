@@ -16,9 +16,13 @@ namespace NotionFlow.App.ViewModels
                 {
                     _isBusy = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsNotBusy)); // ← notifica el inverso
                 }
             }
         }
+
+        // Inverso de IsBusy — para IsVisible sin necesitar InvertedBoolConverter
+        public bool IsNotBusy => !IsBusy;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -78,7 +82,8 @@ namespace NotionFlow.App.ViewModels
             }
         }
 
-        protected void SetProperty<T>(ref T backingField, T value, [CallerMemberName] string? propertyName = null)
+        protected void SetProperty<T>(ref T backingField, T value,
+            [CallerMemberName] string? propertyName = null)
         {
             if (!EqualityComparer<T>.Default.Equals(backingField, value))
             {

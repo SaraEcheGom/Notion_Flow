@@ -31,6 +31,7 @@ namespace NotionFlow.App.ViewModels.Course
         public ICommand DeleteActivityCommand { get; }
         public ICommand TakeActivityCommand { get; }
         public ICommand ViewResultsCommand { get; }
+        public ICommand GoToProgressCommand { get; }
 
         private NotionFlow.App.ViewModels.Teacher.ActivityViewModel? _actVm;
 
@@ -46,7 +47,8 @@ namespace NotionFlow.App.ViewModels.Course
             {
                 var option = await Shell.Current.DisplayActionSheet(
                     "¿Qué deseas agregar?", "Cancelar", null,
-                    "Crear Evaluación", "Publicar Contenido", "Crear Actividad");
+                    "Crear Evaluación", "Publicar Contenido", "Crear Actividad",
+                    "Generar cuestionario desde foto");
 
                 if (option == "Crear Evaluación")
                     await Shell.Current.Navigation.PushAsync(new CreateEvaluationPage(this));
@@ -58,6 +60,12 @@ namespace NotionFlow.App.ViewModels.Course
                     var createPage = new CreateActivityPage(actVm);
                     createPage.ActivityCreated += async () => await LoadDataAsync();
                     await Shell.Current.Navigation.PushAsync(createPage);
+                }
+                else if (option == "Generar cuestionario desde foto")
+                {
+                    var actVm = new NotionFlow.App.ViewModels.Teacher.ActivityViewModel(_api, int.Parse(_courseId), CourseName);
+                    var generatePage = new GenerateQuizFromImagePage(_api, actVm);
+                    await Shell.Current.Navigation.PushAsync(generatePage);
                 }
             });
 
@@ -119,6 +127,12 @@ namespace NotionFlow.App.ViewModels.Course
                     new ActivityResultsPage(_api, int.Parse(_courseId), activity.Id, activity.Title));
             });
 
+            GoToProgressCommand = new Command(async () =>
+            {
+                await Shell.Current.Navigation.PushAsync(
+                    new NotionFlow.App.Views.Course.CourseProgressPage(_api, int.Parse(_courseId), CourseName));
+            });
+
             _ = LoadDataAsync();
         }
 
@@ -157,9 +171,9 @@ namespace NotionFlow.App.ViewModels.Course
             }
         }
 
-        public async Task CreateEvaluationAsync(string title, string description, double percentage)
+        public async Task CreateEvaluationAsync(string title, string description, double percentage, DateTime date)
         {
-            await _api.CreateEvaluationAsync(int.Parse(_courseId), title, description, percentage);
+            await _api.CreateEvaluationAsync(int.Parse(_courseId), title, description, percentage, date);
             await LoadDataAsync();
         }
 

@@ -1,4 +1,4 @@
-using NotionFlow.App.Models.Auth;
+﻿using NotionFlow.App.Models.Auth;
 using NotionFlow.App.Services;
 
 namespace NotionFlow.App.Views.Student;
@@ -52,9 +52,9 @@ public partial class StudentProgressPage : ContentPage
             OverallProgress.Progress = pct;
             ProgressPercentLabel.Text = $"{pct * 100:F0}% completado";
 
-            // ── Nivel ────────────────────────────────────────────────────────
+            // â”€â”€ Nivel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             LevelLabel.Text = $"{progress.LevelEmoji} Nivel: {progress.LevelName}";
-            StreakLabel.Text = $"🔁 Racha: {progress.Streak} actividades seguidas";
+            StreakLabel.Text = $"ðŸ” Racha: {progress.Streak} actividades seguidas";
 
             if (progress.NextLevelPoints < int.MaxValue && progress.NextLevelPoints > 0)
             {
@@ -65,23 +65,23 @@ public partial class StudentProgressPage : ContentPage
             else
             {
                 LevelProgressBar.Progress = 1.0;
-                LevelProgressLabel.Text = "🌟 ¡Nivel máximo — Leyenda!";
+                LevelProgressLabel.Text = "ðŸŒŸ Â¡Nivel mÃ¡ximo â€” Leyenda!";
             }
 
-            // ── Insignias ────────────────────────────────────────────────────
+            // â”€â”€ Insignias â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             BadgesList.Children.Clear();
             if (progress.Badges.Count == 0)
             {
                 BadgesList.Add(new Label
                 {
-                    Text = "Aún no tienes insignias. ¡Completa actividades para ganarlas!",
+                    Text = "AÃºn no tienes insignias. Â¡Completa actividades para ganarlas!",
                     TextColor = TextMuted, FontSize = 13
                 });
             }
             else
             {
-                // Título con conteo
-                BadgesHeader.Text = $"🏆 Mis Insignias ({progress.Badges.Count})";
+                // TÃ­tulo con conteo
+                BadgesHeader.Text = $"ðŸ† Mis Insignias ({progress.Badges.Count})";
 
                 foreach (var badge in progress.Badges)
                 {
@@ -91,7 +91,7 @@ public partial class StudentProgressPage : ContentPage
                     texts.Add(new Label { Text = badge.Name, FontSize = 14, FontAttributes = FontAttributes.Bold, TextColor = PrimaryDark });
                     texts.Add(new Label { Text = badge.Description, FontSize = 12, TextColor = TextMuted });
                     if (badge.EarnedAt.HasValue)
-                        texts.Add(new Label { Text = $"🗓 Obtenida el {badge.EarnedAt:dd/MM/yyyy}", FontSize = 11, TextColor = TextMuted });
+                        texts.Add(new Label { Text = $"ðŸ—“ Obtenida el {badge.EarnedAt:dd/MM/yyyy}", FontSize = 11, TextColor = TextMuted });
                     row.Add(texts);
                     BadgesList.Add(new Border
                     {
@@ -104,25 +104,25 @@ public partial class StudentProgressPage : ContentPage
                 }
             }
 
-            // ── Actividades ───────────────────────────────────────────────────
+            // â”€â”€ Actividades â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             ActivitiesList.Children.Clear();
             if (progress.ActivityDetails.Count == 0)
             {
-                ActivitiesList.Add(new Label { Text = "No tienes actividades asignadas todavía.", TextColor = TextMuted, FontSize = 13 });
+                ActivitiesList.Add(new Label { Text = "No tienes actividades asignadas todavÃ­a.", TextColor = TextMuted, FontSize = 13 });
             }
             else
             {
                 foreach (var act in progress.ActivityDetails)
                 {
                     var row = new HorizontalStackLayout { Spacing = 12 };
-                    row.Add(new Label { Text = act.Completed ? "✅" : "⏳", FontSize = 20, VerticalOptions = LayoutOptions.Center });
+                    row.Add(new Label { Text = act.Completed ? "âœ…" : "â³", FontSize = 20, VerticalOptions = LayoutOptions.Center });
 
                     var info = new VerticalStackLayout { Spacing = 2, HorizontalOptions = LayoutOptions.FillAndExpand };
                     info.Add(new Label { Text = act.ActivityTitle, FontSize = 14, FontAttributes = FontAttributes.Bold, TextColor = TextDark });
                     info.Add(new Label
                     {
                         Text = act.Completed && act.Score.HasValue
-                            ? $"Puntuación: {act.Score}/100 · {act.SubmittedAt:dd/MM/yyyy}"
+                            ? $"PuntuaciÃ³n: {act.Score}/100 Â· {act.SubmittedAt:dd/MM/yyyy}"
                             : "Pendiente",
                         FontSize = 12,
                         TextColor = act.Completed ? PrimaryDark : TextMuted
