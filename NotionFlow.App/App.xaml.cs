@@ -1,7 +1,12 @@
-﻿namespace NotionFlow.App;
+﻿using NotionFlow.App.Services;
+using System.Diagnostics;
+
+namespace NotionFlow.App;
 
 public partial class App : Application
 {
+    private LocalDataService _localDataService = new();
+
     public App(AppShell shell)
     {
         InitializeComponent();
@@ -29,5 +34,21 @@ public partial class App : Application
             });
             e.SetObserved();
         };
+    }
+
+    protected override async void OnStart()
+    {
+        base.OnStart();
+
+        try
+        {
+            Debug.WriteLine("Inicializando datos locales...");
+            await _localDataService.InitializeAsync();
+            Debug.WriteLine("Datos locales cargados");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error: {ex.Message}");
+        }
     }
 }

@@ -57,10 +57,9 @@ public partial class CourseReportPage : ContentPage
                 return;
             }
 
-            // Encabezado ranking
             StudentsList.Add(new Label
             {
-                Text = "🏅 Ranking del Grupo",
+                Text = "Ranking del Grupo",
                 FontSize = 16,
                 FontAttributes = FontAttributes.Bold,
                 TextColor = TextDark,
@@ -72,7 +71,6 @@ public partial class CourseReportPage : ContentPage
                 double pct = student.TotalActivities > 0
                     ? (double)student.CompletedActivities / student.TotalActivities : 0;
 
-                // Color de medalla para top 3
                 Color rankBg = student.Rank switch
                 {
                     1 => Gold,
@@ -81,11 +79,10 @@ public partial class CourseReportPage : ContentPage
                     _ => PrimaryLight
                 };
                 Color rankText = student.Rank <= 3 ? Colors.White : TextDark;
-                string rankIcon = student.Rank switch { 1 => "🥇", 2 => "🥈", 3 => "🥉", _ => $"#{student.Rank}" };
+                string rankIcon = student.Rank switch { 1 => "1", 2 => "2", 3 => "3", _ => $"#{student.Rank}" };
 
                 var main = new VerticalStackLayout { Spacing = 10 };
 
-                // Fila: posición + nombre + nivel + puntos
                 var topRow = new Grid
                 {
                     ColumnDefinitions =
@@ -97,7 +94,6 @@ public partial class CourseReportPage : ContentPage
                     ColumnSpacing = 8
                 };
 
-                // Medalla
                 topRow.Add(new Border
                 {
                     BackgroundColor = rankBg,
@@ -115,31 +111,20 @@ public partial class CourseReportPage : ContentPage
                     }
                 }, 0);
 
-                // Nombre + nivel
                 var nameStack = new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center };
                 nameStack.Add(new Label
                 {
-                    Text = $"{student.LevelEmoji} {student.StudentName}",
+                    Text = $"{student.StudentName}",
                     FontSize = 14, FontAttributes = FontAttributes.Bold, TextColor = TextDark
                 });
                 nameStack.Add(new Label
                 {
-                    Text = $"{student.LevelName} · {student.CompletedActivities}/{student.TotalActivities} act. · Prom: {student.AverageScore:F0}",
+                    Text = $"{student.CompletedActivities}/{student.TotalActivities} act. - Promedio: {student.AverageScore:F0}",
                     FontSize = 11, TextColor = TextMuted
                 });
-                // Insignias en mini
-                if (student.Badges.Count > 0)
-                {
-                    var badgeRow = new HorizontalStackLayout { Spacing = 4 };
-                    foreach (var b in student.Badges.Take(5))
-                        badgeRow.Add(new Label { Text = b.Emoji, FontSize = 14 });
-                    if (student.BadgeCount > 5)
-                        badgeRow.Add(new Label { Text = $"+{student.BadgeCount - 5}", FontSize = 11, TextColor = TextMuted, VerticalOptions = LayoutOptions.Center });
-                    nameStack.Add(badgeRow);
-                }
+
                 topRow.Add(nameStack, 1);
 
-                // Puntos
                 topRow.Add(new Border
                 {
                     BackgroundColor = AccentYellow,
@@ -149,7 +134,7 @@ public partial class CourseReportPage : ContentPage
                     VerticalOptions = LayoutOptions.Center,
                     Content = new Label
                     {
-                        Text = $"🏅 {student.TotalPoints}pts",
+                        Text = $"{student.Score} pts",
                         FontSize = 12, FontAttributes = FontAttributes.Bold,
                         TextColor = Color.FromArgb("#7A5A20")
                     }
@@ -157,7 +142,6 @@ public partial class CourseReportPage : ContentPage
 
                 main.Add(topRow);
 
-                // Barra de progreso
                 var progressBar = new ProgressBar
                 {
                     Progress = pct,
@@ -166,24 +150,6 @@ public partial class CourseReportPage : ContentPage
                 };
                 main.Add(progressBar);
 
-                // Botón ver detalle
-                var btn = new Button
-                {
-                    Text = "Ver progreso individual →",
-                    FontSize = 12,
-                    BackgroundColor = PrimaryColor,
-                    TextColor = Colors.White,
-                    CornerRadius = 20,
-                    Padding = new Thickness(16, 8),
-                    HorizontalOptions = LayoutOptions.Start
-                };
-                var sid = student.StudentId;
-                var sname = student.StudentName;
-                btn.Clicked += async (s, e) =>
-                    await Navigation.PushAsync(new StudentProgressDetailPage(_api, _courseId, sid, sname));
-                main.Add(btn);
-
-                // Borde especial para top 3
                 Color cardBorder = student.Rank switch { 1 => Gold, 2 => Silver, 3 => Bronze, _ => BorderLight };
                 StudentsList.Add(new Border
                 {
@@ -199,11 +165,6 @@ public partial class CourseReportPage : ContentPage
         catch (Exception ex)
         {
             await DisplayAlert("Error", $"No se pudo cargar el reporte: {ex.Message}", "OK");
-        }
-        finally
-        {
-            LoadingIndicator.IsRunning = false;
-            LoadingIndicator.IsVisible = false;
         }
     }
 }

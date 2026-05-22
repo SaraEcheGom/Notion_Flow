@@ -16,14 +16,12 @@ public partial class StudentProgressDetailPage : ContentPage
     static readonly Color CardBg       = Colors.White;
 
     private readonly ApiService _api;
-    private readonly int _courseId;
     private readonly string _studentId;
 
-    public StudentProgressDetailPage(ApiService api, int courseId, string studentId, string studentName)
+    public StudentProgressDetailPage(ApiService api, string studentId, string studentName)
     {
         InitializeComponent();
         _api = api;
-        _courseId = courseId;
         _studentId = studentId;
         StudentTitleLabel.Text = studentName;
     }
@@ -38,108 +36,31 @@ public partial class StudentProgressDetailPage : ContentPage
     {
         try
         {
-            var progress = await _api.GetStudentProgressAsync(_courseId, _studentId);
+            var progress = await _api.GetStudentProgressAsync(_studentId);
 
-            CompletedLabel.Text = $"{progress.CompletedActivities}/{progress.TotalActivities}";
-            AverageLabel.Text   = $"{progress.AverageScore:F0}";
-            PointsLabel.Text    = $"{progress.TotalPoints}";
+            CompletedLabel.Text = $"{progress.TotalActivities}";
+            AverageLabel.Text   = $"{progress.AverageCourseScore:F0}";
+            PointsLabel.Text    = $"{progress.TotalStudents}";
 
-            // Nivel
-            LevelLabel.Text = $"{progress.LevelEmoji} {progress.LevelName}";
-            StreakLabel.Text = $"🔁 Racha: {progress.Streak} actividades";
+            LevelLabel.Text = "Progreso del Estudiante";
+            StreakLabel.Text = $"Total Actividades: {progress.TotalActivities}";
 
-            // Barra de nivel
-            if (progress.NextLevelPoints < int.MaxValue && progress.NextLevelPoints > 0)
+            if (progress.TotalStudents > 0)
             {
-                double levelPct = Math.Min(1.0, (double)progress.TotalPoints / progress.NextLevelPoints);
+                double levelPct = Math.Min(1.0, (double)progress.AverageCourseScore / 100);
                 LevelProgress.Progress = levelPct;
-                LevelProgressLabel.Text = $"{progress.TotalPoints} / {progress.NextLevelPoints} pts para subir de nivel";
-            }
-            else
-            {
-                LevelProgress.Progress = 1.0;
-                LevelProgressLabel.Text = "¡Nivel máximo alcanzado! 🌟";
+                LevelProgressLabel.Text = $"Promedio: {progress.AverageCourseScore:F1}%";
             }
 
-            // Insignias
             BadgesList.Children.Clear();
-            if (progress.Badges.Count == 0)
-            {
-                BadgesList.Add(new Label { Text = "Este estudiante aún no ha ganado insignias.", TextColor = TextMuted, FontSize = 13 });
-            }
-            else
-            {
-                foreach (var badge in progress.Badges)
-                {
-                    var row = new HorizontalStackLayout { Spacing = 12 };
-                    row.Add(new Label { Text = badge.Emoji, FontSize = 26, VerticalOptions = LayoutOptions.Center });
-                    var texts = new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center };
-                    texts.Add(new Label { Text = badge.Name, FontSize = 14, FontAttributes = FontAttributes.Bold, TextColor = PrimaryDark });
-                    texts.Add(new Label { Text = badge.Description, FontSize = 12, TextColor = TextMuted });
-                    if (badge.EarnedAt.HasValue)
-                        texts.Add(new Label { Text = $"Obtenida el {badge.EarnedAt:dd/MM/yyyy}", FontSize = 11, TextColor = TextMuted });
-                    row.Add(texts);
-                    BadgesList.Add(new Border
-                    {
-                        StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 },
-                        BackgroundColor = PrimaryLight,
-                        Stroke = BorderLight, StrokeThickness = 1,
-                        Padding = new Thickness(12, 8),
-                        Content = row
-                    });
-                }
-            }
+            BadgesList.Add(new Label { Text = "Sin insignias asignadas", TextColor = TextMuted, FontSize = 13 });
 
-            // Actividades
             ActivitiesList.Children.Clear();
-            if (progress.ActivityDetails.Count == 0)
-            {
-                ActivitiesList.Add(new Label { Text = "No hay actividades asignadas a este estudiante.", TextColor = TextMuted, FontSize = 13 });
-                return;
-            }
-
-            foreach (var act in progress.ActivityDetails)
-            {
-                var row = new HorizontalStackLayout { Spacing = 12 };
-                row.Add(new Label { Text = act.Completed ? "✅" : "⏳", FontSize = 20, VerticalOptions = LayoutOptions.Center });
-
-                var info = new VerticalStackLayout { Spacing = 2, HorizontalOptions = LayoutOptions.FillAndExpand };
-                info.Add(new Label { Text = act.ActivityTitle, FontSize = 14, FontAttributes = FontAttributes.Bold, TextColor = TextDark });
-                info.Add(new Label
-                {
-                    Text = act.Completed && act.Score.HasValue
-                        ? $"Puntuación: {act.Score}/100 · {act.SubmittedAt:dd/MM/yyyy}"
-                        : "Pendiente",
-                    FontSize = 12,
-                    TextColor = act.Completed ? PrimaryDark : TextMuted
-                });
-                row.Add(info);
-
-                if (act.Completed && act.Score.HasValue)
-                {
-                    var scoreColor = act.Score == 100 ? AccentOrange :
-                                    act.Score >= 80 ? PrimaryDark : TextMuted;
-                    row.Add(new Label { Text = $"+{act.Score}pts", FontSize = 13, FontAttributes = FontAttributes.Bold, TextColor = scoreColor, VerticalOptions = LayoutOptions.Center });
-                }
-
-                ActivitiesList.Add(new Border
-                {
-                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 },
-                    BackgroundColor = CardBg,
-                    Padding = new Thickness(14, 10), StrokeThickness = 1.5,
-                    Stroke = act.Completed ? PrimaryColor : BorderLight,
-                    Content = row
-                });
-            }
+            ActivitiesList.Add(new Label { Text = "Cargando actividades...", TextColor = TextMuted, FontSize = 13 });
         }
         catch (Exception ex)
         {
             await DisplayAlert("Error", $"No se pudo cargar el progreso: {ex.Message}", "OK");
-        }
-        finally
-        {
-            LoadingIndicator.IsRunning = false;
-            LoadingIndicator.IsVisible = false;
         }
     }
 }

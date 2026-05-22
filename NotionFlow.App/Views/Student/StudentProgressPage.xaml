@@ -9,64 +9,13 @@
         <VerticalStackLayout Padding="20,24" Spacing="16">
 
             <Label Text="📊 Mi Progreso" Style="{StaticResource Headline}"/>
-            <Label x:Name="StudentNameLabel" Style="{StaticResource SubHeadline}"/>
+            
+            <Label x:Name="TotalStudentsLabel" FontSize="14" FontAttributes="Bold"/>
+            <Label x:Name="TotalActivitiesLabel" FontSize="14" FontAttributes="Bold"/>
+            <Label x:Name="AverageLabel" FontSize="14" FontAttributes="Bold"/>
 
-            <!-- Resumen numérico -->
-            <Border Style="{StaticResource KawaiiCard}">
-                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
-                    <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="4">
-                        <Label x:Name="CompletedLabel" FontSize="28" FontAttributes="Bold"
-                               HorizontalOptions="Center" TextColor="{StaticResource PrimaryColor}"/>
-                        <Label Text="Completadas" FontSize="11" HorizontalOptions="Center"
-                               TextColor="{StaticResource TextMuted}"/>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
-                        <Label x:Name="AverageLabel" FontSize="28" FontAttributes="Bold"
-                               HorizontalOptions="Center" TextColor="{StaticResource PrimaryDark}"/>
-                        <Label Text="Promedio" FontSize="11" HorizontalOptions="Center"
-                               TextColor="{StaticResource TextMuted}"/>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4">
-                        <Label x:Name="PointsLabel" FontSize="28" FontAttributes="Bold"
-                               HorizontalOptions="Center" TextColor="{StaticResource AccentOrange}"/>
-                        <Label Text="Puntos 🏅" FontSize="11" HorizontalOptions="Center"
-                               TextColor="{StaticResource TextMuted}"/>
-                    </VerticalStackLayout>
-                </Grid>
-            </Border>
-
-            <!-- Barra de progreso general -->
-            <Border Style="{StaticResource KawaiiCard}">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Progreso general" Style="{StaticResource SectionTitle}"/>
-                    <ProgressBar x:Name="OverallProgress" ProgressColor="{StaticResource PrimaryColor}" Progress="0"/>
-                    <Label x:Name="ProgressPercentLabel" HorizontalOptions="End"
-                           TextColor="{StaticResource TextMuted}" FontSize="12"/>
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- Nivel HU#16 -->
-            <Border Style="{StaticResource KawaiiCard}">
-                <VerticalStackLayout Spacing="8">
-                    <Label x:Name="LevelLabel" FontSize="18" FontAttributes="Bold"
-                           TextColor="{StaticResource PrimaryDark}" HorizontalOptions="Center"/>
-                    <ProgressBar x:Name="LevelProgressBar" ProgressColor="{StaticResource AccentOrange}" HeightRequest="8" Progress="0"/>
-                    <Label x:Name="LevelProgressLabel" FontSize="11" TextColor="{StaticResource TextMuted}"
-                           HorizontalOptions="Center"/>
-                    <Label x:Name="StreakLabel" FontSize="12" TextColor="{StaticResource TextMuted}"
-                           HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- Insignias HU#17 -->
-            <Label x:Name="BadgesHeader" Text="🏆 Mis Insignias" Style="{StaticResource SectionTitle}"/>
-            <Border Style="{StaticResource KawaiiCard}">
-                <VerticalStackLayout x:Name="BadgesList" Spacing="10"/>
-            </Border>
-
-            <!-- Actividades HU#14 + puntos HU#16 -->
-            <Label Text="📋 Detalle de Actividades" Style="{StaticResource SectionTitle}"/>
-            <VerticalStackLayout x:Name="ActivitiesList" Spacing="10"/>
+            <Label Text="Estudiantes" FontSize="16" FontAttributes="Bold" Margin="0,20,0,10"/>
+            <VerticalStackLayout x:Name="StudentsList" Spacing="10"/>
 
         </VerticalStackLayout>
     </ScrollView>

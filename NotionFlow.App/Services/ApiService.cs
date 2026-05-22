@@ -22,7 +22,6 @@ namespace NotionFlow.App.Services
             var handler = new HttpClientHandler();
 
 #if DEBUG
-            // Permite certificados self-signed solo en debug
             handler.ServerCertificateCustomValidationCallback =
                 (message, cert, chain, errors) => true;
 #endif
@@ -47,7 +46,6 @@ namespace NotionFlow.App.Services
 #endif
         }
 
-        /// <summary>Carga el JWT desde SecureStorage y configura el header Authorization.</summary>
         public async Task RefreshAuthHeaderAsync()
         {
             try
@@ -85,7 +83,6 @@ namespace NotionFlow.App.Services
                 var jsonContent = await response.Content.ReadAsStringAsync();
                 var data = JsonSerializer.Deserialize<AuthResponse>(jsonContent, JsonOptions)!;
 
-                // Guardar token en SecureStorage (cifrado por el OS)
                 await SecureStorage.SetAsync("jwt_token", data.Token);
                 await RefreshAuthHeaderAsync();
 
@@ -351,6 +348,33 @@ namespace NotionFlow.App.Services
 
             var json = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<List<CourseResponse>>(json, JsonOptions)!;
+        }
+
+        public async Task<ProgressResponse> GetMyProgressAsync()
+        {
+            await RefreshAuthHeaderAsync();
+            var response = await _httpClient.GetAsync("student/progress");
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<ProgressResponse>(json, JsonOptions)!;
+        }
+
+        public async Task<CourseReport> GetCourseReportAsync(int courseId)
+        {
+            await RefreshAuthHeaderAsync();
+            var response = await _httpClient.GetAsync($"courses/{courseId}/report");
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<CourseReport>(json, JsonOptions)!;
+        }
+
+        public async Task<ProgressResponse> GetStudentProgressAsync(string studentId)
+        {
+            await RefreshAuthHeaderAsync();
+            var response = await _httpClient.GetAsync($"student/{studentId}/progress");
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<ProgressResponse>(json, JsonOptions)!;
         }
     }
 }
